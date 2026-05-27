@@ -3,334 +3,2044 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>EasyEyes — YouTube Dark Mode for Students</title>
+  <meta name="description" content="EasyEyes Premium — The Ultimate YouTube Study Station with high-fidelity student eye filters, YouTube Live support, smart pinch-to-zoom, and an integrated 20-20-20 eye health timer.">
+  <title>EasyEyes Pro — The Premium YouTube Study Station</title>
+  <!-- Google Fonts for elite typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-dark: #07070a;
+      --bg-card: #0f1016;
+      --bg-card-hover: #141620;
+      --bg-pill: #191c28;
+      --border-color: #222535;
+      --border-glow: #383e58;
+      
+      /* Vibrant Theme Palette */
+      --accent-primary: #7c6fff;
+      --accent-secondary: #ff6f91;
+      --accent-green: #39e5a4;
+      --accent-yellow: #ffb347;
+      --accent-blue: #00e5ff;
+      
+      /* Text variables */
+      --text-main: #f3f4f6;
+      --text-muted: #8b92b6;
+      --text-label: #5e6488;
+      
+      /* Shadows */
+      --glow-shadow: 0 8px 32px rgba(124, 111, 255, 0.15);
+      --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(124, 111, 255, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(255, 111, 145, 0.08) 0px, transparent 50%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    /* Custom elegant scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-dark);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--border-glow);
+    }
+
+    /* Main Container Layout */
+    .app-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Header Styling */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px;
+      background: rgba(15, 16, 22, 0.7);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      box-shadow: var(--card-shadow);
+      position: sticky;
+      top: 16px;
+      z-index: 100;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 4px 15px rgba(124, 111, 255, 0.3);
+      position: relative;
+      animation: floatLogo 4s ease-in-out infinite;
+    }
+
+    @keyframes floatLogo {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+
+    .logo-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: var(--accent-green);
+      color: #000;
+      font-size: 8px;
+      font-weight: 800;
+      padding: 2px 5px;
+      border-radius: 10px;
+      letter-spacing: 0.5px;
+    }
+
+    .logo-text-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .logo-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .logo-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* Live Stream Status Badge */
+    .live-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 111, 145, 0.1);
+      border: 1px solid rgba(255, 111, 145, 0.2);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: none; /* Dynamic appearance */
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--accent-secondary);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent-secondary);
+      animation: pulseLive 1.5s infinite;
+    }
+
+    @keyframes pulseLive {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.3); opacity: 0.5; }
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-pill);
+      border: 1px solid var(--border-color);
+      padding: 8px 16px;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .status-badge:hover {
+      border-color: var(--accent-primary);
+      background: rgba(124, 111, 255, 0.08);
+      transform: translateY(-1px);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--text-muted);
+      border-radius: 50%;
+      transition: background-color 0.3s;
+    }
+
+    .status-dot.active {
+      background-color: var(--accent-green);
+      box-shadow: 0 0 10px var(--accent-green);
+    }
+
+    .status-text {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    /* Grid Layout: Main Workspace */
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 1024px) {
+      .workspace-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Cards Setup */
+    .station-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .station-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-primary), transparent, var(--accent-secondary));
+      opacity: 0.3;
+    }
+
+    /* Search & Load Section */
+    .url-bar-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .input-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .url-input-wrapper {
+      display: flex;
+      gap: 12px;
+      position: relative;
+    }
+
+    .url-input {
+      flex: 1;
+      background: var(--bg-pill);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 16px 20px;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.3s;
+    }
+
+    .url-input:focus {
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px rgba(124, 111, 255, 0.15);
+      background: var(--bg-card);
+    }
+
+    .load-button {
+      background: linear-gradient(135deg, var(--accent-primary), #6654ff);
+      color: #fff;
+      border: none;
+      border-radius: 16px;
+      padding: 0 28px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(124, 111, 255, 0.2);
+    }
+
+    .load-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(124, 111, 255, 0.35);
+    }
+
+    .load-button:active {
+      transform: translateY(0);
+    }
+
+    /* Advanced Interactive Video Station */
+    .video-viewport {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: #000;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    }
+
+    /* Zoom Canvas - Holds the actual video */
+    .video-zoom-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-origin: center center;
+      transition: transform 0.1s ease-out; /* Smooth translation & scaling */
+    }
+
+    #yt-iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      pointer-events: auto;
+      transition: filter 0.3s;
+    }
+
+    /* Transparent Overlay for Touch gestures, zoom, & panning */
+    .gesture-interactive-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      background: rgba(0, 0, 0, 0);
+      display: none; /* Handled dynamically */
+      cursor: grab;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+
+    .gesture-interactive-overlay.active {
+      display: flex;
+    }
+
+    .gesture-interactive-overlay:active {
+      cursor: grabbing;
+    }
+
+    .gesture-hint-card {
+      background: rgba(15, 16, 22, 0.85);
+      border: 1px solid var(--accent-primary);
+      padding: 12px 20px;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+      pointer-events: none;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      animation: fadeInOut 2.5s forwards;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: scale(0.9); }
+      15% { opacity: 1; transform: scale(1); }
+      85% { opacity: 1; }
+      100% { opacity: 0; transform: scale(1.05); }
+    }
+
+    /* Zoom Indicator Overlay */
+    .zoom-status-badge {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      background: rgba(15, 16, 22, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 6px 12px;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      z-index: 20;
+      backdrop-filter: blur(6px);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .zoom-indicator-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: var(--accent-blue);
+    }
+
+    /* Placeholder Screen */
+    .player-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      color: var(--text-muted);
+      z-index: 5;
+      background: radial-gradient(circle at center, #141620, #0a0a0f);
+      text-align: center;
+      padding: 24px;
+    }
+
+    .placeholder-art {
+      width: 80px;
+      height: 80px;
+      background: rgba(124, 111, 255, 0.1);
+      border: 1px solid rgba(124, 111, 255, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      color: var(--accent-primary);
+      animation: pulsePulse 3s infinite;
+    }
+
+    @keyframes pulsePulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(124, 111, 255, 0.2); }
+      50% { transform: scale(1.05); box-shadow: 0 0 20px 10px rgba(124, 111, 255, 0.1); }
+    }
+
+    .placeholder-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .placeholder-desc {
+      font-size: 13px;
+      max-width: 280px;
+      line-height: 1.6;
+    }
+
+    /* Premium Player Bar Controls */
+    .player-control-strip {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-pill);
+      border: 1px solid var(--border-color);
+      padding: 10px 16px;
+      border-radius: 16px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .control-mode-group {
+      display: flex;
+      background: var(--bg-dark);
+      padding: 4px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+    }
+
+    .mode-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .mode-btn.active {
+      background: var(--accent-primary);
+      color: #fff;
+      box-shadow: 0 4px 10px rgba(124, 111, 255, 0.25);
+    }
+
+    .zoom-adjusters {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .zoom-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .zoom-btn:hover {
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+      background: rgba(0, 229, 255, 0.05);
+    }
+
+    .zoom-value {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      min-width: 45px;
+      text-align: center;
+    }
+
+    /* Filter Preset Grid */
+    .filter-preset-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 2px;
+    }
+
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+    }
+
+    .preset-card {
+      background: var(--bg-pill);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .preset-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-glow);
+      transform: translateY(-2px);
+    }
+
+    .preset-card.active {
+      border-color: var(--accent-primary);
+      background: rgba(124, 111, 255, 0.08);
+      box-shadow: inset 0 0 12px rgba(124, 111, 255, 0.1);
+    }
+
+    .preset-card.premium-glow {
+      border-color: var(--accent-secondary);
+    }
+    .preset-card.premium-glow.active {
+      background: rgba(255, 111, 145, 0.08);
+      box-shadow: inset 0 0 12px rgba(255, 111, 145, 0.1);
+    }
+
+    .preset-badge {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
+      color: #fff;
+      font-size: 8px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-bottom-left-radius: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .preset-card-icon {
+      font-size: 20px;
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: var(--bg-card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border-color);
+      transition: all 0.3s;
+    }
+
+    .preset-card.active .preset-card-icon {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+      background: rgba(124, 111, 255, 0.1);
+    }
+
+    .preset-card.premium-glow.active .preset-card-icon {
+      border-color: var(--accent-secondary);
+      color: var(--accent-secondary);
+      background: rgba(255, 111, 145, 0.1);
+    }
+
+    .preset-card-details {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .preset-card-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .preset-card-desc {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    /* Manual Fine Tuning Sliders */
+    .slider-tuning-panel {
+      background: var(--bg-pill);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .slider-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .slider-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .slider-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .slider-title span {
+      font-size: 14px;
+    }
+
+    .slider-val {
+      font-family: monospace;
+      color: var(--text-main);
+      font-weight: 700;
+      background: var(--bg-card);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+    }
+
+    .slider-input {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--bg-card);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .slider-input::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--accent-primary);
+      cursor: pointer;
+      transition: transform 0.1s;
+      border: 2px solid #fff;
+    }
+
+    .slider-input::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    /* Invert Bright Video Card Toggle */
+    .invert-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(135deg, rgba(25, 28, 40, 0.9), rgba(15, 16, 22, 0.9));
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 16px 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .invert-card:hover {
+      border-color: var(--border-glow);
+      background: var(--bg-card-hover);
+    }
+
+    .invert-card.active {
+      border-color: var(--accent-secondary);
+      background: rgba(255, 111, 145, 0.05);
+    }
+
+    .invert-text-group {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .invert-icon {
+      font-size: 22px;
+      color: var(--accent-secondary);
+    }
+
+    .invert-title-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .invert-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .invert-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .switch-outer {
+      width: 48px;
+      height: 26px;
+      background: var(--border-color);
+      border-radius: 13px;
+      position: relative;
+      transition: background 0.3s;
+    }
+
+    .switch-outer.active {
+      background: var(--accent-secondary);
+    }
+
+    .switch-inner {
+      width: 20px;
+      height: 20px;
+      background: #fff;
+      border-radius: 50%;
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      transition: transform 0.3s;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+
+    .switch-outer.active .switch-inner {
+      transform: translateX(22px);
+    }
+
+    /* RIGHT COLUMN: HEALTH & HISTORY PANELS */
+    .side-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* 20-20-20 Eye Timer Panel */
+    .timer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .timer-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100px;
+      height: 100px;
+      background: radial-gradient(circle, rgba(57, 229, 164, 0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .panel-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panel-title-icon {
+      color: var(--accent-green);
+    }
+
+    .health-badge {
+      background: rgba(57, 229, 164, 0.1);
+      border: 1px solid rgba(57, 229, 164, 0.2);
+      color: var(--accent-green);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .timer-dashboard {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .timer-visual-circle {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      flex-shrink: 0;
+    }
+
+    .svg-ring {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .svg-ring-bg {
+      fill: none;
+      stroke: var(--bg-pill);
+      stroke-width: 6;
+    }
+
+    .svg-ring-fill {
+      fill: none;
+      stroke: var(--accent-green);
+      stroke-width: 6;
+      stroke-linecap: round;
+      stroke-dasharray: 226;
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 1s linear, stroke 0.3s;
+    }
+
+    .timer-digits {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: monospace;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .timer-explanation {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .timer-headline {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .timer-subheadline {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .timer-action-btn {
+      width: 100%;
+      background: var(--bg-pill);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 12px;
+      border-radius: 14px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+
+    .timer-action-btn:hover {
+      border-color: var(--accent-green);
+      background: rgba(57, 229, 164, 0.05);
+      color: var(--accent-green);
+    }
+
+    /* Recent Played Video History Section */
+    .history-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-height: 520px;
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .clear-history-btn {
+      background: none;
+      border: none;
+      color: var(--accent-secondary);
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: background 0.2s;
+    }
+
+    .clear-history-btn:hover {
+      background: rgba(255, 111, 145, 0.1);
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .history-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 40px 0;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .history-empty-icon {
+      font-size: 28px;
+      opacity: 0.4;
+    }
+
+    .history-item {
+      display: flex;
+      gap: 12px;
+      padding: 10px;
+      background: var(--bg-pill);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      align-items: center;
+    }
+
+    .history-item:hover {
+      border-color: var(--accent-primary);
+      background: var(--bg-card-hover);
+      transform: translateY(-1px);
+    }
+
+    .history-thumbnail-wrapper {
+      position: relative;
+      width: 80px;
+      aspect-ratio: 16/9;
+      border-radius: 8px;
+      overflow: hidden;
+      flex-shrink: 0;
+      border: 1px solid var(--border-color);
+    }
+
+    .history-thumbnail {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .history-live-pill {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      background: var(--accent-secondary);
+      color: #fff;
+      font-size: 7px;
+      font-weight: 800;
+      padding: 1px 4px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .history-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .history-item-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .history-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 9px;
+      color: var(--text-muted);
+    }
+
+    .history-delete-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 14px;
+      padding: 4px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .history-delete-btn:hover {
+      color: var(--accent-secondary);
+      background: rgba(255, 111, 145, 0.1);
+    }
+
+    /* Study Smart Panel */
+    .study-tips-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .tip-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .tip-bullet {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-primary);
+      margin-top: 6px;
+      flex-shrink: 0;
+    }
+
+    /* Hosting Local File Warning Bar */
+    .host-warning-strip {
+      background: rgba(255, 179, 71, 0.08);
+      border: 1px solid rgba(255, 179, 71, 0.3);
+      padding: 14px 20px;
+      border-radius: 16px;
+      display: none;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .host-warning-icon {
+      font-size: 24px;
+      color: var(--accent-yellow);
+    }
+
+    .host-warning-text {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .host-warning-text b {
+      color: var(--text-main);
+    }
+
+    .host-warning-text a {
+      color: var(--accent-primary);
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .host-warning-text a:hover {
+      text-decoration: underline;
+    }
+
+    /* Footer styling */
+    .footer {
+      text-align: center;
+      padding: 16px;
+      font-size: 11px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-color);
+      margin-top: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .footer span {
+      color: var(--accent-secondary);
+      animation: heartbeat 1.5s infinite;
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+    }
+  </style>
 </head>
 <body>
 
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Syne:wght@700;800&display=swap');
-  *{box-sizing:border-box;margin:0;padding:0}
-  :root{
-    --bg:#0a0a0f;--surface:#111118;--surface2:#1a1a24;--surface3:#22222f;
-    --border:#2a2a3a;--accent:#7c6fff;--accent2:#ff6f91;--green:#4fffb0;
-    --text:#f0f0ff;--muted:#888aaa;--warn:#ffb347;
-  }
-  body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0}
-  .app{display:flex;flex-direction:column;min-height:100vh;max-width:430px;margin:0 auto;background:var(--bg)}
+<div class="app-container">
   
-  .header{padding:18px 20px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
-  .logo{display:flex;align-items:center;gap:10px}
-  .logo-icon{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-  .logo-text{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;letter-spacing:-0.5px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-  .logo-sub{font-size:11px;color:var(--muted);margin-top:1px}
-  .timer-badge{display:flex;align-items:center;gap:5px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:5px 10px;cursor:pointer}
-  .timer-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:pulse 2s infinite}
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-  .timer-text{font-size:12px;color:var(--green);font-weight:500}
-
-  .url-section{padding:16px 20px}
-  .url-label{font-size:12px;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;text-transform:uppercase;font-weight:500}
-  .url-row{display:flex;gap:8px}
-  .url-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:11px 14px;font-size:14px;color:var(--text);font-family:'Space Grotesk',sans-serif;outline:none;transition:border-color .2s}
-  .url-input:focus{border-color:var(--accent)}
-  .url-input::placeholder{color:var(--muted)}
-  .load-btn{background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:12px;padding:11px 16px;font-size:13px;font-weight:600;color:#fff;cursor:pointer;font-family:'Space Grotesk',sans-serif;white-space:nowrap;transition:opacity .2s}
-  .load-btn:active{opacity:.8}
-
-  .video-wrap{margin:0 20px;position:relative;border-radius:16px;overflow:hidden;background:#000;aspect-ratio:16/9;border:1px solid var(--border)}
-  .video-overlay{position:absolute;inset:0;pointer-events:none;z-index:2;border-radius:16px}
-  #yt-iframe{width:100%;height:100%;border:none;display:block}
-  .placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--muted)}
-  .placeholder-icon{font-size:42px;opacity:.3}
-  .placeholder-text{font-size:13px;opacity:.6}
-  .placeholder-arrow{font-size:11px;color:var(--accent);opacity:.7}
-
-  .presets{padding:16px 20px 8px}
-  .section-label{font-size:11px;color:var(--muted);letter-spacing:.6px;text-transform:uppercase;font-weight:500;margin-bottom:10px}
-  .preset-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-  .preset-btn{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;transition:all .2s;font-family:'Space Grotesk',sans-serif}
-  .preset-btn:active{transform:scale(.95)}
-  .preset-btn.active{border-color:var(--accent);background:rgba(124,111,255,.15)}
-  .preset-icon{font-size:18px}
-  .preset-name{font-size:10px;color:var(--muted);font-weight:500}
-  .preset-btn.active .preset-name{color:var(--accent)}
-
-  .controls{padding:8px 20px 16px}
-  .filter-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-  .filter-label{font-size:13px;color:var(--muted);width:80px;flex-shrink:0}
-  .filter-slider{flex:1;accent-color:var(--accent);height:4px;cursor:pointer}
-  .filter-val{font-size:12px;color:var(--text);width:36px;text-align:right;font-weight:500}
-
-  .big-toggle-row{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--surface2);border-radius:14px;border:1px solid var(--border);margin:0 20px 14px;cursor:pointer;transition:all .25s}
-  .big-toggle-row.on{border-color:var(--accent2);background:rgba(255,111,145,.08)}
-  .toggle-info{flex:1}
-  .toggle-title{font-size:14px;font-weight:600}
-  .toggle-desc{font-size:11px;color:var(--muted);margin-top:2px}
-  .toggle-switch{width:44px;height:24px;border-radius:12px;background:var(--border);position:relative;flex-shrink:0;transition:background .25s}
-  .toggle-switch.on{background:var(--accent2)}
-  .toggle-switch::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .25s}
-  .toggle-switch.on::after{transform:translateX(20px)}
-
-  .break-bar{margin:0 20px;padding:12px 16px;background:rgba(79,255,176,.05);border:1px solid rgba(79,255,176,.2);border-radius:14px;display:flex;align-items:center;gap:12px;margin-bottom:16px}
-  .break-icon{font-size:20px}
-  .break-info{flex:1}
-  .break-title{font-size:13px;font-weight:600;color:var(--green)}
-  .break-sub{font-size:11px;color:var(--muted)}
-  .break-btn{font-size:11px;background:rgba(79,255,176,.15);border:1px solid rgba(79,255,176,.3);color:var(--green);border-radius:8px;padding:5px 10px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-weight:500}
-
-
-  .host-warning{display:none;margin:0 20px 14px;padding:14px 16px;background:rgba(255,179,71,.08);border:1px solid rgba(255,179,71,.4);border-radius:14px}
-  .hw-title{font-size:13px;font-weight:700;color:var(--warn);margin-bottom:8px}
-  .hw-body{font-size:12px;color:var(--muted);line-height:1.9}
-  .hw-body b{color:var(--text)}
-  .hw-body a{color:var(--accent);font-weight:600;text-decoration:none}
-
-  .footer{padding:12px 20px;border-top:1px solid var(--border);text-align:center;font-size:11px;color:var(--muted)}
-  .footer span{color:var(--accent2)}
-</style>
-
-<h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">EasyEyes — YouTube dark mode and color filter web app for students</h2>
-
-<div class="app">
-  <div class="header">
-    <div class="logo">
-      <div class="logo-icon">&#128065;</div>
-      <div>
-        <div class="logo-text">EasyEyes</div>
-        <div class="logo-sub">YouTube filter for students</div>
+  <!-- Header Bar -->
+  <header class="header">
+    <a href="#" class="logo-container">
+      <div class="logo-icon">
+        &#128065;
+        <span class="logo-badge">Pro</span>
+      </div>
+      <div class="logo-text-group">
+        <h1 class="logo-title">EasyEyes Pro</h1>
+        <span class="logo-subtitle">Premium YouTube Study Station</span>
+      </div>
+    </a>
+    
+    <div class="header-controls">
+      <!-- Live badge -->
+      <div class="live-status" id="live-badge">
+        <div class="live-dot"></div>
+        <span>YouTube Live Stream</span>
+      </div>
+      
+      <!-- Timer toggle badge -->
+      <div class="status-badge" onclick="toggleTimer()">
+        <div class="status-dot" id="timer-dot"></div>
+        <span class="status-text" id="timer-text">20:00</span>
       </div>
     </div>
-    <div class="timer-badge" onclick="toggleTimer()">
-      <div class="timer-dot" id="timer-dot"></div>
-      <div class="timer-text" id="timer-text">20:00</div>
+  </header>
+
+  <!-- Local Host Warning banner -->
+  <div class="host-warning-strip" id="host-warning">
+    <div class="host-warning-icon">&#9888;</div>
+    <div class="host-warning-text">
+      <b>Running from a local file:</b> YouTube embeds might block playback due to cross-origin security rules. 
+      For a 100% seamless experience, drag-and-drop this HTML file onto <a href="https://app.netlify.com/drop" target="_blank">Netlify Drop</a> to get a free, secure HTTPS hosting link instantly!
     </div>
   </div>
 
-  <div class="url-section">
-    <div class="url-label">Paste YouTube Link</div>
-    <div class="url-row">
-      <input class="url-input" id="url-input" type="text" placeholder="https://youtube.com/watch?v=..." />
-      <button class="load-btn" onclick="loadVideo()">&#9654; Load</button>
-    </div>
-  </div>
+  <!-- Workspace Grid Layout -->
+  <main class="workspace-grid">
+    
+    <!-- LEFT SIDE: Video Player and Controls -->
+    <div class="side-stack">
+      
+      <!-- Video Station Card -->
+      <section class="station-card">
+        
+        <!-- Video Input bar -->
+        <div class="url-bar-section">
+          <div class="input-label">
+            <span>Paste YouTube Live or Video Link</span>
+            <span style="color: var(--accent-primary);">Supports Live streams</span>
+          </div>
+          <div class="url-input-wrapper">
+            <input class="url-input" id="url-input" type="text" placeholder="e.g., https://www.youtube.com/watch?v=... or https://youtube.com/live/..." />
+            <button class="load-button" onclick="loadVideo()">
+              <span>&#9654;</span> Load
+            </button>
+          </div>
+        </div>
 
-  <div class="host-warning" id="host-warning">
-    <div class="hw-title">&#9888; YouTube videos need an https:// page</div>
-    <div class="hw-body">
-      You opened this as a local file, so YouTube blocks loading.<br><br>
-      <b>Free fix (1 min):</b><br>
-      1. Visit <a href="https://app.netlify.com/drop" target="_blank">app.netlify.com/drop</a><br>
-      2. Drag &amp; drop this HTML file onto the page<br>
-      3. Netlify gives you a free link &#8212; open it in your browser<br>
-      4. Paste your YouTube link and enjoy! &#9989;
-    </div>
-  </div>
+        <!-- Video Screen Area -->
+        <div class="video-viewport">
+          
+          <!-- Zoom indicator -->
+          <div class="zoom-status-badge">
+            <div class="zoom-indicator-dot"></div>
+            <span id="zoom-percentage">Zoom: 100%</span>
+          </div>
 
-  <div class="video-wrap">
-    <iframe id="yt-iframe" style="display:none" allowfullscreen allow="autoplay; encrypted-media"></iframe>
-    <div id="vid-overlay" class="video-overlay"></div>
-    <div class="placeholder" id="placeholder">
-      <div class="placeholder-icon">&#127909;</div>
-      <div class="placeholder-text">Paste a link above to load video</div>
-      <div class="placeholder-arrow">&#8593; paste &amp; hit Load</div>
-    </div>
-  </div>
+          <!-- Video viewport scale container -->
+          <div class="video-zoom-container" id="video-zoom-container">
+            <iframe id="yt-iframe" style="display:none" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+          </div>
 
-  <div style="height:14px"></div>
+          <!-- Transparent Interaction/Zoom Overlay -->
+          <div class="gesture-interactive-overlay" id="gesture-overlay">
+            <div class="gesture-hint-card" id="gesture-hint">
+              <span>👋 Pinch with 2 fingers to zoom</span>
+              <span style="font-size: 10px; color: var(--text-muted);">Drag with 1 finger to pan around</span>
+            </div>
+          </div>
 
-  <div class="big-toggle-row" id="invert-toggle" onclick="toggleInvert()">
-    <div>
-      <div style="font-size:22px;margin-bottom:4px">&#9681;</div>
-    </div>
-    <div class="toggle-info">
-      <div class="toggle-title">Dark Mode Invert</div>
-      <div class="toggle-desc">White &#8594; Black &nbsp;|&nbsp; Makes bright videos dark</div>
-    </div>
-    <div class="toggle-switch" id="invert-sw"></div>
-  </div>
+          <!-- Placeholder Screen -->
+          <div class="player-placeholder" id="placeholder">
+            <div class="placeholder-art">&#127891;</div>
+            <div class="placeholder-title">Ready for Deep Study</div>
+            <div class="placeholder-desc">Paste a regular YouTube link or a Live study stream above and click Load to begin.</div>
+          </div>
+        </div>
 
-  <div class="presets" style="padding-top:4px">
-    <div class="section-label">Presets</div>
-    <div class="preset-grid">
-      <div class="preset-btn" onclick="applyPreset('night')" id="p-night">
-        <div class="preset-icon">&#127771;</div>
-        <div class="preset-name">Night</div>
-      </div>
-      <div class="preset-btn" onclick="applyPreset('study')" id="p-study">
-        <div class="preset-icon">&#128214;</div>
-        <div class="preset-name">Study</div>
-      </div>
-      <div class="preset-btn" onclick="applyPreset('cinema')" id="p-cinema">
-        <div class="preset-icon">&#127916;</div>
-        <div class="preset-name">Cinema</div>
-      </div>
-      <div class="preset-btn" onclick="applyPreset('reset')" id="p-reset">
-        <div class="preset-icon">&#9728;</div>
-        <div class="preset-name">Reset</div>
-      </div>
-    </div>
-  </div>
+        <!-- Premium Player Custom Toolstrip Bar -->
+        <div class="player-control-strip">
+          <div class="control-mode-group">
+            <button class="mode-btn active" id="mode-control" onclick="setInteractiveMode('control')">
+              &#127918; Player Controls
+            </button>
+            <button class="mode-btn" id="mode-gesture" onclick="setInteractiveMode('gesture')">
+              &#9995; Zoom & Pan
+            </button>
+          </div>
 
-  <div class="controls">
-    <div class="section-label">Manual Controls</div>
+          <!-- Zoom adjusters for desktop/mouse users -->
+          <div class="zoom-adjusters">
+            <button class="zoom-btn" onclick="adjustZoom(-0.1)" title="Zoom Out">-</button>
+            <span class="zoom-value" id="zoom-control-percentage">100%</span>
+            <button class="zoom-btn" onclick="adjustZoom(0.1)" title="Zoom In">+</button>
+            <button class="zoom-btn" onclick="resetZoom()" style="width: auto; padding: 0 10px; font-size: 11px;" title="Reset Zoom">Reset</button>
+          </div>
+        </div>
 
-    <div class="filter-row">
-      <div class="filter-label">&#9788; Brightness</div>
-      <input class="filter-slider" type="range" id="brightness" min="20" max="150" value="100" step="1" oninput="applyFilters()">
-      <div class="filter-val" id="brightness-val">100%</div>
-    </div>
-    <div class="filter-row">
-      <div class="filter-label">&#9651; Contrast</div>
-      <input class="filter-slider" type="range" id="contrast" min="50" max="200" value="100" step="1" oninput="applyFilters()">
-      <div class="filter-val" id="contrast-val">100%</div>
-    </div>
-    <div class="filter-row">
-      <div class="filter-label">&#127769; Warm Tone</div>
-      <input class="filter-slider" type="range" id="sepia" min="0" max="100" value="0" step="1" oninput="applyFilters()">
-      <div class="filter-val" id="sepia-val">0%</div>
-    </div>
-    <div class="filter-row">
-      <div class="filter-label">&#128065; Saturation</div>
-      <input class="filter-slider" type="range" id="saturate" min="0" max="200" value="100" step="1" oninput="applyFilters()">
-      <div class="filter-val" id="saturate-val">100%</div>
-    </div>
-  </div>
+      </section>
 
-  <div class="break-bar">
-    <div class="break-icon">&#128064;</div>
-    <div class="break-info">
-      <div class="break-title" id="break-title">20-20-20 Eye Break Timer</div>
-      <div class="break-sub" id="break-sub">Look 20 ft away for 20 sec every 20 min</div>
-    </div>
-    <button class="break-btn" id="break-btn" onclick="toggleTimer()">Start</button>
-  </div>
+      <!-- Premium Filters Presets Card -->
+      <section class="station-card">
+        <div>
+          <h2 class="panel-title" style="margin-bottom: 2px;">
+            <span>&#128065;</span> Premium Study Filters
+          </h2>
+          <span class="preset-card-desc" style="color: var(--text-muted);">Select premium color science settings formulated specifically for student eyes.</span>
+        </div>
 
-  <div class="footer">Made with <span>&#9829;</span> for student eyes &nbsp;·&nbsp; Works in mobile browser</div>
+        <!-- Presets Grid -->
+        <div class="preset-grid">
+          
+          <!-- HD Premium -->
+          <div class="preset-card premium-glow" onclick="applyPreset('hd-premium')" id="p-hd-premium">
+            <div class="preset-badge">Premium</div>
+            <div class="preset-card-icon">&#128253;</div>
+            <div class="preset-card-details">
+              <span class="preset-card-title">HD Premium</span>
+              <span class="preset-card-desc">Crisp High-Fidelity</span>
+            </div>
+          </div>
+
+          <!-- Ultra Clarity Premium HD -->
+          <div class="preset-card premium-glow" onclick="applyPreset('premium-hd')" id="p-premium-hd">
+            <div class="preset-badge">Elite</div>
+            <div class="preset-card-icon">&#128142;</div>
+            <div class="preset-card-details">
+              <span class="preset-card-title">Premium HD</span>
+              <span class="preset-card-desc">Ultra Clear Contrast</span>
+            </div>
+          </div>
+
+          <!-- Super Focus Mode -->
+          <div class="preset-card" onclick="applyPreset('focus')" id="p-focus">
+            <div class="preset-card-icon">&#127919;</div>
+            <div class="preset-card-details">
+              <span class="preset-card-title">Super Focus</span>
+              <span class="preset-card-desc">Math & Coding</span>
+            </div>
+          </div>
+
+          <!-- Blue light block -->
+          <div class="preset-card" onclick="applyPreset('blue-block')" id="p-blue-block">
+            <div class="preset-card-icon">&#128214;</div>
+            <div class="preset-card-details">
+              <span class="preset-card-title">Reader Mode</span>
+              <span class="preset-card-desc">De-noise Blue Light</span>
+            </div>
+          </div>
+
+          <!-- Night mode preset -->
+          <div class="preset-card" onclick="applyPreset('night')" id="p-night">
+            <div class="preset-card-icon">&#127771;</div>
+            <div class="preset-card-details">
+              <span class="preset-card-title">Night Vision</span>
+              <span class="preset-card-desc">Warm Dim Overlay</span>
+            </div>
+          </div>
+
+          <!-- Reset Filter -->
+          <div class="preset-card" onclick="applyPreset('reset')" id="p-reset">
+            <div class="preset-card-icon">&#9728;</div>
+            <div class="preset-card-details">
+              <span class="preset-card-title">Original</span>
+              <span class="preset-card-desc">Reset filters</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Invert toggle panel -->
+        <div class="invert-card" id="invert-toggle" onclick="toggleInvert()">
+          <div class="invert-text-group">
+            <div class="invert-icon">&#9681;</div>
+            <div class="invert-title-group">
+              <span class="invert-title">Deep Dark Inversion</span>
+              <span class="invert-desc">Inverts white pages to clean, non-glare black backgrounds. Excellent for code guides.</span>
+            </div>
+          </div>
+          <div class="switch-outer" id="invert-sw">
+            <div class="switch-inner"></div>
+          </div>
+        </div>
+
+        <!-- Manual tuning sliders -->
+        <div class="slider-tuning-panel">
+          <span class="filter-preset-label">Manual Fine Tuning</span>
+          
+          <div class="slider-row">
+            <div class="slider-info">
+              <span class="slider-title"><span>&#9788;</span> Brightness</span>
+              <span class="slider-val" id="brightness-val">100%</span>
+            </div>
+            <input class="slider-input" type="range" id="brightness" min="20" max="150" value="100" step="1" oninput="applyFilters()">
+          </div>
+
+          <div class="slider-row">
+            <div class="slider-info">
+              <span class="slider-title"><span>&#9651;</span> Contrast</span>
+              <span class="slider-val" id="contrast-val">100%</span>
+            </div>
+            <input class="slider-input" type="range" id="contrast" min="50" max="200" value="100" step="1" oninput="applyFilters()">
+          </div>
+
+          <div class="slider-row">
+            <div class="slider-info">
+              <span class="slider-title"><span>&#127769;</span> Warm Tone (Sepia)</span>
+              <span class="slider-val" id="sepia-val">0%</span>
+            </div>
+            <input class="slider-input" type="range" id="sepia" min="0" max="100" value="0" step="1" oninput="applyFilters()">
+          </div>
+
+          <div class="slider-row">
+            <div class="slider-info">
+              <span class="slider-title"><span>&#128065;</span> Saturation</span>
+              <span class="slider-val" id="saturate-val">100%</span>
+            </div>
+            <input class="slider-input" type="range" id="saturate" min="0" max="200" value="100" step="1" oninput="applyFilters()">
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+
+    <!-- RIGHT SIDE: Eye health countdown timer, Recently played history list, Study notes -->
+    <div class="side-stack">
+      
+      <!-- 20-20-20 Eye Break Health Station -->
+      <section class="timer-card">
+        <div class="panel-header">
+          <h2 class="panel-title">
+            <span class="panel-title-icon">&#9811;</span> 20-20-20 Eye Timer
+          </h2>
+          <span class="health-badge">Ocular Health</span>
+        </div>
+
+        <div class="timer-dashboard">
+          <div class="timer-visual-circle">
+            <svg class="svg-ring">
+              <circle class="svg-ring-bg" cx="40" cy="40" r="36"></circle>
+              <circle class="svg-ring-fill" id="timer-ring" cx="40" cy="40" r="36"></circle>
+            </svg>
+            <div class="timer-digits" id="timer-dashboard-text">20:00</div>
+          </div>
+
+          <div class="timer-explanation">
+            <span class="timer-headline" id="timer-heading">Prevent Eye Strain</span>
+            <span class="timer-subheadline" id="timer-subheading">Every 20 minutes, look at an object 20 feet away for 20 seconds.</span>
+          </div>
+        </div>
+
+        <button class="timer-action-btn" id="timer-btn" onclick="toggleTimer()">
+          Start Session
+        </button>
+      </section>
+
+      <!-- Recently Played Video History -->
+      <section class="history-card">
+        <div class="history-header">
+          <h2 class="panel-title">
+            <span>&#128338;</span> Recent History
+          </h2>
+          <button class="clear-history-btn" onclick="clearHistory()">
+            &#128465; Clear History
+          </button>
+        </div>
+
+        <div class="history-list" id="history-list">
+          <!-- Populated dynamically via JS -->
+          <div class="history-empty">
+            <div class="history-empty-icon">&#128229;</div>
+            <div style="font-size: 12px; font-weight: 600;">No history logged yet</div>
+            <div style="font-size: 10px; color: var(--text-muted);">Videos you study will appear here</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Quick Study Stats & Guidance -->
+      <section class="study-tips-card">
+        <h2 class="panel-title">
+          <span>&#128161;</span> Study Tips & shortcuts
+        </h2>
+        <div class="tip-item">
+          <div class="tip-bullet"></div>
+          <div>Toggle <b>Zoom & Pan</b> to scale small code or graphics, then switch back to <b>Player Controls</b> to seek or pause.</div>
+        </div>
+        <div class="tip-item">
+          <div class="tip-bullet"></div>
+          <div>Drag around with your finger or mouse inside the viewport when zoomed to scan across different sections.</div>
+        </div>
+        <div class="tip-item">
+          <div class="tip-bullet"></div>
+          <div>Press the <b>Enter key</b> inside the input box to instantly compile and load video nodes.</div>
+        </div>
+      </section>
+
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    Made with <span>&#9829;</span> for student eye health · Responsive Study Station Pro
+  </footer>
+
 </div>
 
+<!-- Self-contained JavaScript logic -->
 <script>
+// State Management
 let invertOn = false;
 let timerOn = false;
 let timerInterval = null;
-let timerSeconds = 20 * 60;
+const totalTimerSeconds = 20 * 60; // 20 minutes
+let timerSecondsLeft = totalTimerSeconds;
 let activePreset = null;
+let recentVideos = [];
 
-function loadVideo() {
-  const raw = document.getElementById('url-input').value.trim();
+// Interactive zoom & pan variables
+let zoomLevel = 1.0;
+let panX = 0;
+let panY = 0;
+let isPanning = false;
+let startX = 0;
+let startY = 0;
+let initialPinchDistance = 0;
+let initialZoom = 1.0;
+let interactiveMode = 'control'; // 'control' or 'gesture'
+
+// DOM Elements
+const iframe = document.getElementById('yt-iframe');
+const zoomContainer = document.getElementById('video-zoom-container');
+const gestureOverlay = document.getElementById('gesture-overlay');
+const placeholder = document.getElementById('placeholder');
+const timerText = document.getElementById('timer-text');
+const timerDashboardText = document.getElementById('timer-dashboard-text');
+const timerRing = document.getElementById('timer-ring');
+const timerBtn = document.getElementById('timer-btn');
+const timerDot = document.getElementById('timer-dot');
+const timerHeading = document.getElementById('timer-heading');
+const timerSubheading = document.getElementById('timer-subheading');
+const liveBadge = document.getElementById('live-badge');
+
+// Load video history from localstorage on start
+window.onload = function() {
+  const stored = localStorage.getItem('easyeyes_history');
+  if (stored) {
+    try {
+      recentVideos = JSON.parse(stored);
+      renderHistory();
+    } catch(e) {
+      recentVideos = [];
+    }
+  }
+
+  // Setup Touch / Gesture event listeners on the overlay
+  setupGestureListeners();
+
+  // Hosting validation
+  const proto = window.location.protocol;
+  if (proto === 'file:' || proto === 'content:' || proto === 'blob:') {
+    document.getElementById('host-warning').style.display = 'flex';
+  }
+};
+
+// YouTube URL parser
+function parseYouTubeId(url) {
+  url = url.trim();
   let vid = '';
-  const m1 = raw.match(/[?&]v=([^&]+)/);
-  const m2 = raw.match(/youtu\.be\/([^?&]+)/);
-  const m3 = raw.match(/embed\/([^?&]+)/);
-  if (m1) vid = m1[1];
-  else if (m2) vid = m2[1];
-  else if (m3) vid = m3[1];
-  else if (/^[A-Za-z0-9_-]{11}$/.test(raw)) vid = raw;
+  
+  // Regex matchers for all YouTube variations (live streams, watches, embed, shorts)
+  const regWatch = /[?&]v=([^&]+)/;
+  const regShort = /youtu\.be\/([^?&]+)/;
+  const regEmbed = /embed\/([^?&]+)/;
+  const regLive = /youtube\.com\/live\/([^?&]+)/;
+  const regShorts = /youtube\.com\/shorts\/([^?&]+)/;
 
-  if (!vid) { alert('Please paste a valid YouTube link!'); return; }
+  const mWatch = url.match(regWatch);
+  const mShort = url.match(regShort);
+  const mEmbed = url.match(regEmbed);
+  const mLive = url.match(regLive);
+  const mShorts = url.match(regShorts);
 
-  const iframe = document.getElementById('yt-iframe');
-  iframe.src = 'https://www.youtube.com/embed/' + vid + '?rel=0&modestbranding=1';
-  iframe.style.display = 'block';
-  document.getElementById('placeholder').style.display = 'none';
-  applyFilters();
+  if (mWatch) vid = mWatch[1];
+  else if (mShort) vid = mShort[1];
+  else if (mEmbed) vid = mEmbed[1];
+  else if (mLive) vid = mLive[1];
+  else if (mShorts) vid = mShorts[1];
+  else if (/^[A-Za-z0-9_-]{11}$/.test(url)) vid = url;
+
+  return {
+    id: vid,
+    isLive: regLive.test(url)
+  };
 }
 
+// Loads video into iframe and registers in history
+function loadVideo(customId = null, isCustomLive = false) {
+  let vid = '';
+  let isLive = false;
+
+  if (customId) {
+    vid = customId;
+    isLive = isCustomLive;
+    document.getElementById('url-input').value = 'https://www.youtube.com/watch?v=' + vid;
+  } else {
+    const rawVal = document.getElementById('url-input').value;
+    const parsed = parseYouTubeId(rawVal);
+    vid = parsed.id;
+    isLive = parsed.isLive;
+  }
+
+  if (!vid) {
+    alert('Please insert a valid YouTube Video, Live Stream or Shorts link!');
+    return;
+  }
+
+  // Construct YouTube URL with modest branding
+  iframe.src = 'https://www.youtube.com/embed/' + vid + '?rel=0&modestbranding=1&autoplay=1';
+  iframe.style.display = 'block';
+  placeholder.style.display = 'none';
+
+  // Toggle Live Badge state
+  if (isLive) {
+    liveBadge.style.display = 'flex';
+  } else {
+    liveBadge.style.display = 'none';
+  }
+
+  // Reset zoom properties
+  resetZoom();
+  applyFilters();
+
+  // Save to history list
+  addToHistory(vid, isLive);
+}
+
+// Add Item to History
+function addToHistory(vid, isLive) {
+  // Check if item already exists
+  recentVideos = recentVideos.filter(item => item.id !== vid);
+
+  // Unshift new video details
+  recentVideos.unshift({
+    id: vid,
+    isLive: isLive,
+    timestamp: Date.now()
+  });
+
+  // Keep it within max 10 records
+  if (recentVideos.length > 10) {
+    recentVideos.pop();
+  }
+
+  localStorage.setItem('easyeyes_history', JSON.stringify(recentVideos));
+  renderHistory();
+}
+
+// Render History
+function renderHistory() {
+  const listEl = document.getElementById('history-list');
+  if (recentVideos.length === 0) {
+    listEl.innerHTML = `
+      <div class="history-empty">
+        <div class="history-empty-icon">&#128229;</div>
+        <div style="font-size: 12px; font-weight: 600;">No history logged yet</div>
+        <div style="font-size: 10px; color: var(--text-muted);">Videos you study will appear here</div>
+      </div>
+    `;
+    return;
+  }
+
+  let html = '';
+  recentVideos.forEach(vid => {
+    const formattedDate = new Date(vid.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const liveIndicator = vid.isLive ? `<span class="history-live-pill">Live</span>` : '';
+    html += `
+      <div class="history-item" onclick="loadVideo('${vid.id}', ${vid.isLive})">
+        <div class="history-thumbnail-wrapper">
+          <img class="history-thumbnail" src="https://img.youtube.com/vi/${vid.id}/mqdefault.jpg" alt="Thumbnail">
+          ${liveIndicator}
+        </div>
+        <div class="history-info">
+          <span class="history-item-title">Video ID: ${vid.id}</span>
+          <div class="history-meta">
+            <span>Study Session</span>
+            <span>${formattedDate}</span>
+          </div>
+        </div>
+        <button class="history-delete-btn" onclick="event.stopPropagation(); deleteHistoryItem('${vid.id}')" title="Remove from list">
+          &times;
+        </button>
+      </div>
+    `;
+  });
+  listEl.innerHTML = html;
+}
+
+// Clear single history row
+function deleteHistoryItem(id) {
+  recentVideos = recentVideos.filter(item => item.id !== id);
+  localStorage.setItem('easyeyes_history', JSON.stringify(recentVideos));
+  renderHistory();
+}
+
+// Clear all history logs
+function clearHistory() {
+  if (confirm('Are you sure you want to clear your recently played history?')) {
+    recentVideos = [];
+    localStorage.removeItem('easyeyes_history');
+    renderHistory();
+  }
+}
+
+// Toggle interactive layout Modes
+function setInteractiveMode(mode) {
+  interactiveMode = mode;
+  document.getElementById('mode-control').classList.toggle('active', mode === 'control');
+  document.getElementById('mode-gesture').classList.toggle('active', mode === 'gesture');
+
+  if (mode === 'gesture') {
+    gestureOverlay.classList.add('active');
+    
+    // Display Hint
+    const hint = document.getElementById('gesture-hint');
+    hint.style.animation = 'none';
+    setTimeout(() => {
+      hint.style.animation = 'fadeInOut 2.5s forwards';
+    }, 10);
+  } else {
+    gestureOverlay.classList.remove('active');
+  }
+}
+
+// Handle zoom Adjusters manually
+function adjustZoom(delta) {
+  zoomLevel = Math.max(1.0, Math.min(4.0, zoomLevel + delta));
+  
+  // Constrain boundary panning on smaller zooms
+  if (zoomLevel === 1.0) {
+    panX = 0;
+    panY = 0;
+  }
+  updateZoomTransform();
+}
+
+function resetZoom() {
+  zoomLevel = 1.0;
+  panX = 0;
+  panY = 0;
+  updateZoomTransform();
+}
+
+// Apply css transform values
+function updateZoomTransform() {
+  zoomContainer.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
+  
+  const percentageText = `Zoom: ${Math.round(zoomLevel * 100)}%`;
+  document.getElementById('zoom-percentage').textContent = percentageText;
+  document.getElementById('zoom-control-percentage').textContent = `${Math.round(zoomLevel * 100)}%`;
+}
+
+// Touch gesture zoom and pan handling
+function setupGestureListeners() {
+  // Desktop Mouse Drag to Pan inside the Gesture Overlay
+  gestureOverlay.addEventListener('mousedown', function(e) {
+    if (interactiveMode !== 'gesture') return;
+    isPanning = true;
+    startX = e.clientX - panX * zoomLevel;
+    startY = e.clientY - panY * zoomLevel;
+  });
+
+  window.addEventListener('mousemove', function(e) {
+    if (!isPanning || interactiveMode !== 'gesture') return;
+    panX = (e.clientX - startX) / zoomLevel;
+    panY = (e.clientY - startY) / zoomLevel;
+    updateZoomTransform();
+  });
+
+  window.addEventListener('mouseup', function() {
+    isPanning = false;
+  });
+
+  // Mobile Touch Gestures (Pinch to Zoom and 1-finger Panning)
+  gestureOverlay.addEventListener('touchstart', function(e) {
+    if (interactiveMode !== 'gesture') return;
+    
+    if (e.touches.length === 1) {
+      // Panning initialization
+      isPanning = true;
+      startX = e.touches[0].clientX - panX * zoomLevel;
+      startY = e.touches[0].clientY - panY * zoomLevel;
+    } else if (e.touches.length === 2) {
+      // Zoom initialization
+      isPanning = false;
+      initialPinchDistance = getDistanceBetweenTouches(e.touches);
+      initialZoom = zoomLevel;
+    }
+  });
+
+  gestureOverlay.addEventListener('touchmove', function(e) {
+    if (interactiveMode !== 'gesture') return;
+
+    if (e.touches.length === 1 && isPanning) {
+      panX = (e.touches[0].clientX - startX) / zoomLevel;
+      panY = (e.touches[0].clientY - startY) / zoomLevel;
+      updateZoomTransform();
+    } else if (e.touches.length === 2) {
+      const currentDistance = getDistanceBetweenTouches(e.touches);
+      const factor = currentDistance / initialPinchDistance;
+      zoomLevel = Math.max(1.0, Math.min(4.0, initialZoom * factor));
+      updateZoomTransform();
+    }
+  });
+
+  gestureOverlay.addEventListener('touchend', function(e) {
+    isPanning = false;
+  });
+}
+
+function getDistanceBetweenTouches(touches) {
+  const dx = touches[0].clientX - touches[1].clientX;
+  const dy = touches[0].clientY - touches[1].clientY;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
+// Eye Protection Filter Matrix
 function applyFilters() {
   const br = document.getElementById('brightness').value;
   const co = document.getElementById('contrast').value;
   const se = document.getElementById('sepia').value;
   const sa = document.getElementById('saturate').value;
 
+  // Sync display counters
   document.getElementById('brightness-val').textContent = br + '%';
   document.getElementById('contrast-val').textContent = co + '%';
   document.getElementById('sepia-val').textContent = se + '%';
   document.getElementById('saturate-val').textContent = sa + '%';
 
-  let filter = 'brightness(' + br + '%) contrast(' + co + '%) sepia(' + se + '%) saturate(' + sa + '%)';
-  if (invertOn) filter = 'invert(100%) ' + filter;
-  document.getElementById('yt-iframe').style.filter = filter;
+  let filterStr = `brightness(${br}%) contrast(${co}%) sepia(${se}%) saturate(${sa}%)`;
+  
+  if (invertOn) {
+    // Elegant inversion that preserves warm tones perfectly
+    filterStr = `invert(100%) hue-rotate(180deg) ${filterStr}`;
+  }
+
+  iframe.style.filter = filterStr;
 }
 
-function toggleInvert() {
-  invertOn = !invertOn;
-  const sw = document.getElementById('invert-sw');
-  const row = document.getElementById('invert-toggle');
-  sw.className = 'toggle-switch' + (invertOn ? ' on' : '');
-  row.className = 'big-toggle-row' + (invertOn ? ' on' : '');
-  applyFilters();
-}
-
+// Preset Filters Setup
 function applyPreset(name) {
-  document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
-  if (name !== 'reset') document.getElementById('p-' + name).classList.add('active');
+  // Remove active styling from all buttons
+  document.querySelectorAll('.preset-card').forEach(c => c.classList.remove('active'));
+  document.getElementById('p-' + name).classList.add('active');
   activePreset = name;
 
-  const presets = {
-    night: {br:70, co:120, se:10, sa:80, inv:true},
-    study: {br:85, co:100, se:30, sa:70, inv:false},
-    cinema: {br:90, co:140, se:5, sa:110, inv:false},
-    reset: {br:100, co:100, se:0, sa:100, inv:false}
+  const presetsList = {
+    'hd-premium': { br: 104, co: 116, se: 0, sa: 110, inv: false },
+    'premium-hd': { br: 102, co: 122, se: 5, sa: 105, inv: false },
+    'focus': { br: 85, co: 100, se: 30, sa: 75, inv: false },
+    'blue-block': { br: 90, co: 95, se: 50, sa: 80, inv: false },
+    'night': { br: 70, co: 115, se: 12, sa: 80, inv: true },
+    'reset': { br: 100, co: 100, se: 0, sa: 100, inv: false }
   };
-  const p = presets[name];
+
+  const p = presetsList[name];
   document.getElementById('brightness').value = p.br;
   document.getElementById('contrast').value = p.co;
   document.getElementById('sepia').value = p.se;
   document.getElementById('saturate').value = p.sa;
 
-  if (p.inv !== invertOn) toggleInvert();
-  else applyFilters();
+  // Set invert state safely
+  if (p.inv !== invertOn) {
+    toggleInvert(false); // Toggle silently without applying twice
+  }
+
+  applyFilters();
+}
+
+function toggleInvert(shouldApply = true) {
+  invertOn = !invertOn;
+  
+  const sw = document.getElementById('invert-sw');
+  const card = document.getElementById('invert-toggle');
+
+  if (invertOn) {
+    sw.classList.add('active');
+    card.classList.add('active');
+  } else {
+    sw.classList.remove('active');
+    card.classList.remove('active');
+  }
+
+  if (shouldApply) {
+    applyFilters();
+  }
+}
+
+// self-contained Eye Care Break Alarm Audio (Web Audio API Synthesizer)
+function triggerBreakSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    
+    // Play beautiful study chime sequence
+    const playChime = (time, pitch) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(pitch, time);
+      
+      gain.gain.setValueAtTime(0, time);
+      gain.gain.linearRampToValueAtTime(0.3, time + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.0001, time + 1.2);
+      
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      
+      osc.start(time);
+      osc.stop(time + 1.3);
+    };
+
+    const now = ctx.currentTime;
+    playChime(now, 523.25); // C5
+    playChime(now + 0.25, 659.25); // E5
+    playChime(now + 0.5, 783.99); // G5
+    playChime(now + 0.75, 1046.50); // C6
+  } catch(e) {
+    console.log("Audio not enabled by browser environment restrictions yet.");
+  }
+}
+
+// 20-20-20 Timer Logic
+function updateTimerUI() {
+  const m = Math.floor(timerSecondsLeft / 60);
+  const s = timerSecondsLeft % 60;
+  const timeString = `${m}:${String(s).padStart(2, '0')}`;
+  
+  timerText.textContent = timeString;
+  timerDashboardText.textContent = timeString;
+
+  // Update ring progress
+  const offset = 226 - (226 * (timerSecondsLeft / totalTimerSeconds));
+  timerRing.style.strokeDashoffset = offset;
 }
 
 function toggleTimer() {
   timerOn = !timerOn;
-  document.getElementById('break-btn').textContent = timerOn ? 'Stop' : 'Start';
-  const dot = document.getElementById('timer-dot');
-  dot.style.background = timerOn ? 'var(--green)' : 'var(--muted)';
 
   if (timerOn) {
-    timerSeconds = 20 * 60;
+    timerBtn.textContent = 'Pause Session';
+    timerDot.classList.add('active');
+    timerRing.style.stroke = 'var(--accent-green)';
+    timerHeading.textContent = 'Active Study Session';
+    timerSubheading.textContent = 'Eye break sequence is running. Focus on your work!';
+
     timerInterval = setInterval(() => {
-      timerSeconds--;
-      if (timerSeconds <= 0) {
+      timerSecondsLeft--;
+      if (timerSecondsLeft <= 0) {
         clearInterval(timerInterval);
         timerOn = false;
-        document.getElementById('break-btn').textContent = 'Start';
-        document.getElementById('timer-text').textContent = '20:00';
-        document.getElementById('break-title').innerHTML = '&#128064; Time for an eye break!';
-        document.getElementById('break-sub').textContent = 'Look 20ft away for 20 seconds now!';
-        document.getElementById('timer-dot').style.background = 'var(--accent2)';
-        setTimeout(() => {
-          timerSeconds = 20 * 60;
-          document.getElementById('break-title').textContent = '20-20-20 Eye Break Timer';
-          document.getElementById('break-sub').textContent = 'Look 20 ft away for 20 sec every 20 min';
-          document.getElementById('timer-dot').style.background = 'var(--muted)';
-        }, 20000);
-        return;
+        
+        // Notify eye break time
+        timerBtn.textContent = 'Reset Session';
+        timerDot.classList.remove('active');
+        timerRing.style.stroke = 'var(--accent-secondary)';
+        timerHeading.textContent = '👀 Look Away Now!';
+        timerSubheading.textContent = 'Time for your 20-second eye break! Look 20 feet away.';
+        triggerBreakSound();
+
+        // 20 seconds eye break countdown
+        let breakSeconds = 20;
+        timerDashboardText.textContent = '20s';
+        
+        const breakInterval = setInterval(() => {
+          breakSeconds--;
+          if (breakSeconds <= 0) {
+            clearInterval(breakInterval);
+            timerSecondsLeft = totalTimerSeconds;
+            updateTimerUI();
+            
+            // Auto reset
+            timerHeading.textContent = 'Ready for next round';
+            timerSubheading.textContent = 'Eye break finished! You can start the timer for the next session.';
+            timerBtn.textContent = 'Start Session';
+            timerRing.style.stroke = 'var(--accent-green)';
+          } else {
+            timerDashboardText.textContent = `${breakSeconds}s`;
+          }
+        }, 1000);
+      } else {
+        updateTimerUI();
       }
-      const m = Math.floor(timerSeconds / 60);
-      const s = timerSeconds % 60;
-      document.getElementById('timer-text').textContent = m + ':' + String(s).padStart(2,'0');
     }, 1000);
   } else {
     clearInterval(timerInterval);
-    timerSeconds = 20 * 60;
-    document.getElementById('timer-text').textContent = '20:00';
-    dot.style.background = 'var(--muted)';
+    timerBtn.textContent = 'Resume Session';
+    timerDot.classList.remove('active');
+    timerHeading.textContent = 'Session Paused';
+    timerSubheading.textContent = 'Click resume to continue monitoring your ocular health.';
   }
 }
 
-
-// Show hosting warning if opened as local file
-(function() {
-  const proto = window.location.protocol;
-  if (proto === 'file:' || proto === 'content:' || proto === 'blob:') {
-    document.getElementById('host-warning').style.display = 'block';
+// Enter Key loading listener
+document.getElementById('url-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') {
+    loadVideo();
   }
-})();
-
-document.getElementById('url-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') loadVideo();
 });
 </script>
+
 </body>
 </html>
