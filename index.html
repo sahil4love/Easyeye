@@ -3,37 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="description" content="EasyEyes Premium — The Ultimate YouTube Study Station with high-fidelity student eye filters, YouTube Live support, smart pinch-to-zoom, and an integrated 20-20-20 eye health timer.">
-  <title>EasyEyes Pro — The Premium YouTube Study Station</title>
-  <!-- Google Fonts for elite typography -->
+  <meta name="description" content="EasyEyes Premium — Optimized YouTube mobile study station with visual eye filters, pinch-to-zoom, live matching, and eye break counter.">
+  <title>EasyEyes Mobile Pro — The YouTube Study Station</title>
+  
+  <!-- Premium Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <style>
     :root {
-      --bg-dark: #07070a;
-      --bg-card: #0f1016;
-      --bg-card-hover: #141620;
-      --bg-pill: #191c28;
-      --border-color: #222535;
-      --border-glow: #383e58;
+      --bg-dark: #060609;
+      --bg-card: #0c0d13;
+      --bg-card-hover: #12131d;
+      --bg-pill: #161724;
+      --border-color: #1f2133;
+      --border-glow: #313450;
       
-      /* Vibrant Theme Palette */
+      /* Accent Tones */
       --accent-primary: #7c6fff;
       --accent-secondary: #ff6f91;
       --accent-green: #39e5a4;
-      --accent-yellow: #ffb347;
       --accent-blue: #00e5ff;
+      --accent-yellow: #ffb347;
       
-      /* Text variables */
-      --text-main: #f3f4f6;
-      --text-muted: #8b92b6;
-      --text-label: #5e6488;
+      /* Typography */
+      --text-main: #f0f1f7;
+      --text-muted: #8187aa;
+      --text-label: #52577a;
       
       /* Shadows */
-      --glow-shadow: 0 8px 32px rgba(124, 111, 255, 0.15);
-      --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
     }
 
     * {
@@ -41,110 +41,78 @@
       margin: 0;
       padding: 0;
       -webkit-tap-highlight-color: transparent;
+      user-select: none;
     }
 
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
       background-color: var(--bg-dark);
       background-image: 
-        radial-gradient(at 0% 0%, rgba(124, 111, 255, 0.08) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(255, 111, 145, 0.08) 0px, transparent 50%);
+        radial-gradient(at 0% 0%, rgba(124, 111, 255, 0.07) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(255, 111, 145, 0.07) 0px, transparent 50%);
       background-attachment: fixed;
       color: var(--text-main);
       min-height: 100vh;
       overflow-x: hidden;
-      line-height: 1.5;
+      display: flex;
+      justify-content: center;
+      padding: 0;
     }
 
-    /* Custom elegant scrollbar */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-    ::-webkit-scrollbar-track {
+    /* Mobile Device container alignment */
+    .mobile-app-frame {
+      width: 100%;
+      max-width: 480px;
+      min-height: 100vh;
       background: var(--bg-dark);
-    }
-    ::-webkit-scrollbar-thumb {
-      background: var(--border-color);
-      border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: var(--border-glow);
-    }
-
-    /* Main Container Layout */
-    .app-container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 24px;
+      border-left: 1px solid var(--border-color);
+      border-right: 1px solid var(--border-color);
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      position: relative;
+      box-shadow: 0 0 50px rgba(0,0,0,0.8);
     }
 
-    /* Header Styling */
-    .header {
+    /* Slim Header Bar */
+    .app-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 16px 24px;
-      background: rgba(15, 16, 22, 0.7);
-      backdrop-filter: blur(16px);
-      border: 1px solid var(--border-color);
-      border-radius: 20px;
-      box-shadow: var(--card-shadow);
+      padding: 12px 16px;
+      background: rgba(12, 13, 19, 0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-color);
       position: sticky;
-      top: 16px;
+      top: 0;
       z-index: 100;
     }
 
-    .logo-container {
+    .brand-group {
       display: flex;
       align-items: center;
-      gap: 14px;
-      text-decoration: none;
+      gap: 10px;
     }
 
-    .logo-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
       background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 22px;
-      box-shadow: 0 4px 15px rgba(124, 111, 255, 0.3);
-      position: relative;
-      animation: floatLogo 4s ease-in-out infinite;
+      font-size: 18px;
+      box-shadow: 0 4px 10px rgba(124, 111, 255, 0.25);
     }
 
-    @keyframes floatLogo {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-3px); }
-    }
-
-    .logo-badge {
-      position: absolute;
-      top: -4px;
-      right: -4px;
-      background: var(--accent-green);
-      color: #000;
-      font-size: 8px;
-      font-weight: 800;
-      padding: 2px 5px;
-      border-radius: 10px;
-      letter-spacing: 0.5px;
-    }
-
-    .logo-text-group {
+    .brand-text {
       display: flex;
       flex-direction: column;
     }
 
-    .logo-title {
+    .brand-name {
       font-family: 'Outfit', sans-serif;
-      font-size: 22px;
+      font-size: 16px;
       font-weight: 800;
       letter-spacing: -0.5px;
       background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
@@ -152,362 +120,313 @@
       -webkit-text-fill-color: transparent;
     }
 
-    .logo-subtitle {
-      font-size: 11px;
+    .brand-sub {
+      font-size: 9px;
       color: var(--text-muted);
-      font-weight: 500;
+      font-weight: 600;
       letter-spacing: 0.5px;
       text-transform: uppercase;
     }
 
-    .header-controls {
+    .header-right {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 8px;
     }
 
     /* Live Stream Status Badge */
-    .live-status {
+    .live-indicator {
       display: flex;
       align-items: center;
-      gap: 6px;
-      background: rgba(255, 111, 145, 0.1);
-      border: 1px solid rgba(255, 111, 145, 0.2);
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 700;
+      gap: 5px;
+      background: rgba(255, 111, 145, 0.12);
+      border: 1px solid rgba(255, 111, 145, 0.25);
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 9px;
+      font-weight: 800;
       color: var(--accent-secondary);
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      display: none; /* Dynamic appearance */
+      display: none;
     }
 
     .live-dot {
-      width: 8px;
-      height: 8px;
+      width: 6px;
+      height: 6px;
       background-color: var(--accent-secondary);
       border-radius: 50%;
-      box-shadow: 0 0 8px var(--accent-secondary);
+      box-shadow: 0 0 6px var(--accent-secondary);
       animation: pulseLive 1.5s infinite;
     }
 
     @keyframes pulseLive {
       0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.3); opacity: 0.5; }
+      50% { transform: scale(1.3); opacity: 0.4; }
     }
 
-    .status-badge {
+    .timer-badge {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       background: var(--bg-pill);
       border: 1px solid var(--border-color);
-      padding: 8px 16px;
-      border-radius: 30px;
+      padding: 6px 12px;
+      border-radius: 20px;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.2s;
     }
 
-    .status-badge:hover {
-      border-color: var(--accent-primary);
-      background: rgba(124, 111, 255, 0.08);
-      transform: translateY(-1px);
-    }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
+    .timer-dot {
+      width: 7px;
+      height: 7px;
       background-color: var(--text-muted);
       border-radius: 50%;
       transition: background-color 0.3s;
     }
 
-    .status-dot.active {
+    .timer-dot.active {
       background-color: var(--accent-green);
-      box-shadow: 0 0 10px var(--accent-green);
+      box-shadow: 0 0 8px var(--accent-green);
     }
 
-    .status-text {
-      font-size: 13px;
-      font-weight: 600;
+    .timer-val {
+      font-size: 11px;
+      font-weight: 700;
       color: var(--text-main);
     }
 
-    /* Grid Layout: Main Workspace */
-    .workspace-grid {
-      display: grid;
-      grid-template-columns: 1fr 380px;
-      gap: 24px;
-      align-items: start;
-    }
-
-    @media (max-width: 1024px) {
-      .workspace-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    /* Cards Setup */
-    .station-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 24px;
-      padding: 24px;
-      box-shadow: var(--card-shadow);
+    /* Content Area styling */
+    .scrollable-content {
+      flex: 1;
+      padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 20px;
-      position: relative;
-      overflow: hidden;
+      gap: 16px;
+      overflow-y: auto;
+      padding-bottom: 80px; /* space for tab bar */
     }
 
-    .station-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 3px;
-      background: linear-gradient(90deg, var(--accent-primary), transparent, var(--accent-secondary));
-      opacity: 0.3;
-    }
-
-    /* Search & Load Section */
-    .url-bar-section {
+    /* Load Section */
+    .input-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 12px 14px;
       display: flex;
       flex-direction: column;
       gap: 8px;
     }
 
-    .input-label {
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 1px;
+    .input-row {
       display: flex;
-      justify-content: space-between;
+      gap: 8px;
     }
 
-    .url-input-wrapper {
-      display: flex;
-      gap: 12px;
-      position: relative;
-    }
-
-    .url-input {
+    .url-input-box {
       flex: 1;
       background: var(--bg-pill);
       border: 1px solid var(--border-color);
-      border-radius: 16px;
-      padding: 16px 20px;
+      border-radius: 12px;
+      padding: 12px 14px;
       color: var(--text-main);
       font-family: inherit;
-      font-size: 14px;
+      font-size: 13px;
       outline: none;
       transition: all 0.3s;
+      min-width: 0;
     }
 
-    .url-input:focus {
+    .url-input-box:focus {
       border-color: var(--accent-primary);
-      box-shadow: 0 0 0 3px rgba(124, 111, 255, 0.15);
-      background: var(--bg-card);
+      background: var(--bg-card-hover);
     }
 
-    .load-button {
+    .load-btn {
       background: linear-gradient(135deg, var(--accent-primary), #6654ff);
       color: #fff;
       border: none;
-      border-radius: 16px;
-      padding: 0 28px;
+      border-radius: 12px;
+      padding: 0 16px;
       font-weight: 700;
-      font-size: 14px;
+      font-size: 13px;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 8px;
-      transition: all 0.3s;
-      box-shadow: 0 4px 15px rgba(124, 111, 255, 0.2);
+      gap: 4px;
+      transition: all 0.2s;
     }
 
-    .load-button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(124, 111, 255, 0.35);
+    /* Mobile-First Optimized Video Viewport */
+    .viewport-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
     }
 
-    .load-button:active {
-      transform: translateY(0);
-    }
-
-    /* Advanced Interactive Video Station */
-    .video-viewport {
+    .viewport-container {
       position: relative;
       width: 100%;
       aspect-ratio: 16/9;
       background: #000;
-      border-radius: 20px;
       overflow: hidden;
-      border: 1px solid var(--border-color);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
     }
 
-    /* Zoom Canvas - Holds the actual video */
-    .video-zoom-container {
+    /* Stabilized video container - Scale-Translate transforms applied here */
+    .video-viewport-scaler {
       width: 100%;
       height: 100%;
       position: relative;
       transform-origin: center center;
-      transition: transform 0.1s ease-out; /* Smooth translation & scaling */
+      transition: none; /* Removed transition for ultra-smooth instantaneous drag/pinch responses */
     }
 
     #yt-iframe {
       width: 100%;
       height: 100%;
       border: none;
-      pointer-events: auto;
       transition: filter 0.3s;
     }
 
-    /* Transparent Overlay for Touch gestures, zoom, & panning */
-    .gesture-interactive-overlay {
+    /* Transparent Overlay for tracking touch gestures securely */
+    .gesture-tracker-overlay {
       position: absolute;
       inset: 0;
       z-index: 10;
       background: rgba(0, 0, 0, 0);
-      display: none; /* Handled dynamically */
+      display: none;
       cursor: grab;
       align-items: center;
       justify-content: center;
-      user-select: none;
     }
 
-    .gesture-interactive-overlay.active {
+    .gesture-tracker-overlay.active {
       display: flex;
     }
 
-    .gesture-interactive-overlay:active {
+    .gesture-tracker-overlay:active {
       cursor: grabbing;
     }
 
-    .gesture-hint-card {
-      background: rgba(15, 16, 22, 0.85);
-      border: 1px solid var(--accent-primary);
-      padding: 12px 20px;
-      border-radius: 12px;
-      color: #fff;
-      font-size: 13px;
-      font-weight: 600;
-      text-align: center;
-      pointer-events: none;
-      backdrop-filter: blur(8px);
-      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-      animation: fadeInOut 2.5s forwards;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-    }
-
-    @keyframes fadeInOut {
-      0% { opacity: 0; transform: scale(0.9); }
-      15% { opacity: 1; transform: scale(1); }
-      85% { opacity: 1; }
-      100% { opacity: 0; transform: scale(1.05); }
-    }
-
-    /* Zoom Indicator Overlay */
-    .zoom-status-badge {
+    .gesture-indicator-badge {
       position: absolute;
-      top: 16px;
-      left: 16px;
-      background: rgba(15, 16, 22, 0.8);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 6px 12px;
-      border-radius: 10px;
+      top: 10px;
+      left: 10px;
+      background: rgba(12, 13, 19, 0.85);
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 4px 8px;
+      border-radius: 8px;
       color: #fff;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 700;
       z-index: 20;
       backdrop-filter: blur(6px);
-      pointer-events: none;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
+      pointer-events: none;
     }
 
-    .zoom-indicator-dot {
+    .indicator-blue-dot {
       width: 6px;
       height: 6px;
       border-radius: 50%;
       background-color: var(--accent-blue);
     }
 
-    /* Placeholder Screen */
-    .player-placeholder {
+    /* Floating instructional hint inside viewport */
+    .viewport-hint {
+      background: rgba(12, 13, 19, 0.9);
+      border: 1px solid var(--accent-primary);
+      padding: 10px 16px;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+      text-align: center;
+      pointer-events: none;
+      animation: fadeOut 2.2s forwards;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    }
+
+    @keyframes fadeOut {
+      0% { opacity: 0; transform: scale(0.9); }
+      10% { opacity: 1; transform: scale(1); }
+      80% { opacity: 1; }
+      100% { opacity: 0; transform: scale(1.05); }
+    }
+
+    /* Screen Placeholder */
+    .viewport-placeholder {
       position: absolute;
       inset: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 16px;
+      gap: 12px;
       color: var(--text-muted);
-      z-index: 5;
-      background: radial-gradient(circle at center, #141620, #0a0a0f);
+      background: radial-gradient(circle at center, #11131c, #06070a);
       text-align: center;
-      padding: 24px;
+      padding: 16px;
+      z-index: 5;
     }
 
-    .placeholder-art {
-      width: 80px;
-      height: 80px;
+    .placeholder-icon {
+      font-size: 26px;
+      width: 54px;
+      height: 54px;
       background: rgba(124, 111, 255, 0.1);
-      border: 1px solid rgba(124, 111, 255, 0.2);
+      border: 1px solid rgba(124, 111, 255, 0.25);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 32px;
       color: var(--accent-primary);
-      animation: pulsePulse 3s infinite;
+      animation: heartbeat 3s infinite;
     }
 
-    @keyframes pulsePulse {
-      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(124, 111, 255, 0.2); }
-      50% { transform: scale(1.05); box-shadow: 0 0 20px 10px rgba(124, 111, 255, 0.1); }
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
     }
 
     .placeholder-title {
-      font-size: 18px;
+      font-size: 14px;
       font-weight: 700;
       color: var(--text-main);
     }
 
     .placeholder-desc {
-      font-size: 13px;
-      max-width: 280px;
-      line-height: 1.6;
+      font-size: 11px;
+      max-width: 220px;
+      line-height: 1.5;
     }
 
-    /* Premium Player Bar Controls */
-    .player-control-strip {
+    /* Viewport Control Strip */
+    .viewport-control-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
       background: var(--bg-pill);
-      border: 1px solid var(--border-color);
-      padding: 10px 16px;
-      border-radius: 16px;
-      gap: 12px;
-      flex-wrap: wrap;
+      padding: 8px 12px;
+      border-top: 1px solid var(--border-color);
+      gap: 10px;
     }
 
-    .control-mode-group {
+    .mode-tab-group {
       display: flex;
       background: var(--bg-dark);
-      padding: 4px;
-      border-radius: 10px;
+      padding: 3px;
+      border-radius: 8px;
       border: 1px solid var(--border-color);
     }
 
@@ -515,38 +434,37 @@
       background: none;
       border: none;
       color: var(--text-muted);
-      padding: 6px 14px;
-      font-size: 12px;
+      padding: 5px 12px;
+      font-size: 11px;
       font-weight: 700;
-      border-radius: 8px;
+      border-radius: 6px;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
       transition: all 0.2s;
     }
 
     .mode-btn.active {
       background: var(--accent-primary);
       color: #fff;
-      box-shadow: 0 4px 10px rgba(124, 111, 255, 0.25);
     }
 
-    .zoom-adjusters {
+    .zoom-hud-buttons {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
     }
 
-    .zoom-btn {
+    .hud-btn {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       color: var(--text-main);
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 600;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -554,515 +472,456 @@
       transition: all 0.2s;
     }
 
-    .zoom-btn:hover {
+    .hud-btn:active {
+      background: var(--bg-pill);
       border-color: var(--accent-blue);
-      color: var(--accent-blue);
-      background: rgba(0, 229, 255, 0.05);
     }
 
-    .zoom-value {
-      font-size: 12px;
-      font-weight: 700;
+    .hud-zoom-value {
+      font-size: 10px;
+      font-weight: 800;
       color: var(--text-muted);
-      min-width: 45px;
+      min-width: 36px;
       text-align: center;
     }
 
-    /* Filter Preset Grid */
-    .filter-preset-label {
-      font-size: 11px;
+    /* Interactive Bottom Navigation Hub (Filter / Ocular Care / History tabs) */
+    .tab-container-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: var(--card-shadow);
+    }
+
+    /* Navigation Headers for Tabs */
+    .navigation-tabs-header {
+      display: flex;
+      background: var(--bg-pill);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 4px;
+    }
+
+    .nav-tab-item {
+      flex: 1;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s;
+    }
+
+    .nav-tab-item.active {
+      background: var(--bg-card);
+      color: var(--text-main);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+
+    .tab-icon {
+      font-size: 16px;
+    }
+
+    /* Tab Contents styling */
+    .tab-content-panel {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .tab-content-panel.active {
+      display: flex;
+    }
+
+    /* Tab 1: Filters details */
+    .presets-label {
+      font-size: 10px;
       font-weight: 700;
       color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 2px;
+      letter-spacing: 0.5px;
     }
 
-    .preset-grid {
+    .presets-mobile-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: 10px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
     }
 
-    .preset-card {
+    .preset-mobile-item {
       background: var(--bg-pill);
       border: 1px solid var(--border-color);
-      border-radius: 16px;
-      padding: 12px 14px;
+      border-radius: 12px;
+      padding: 10px 12px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       cursor: pointer;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
       overflow: hidden;
+      transition: all 0.2s;
     }
 
-    .preset-card:hover {
-      background: var(--bg-card-hover);
-      border-color: var(--border-glow);
-      transform: translateY(-2px);
-    }
-
-    .preset-card.active {
+    .preset-mobile-item.active {
       border-color: var(--accent-primary);
-      background: rgba(124, 111, 255, 0.08);
-      box-shadow: inset 0 0 12px rgba(124, 111, 255, 0.1);
+      background: rgba(124, 111, 255, 0.06);
     }
 
-    .preset-card.premium-glow {
+    .preset-mobile-item.premium-badge.active {
       border-color: var(--accent-secondary);
-    }
-    .preset-card.premium-glow.active {
-      background: rgba(255, 111, 145, 0.08);
-      box-shadow: inset 0 0 12px rgba(255, 111, 145, 0.1);
+      background: rgba(255, 111, 145, 0.06);
     }
 
-    .preset-badge {
+    .preset-mini-tag {
       position: absolute;
       top: 0;
       right: 0;
       background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
       color: #fff;
-      font-size: 8px;
+      font-size: 7px;
       font-weight: 800;
-      padding: 2px 6px;
-      border-bottom-left-radius: 8px;
+      padding: 1px 4px;
+      border-bottom-left-radius: 6px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
     }
 
-    .preset-card-icon {
-      font-size: 20px;
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
+    .preset-item-art {
+      font-size: 16px;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
       background: var(--bg-card);
       display: flex;
       align-items: center;
       justify-content: center;
       border: 1px solid var(--border-color);
-      transition: all 0.3s;
     }
 
-    .preset-card.active .preset-card-icon {
+    .preset-mobile-item.active .preset-item-art {
       border-color: var(--accent-primary);
       color: var(--accent-primary);
-      background: rgba(124, 111, 255, 0.1);
     }
 
-    .preset-card.premium-glow.active .preset-card-icon {
+    .preset-mobile-item.premium-badge.active .preset-item-art {
       border-color: var(--accent-secondary);
       color: var(--accent-secondary);
-      background: rgba(255, 111, 145, 0.1);
     }
 
-    .preset-card-details {
+    .preset-item-details {
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 1px;
     }
 
-    .preset-card-title {
-      font-size: 13px;
+    .preset-item-name {
+      font-size: 11px;
       font-weight: 700;
       color: var(--text-main);
     }
 
-    .preset-card-desc {
-      font-size: 10px;
+    .preset-item-sub {
+      font-size: 9px;
       color: var(--text-muted);
     }
 
-    /* Manual Fine Tuning Sliders */
-    .slider-tuning-panel {
+    /* Dark mode invert bar toggle */
+    .inversion-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       background: var(--bg-pill);
       border: 1px solid var(--border-color);
-      border-radius: 18px;
-      padding: 18px;
+      border-radius: 12px;
+      padding: 10px 14px;
+      cursor: pointer;
+    }
+
+    .inversion-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .inversion-text {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+    }
+
+    .inversion-heading {
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .inversion-desc {
+      font-size: 9px;
+      color: var(--text-muted);
+    }
+
+    .toggle-outer {
+      width: 38px;
+      height: 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      position: relative;
+      transition: background 0.3s;
+    }
+
+    .toggle-outer.active {
+      background: var(--accent-secondary);
+      border-color: var(--accent-secondary);
+    }
+
+    .toggle-inner {
+      width: 14px;
+      height: 14px;
+      background: #fff;
+      border-radius: 50%;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: transform 0.3s;
+    }
+
+    .toggle-outer.active .toggle-inner {
+      transform: translateX(18px);
+    }
+
+    /* Fine tuning manual sliders */
+    .fine-tuning-container {
+      background: var(--bg-pill);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
 
     .slider-row {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 4px;
     }
 
-    .slider-info {
+    .slider-labels {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
       color: var(--text-muted);
     }
 
-    .slider-title {
+    .slider-title-text {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
     }
 
-    .slider-title span {
-      font-size: 14px;
+    .slider-title-text span {
+      font-size: 12px;
     }
 
-    .slider-val {
+    .slider-value-badge {
       font-family: monospace;
-      color: var(--text-main);
+      font-size: 10px;
       font-weight: 700;
+      color: var(--text-main);
       background: var(--bg-card);
-      padding: 2px 6px;
-      border-radius: 4px;
-      border: 1px solid var(--border-color);
+      padding: 1px 4px;
+      border-radius: 3px;
     }
 
-    .slider-input {
+    .fine-slider {
       -webkit-appearance: none;
       width: 100%;
-      height: 6px;
-      border-radius: 3px;
+      height: 4px;
+      border-radius: 2px;
       background: var(--bg-card);
       outline: none;
       cursor: pointer;
     }
 
-    .slider-input::-webkit-slider-thumb {
+    .fine-slider::-webkit-slider-thumb {
       -webkit-appearance: none;
-      width: 16px;
-      height: 16px;
+      width: 14px;
+      height: 14px;
       border-radius: 50%;
       background: var(--accent-primary);
       cursor: pointer;
-      transition: transform 0.1s;
-      border: 2px solid #fff;
+      border: 1.5px solid #fff;
     }
 
-    .slider-input::-webkit-slider-thumb:hover {
-      transform: scale(1.2);
-    }
-
-    /* Invert Bright Video Card Toggle */
-    .invert-card {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: linear-gradient(135deg, rgba(25, 28, 40, 0.9), rgba(15, 16, 22, 0.9));
+    /* Tab 2: Ocular Health Care details */
+    .health-dashboard {
+      background: var(--bg-pill);
       border: 1px solid var(--border-color);
-      border-radius: 18px;
-      padding: 16px 20px;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-
-    .invert-card:hover {
-      border-color: var(--border-glow);
-      background: var(--bg-card-hover);
-    }
-
-    .invert-card.active {
-      border-color: var(--accent-secondary);
-      background: rgba(255, 111, 145, 0.05);
-    }
-
-    .invert-text-group {
+      border-radius: 14px;
+      padding: 14px;
       display: flex;
-      gap: 12px;
       align-items: center;
+      gap: 14px;
     }
 
-    .invert-icon {
-      font-size: 22px;
-      color: var(--accent-secondary);
-    }
-
-    .invert-title-group {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .invert-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text-main);
-    }
-
-    .invert-desc {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .switch-outer {
-      width: 48px;
-      height: 26px;
-      background: var(--border-color);
-      border-radius: 13px;
+    .circle-wrap {
       position: relative;
-      transition: background 0.3s;
-    }
-
-    .switch-outer.active {
-      background: var(--accent-secondary);
-    }
-
-    .switch-inner {
-      width: 20px;
-      height: 20px;
-      background: #fff;
-      border-radius: 50%;
-      position: absolute;
-      top: 3px;
-      left: 3px;
-      transition: transform 0.3s;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-    }
-
-    .switch-outer.active .switch-inner {
-      transform: translateX(22px);
-    }
-
-    /* RIGHT COLUMN: HEALTH & HISTORY PANELS */
-    .side-stack {
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-    }
-
-    /* 20-20-20 Eye Timer Panel */
-    .timer-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 24px;
-      padding: 24px;
-      box-shadow: var(--card-shadow);
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .timer-card::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 100px;
-      height: 100px;
-      background: radial-gradient(circle, rgba(57, 229, 164, 0.05) 0%, transparent 70%);
-      pointer-events: none;
-    }
-
-    .panel-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .panel-title {
-      font-family: 'Outfit', sans-serif;
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .panel-title-icon {
-      color: var(--accent-green);
-    }
-
-    .health-badge {
-      background: rgba(57, 229, 164, 0.1);
-      border: 1px solid rgba(57, 229, 164, 0.2);
-      color: var(--accent-green);
-      font-size: 10px;
-      font-weight: 700;
-      padding: 4px 8px;
-      border-radius: 8px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .timer-dashboard {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .timer-visual-circle {
-      position: relative;
-      width: 80px;
-      height: 80px;
+      width: 68px;
+      height: 68px;
       flex-shrink: 0;
     }
 
-    .svg-ring {
+    .svg-circle {
       width: 100%;
       height: 100%;
       transform: rotate(-90deg);
     }
 
-    .svg-ring-bg {
+    .circle-bg {
       fill: none;
-      stroke: var(--bg-pill);
-      stroke-width: 6;
+      stroke: var(--bg-card);
+      stroke-width: 5;
     }
 
-    .svg-ring-fill {
+    .circle-fill {
       fill: none;
       stroke: var(--accent-green);
-      stroke-width: 6;
+      stroke-width: 5;
       stroke-linecap: round;
-      stroke-dasharray: 226;
+      stroke-dasharray: 188;
       stroke-dashoffset: 0;
       transition: stroke-dashoffset 1s linear, stroke 0.3s;
     }
 
-    .timer-digits {
+    .circle-text {
       position: absolute;
       inset: 0;
       display: flex;
       align-items: center;
       justify-content: center;
       font-family: monospace;
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--text-main);
-    }
-
-    .timer-explanation {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .timer-headline {
       font-size: 13px;
       font-weight: 700;
+    }
+
+    .health-info-block {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .health-title {
+      font-size: 12px;
+      font-weight: 700;
       color: var(--text-main);
     }
 
-    .timer-subheadline {
-      font-size: 11px;
+    .health-sub {
+      font-size: 10px;
       color: var(--text-muted);
       line-height: 1.4;
     }
 
-    .timer-action-btn {
+    .health-timer-btn {
       width: 100%;
       background: var(--bg-pill);
       border: 1px solid var(--border-color);
       color: var(--text-main);
-      padding: 12px;
-      border-radius: 14px;
-      font-size: 13px;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 12px;
       font-weight: 700;
       cursor: pointer;
-      transition: all 0.25s;
+      transition: all 0.2s;
     }
 
-    .timer-action-btn:hover {
+    .health-timer-btn:active {
       border-color: var(--accent-green);
       background: rgba(57, 229, 164, 0.05);
       color: var(--accent-green);
     }
 
-    /* Recent Played Video History Section */
-    .history-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 24px;
-      padding: 24px;
-      box-shadow: var(--card-shadow);
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      max-height: 520px;
-    }
-
-    .history-header {
+    /* Tab 3: History log styling */
+    .history-log-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
-    .clear-history-btn {
+    .history-clear-btn {
       background: none;
       border: none;
       color: var(--accent-secondary);
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 4px;
-      padding: 4px 8px;
-      border-radius: 6px;
-      transition: background 0.2s;
+      gap: 3px;
     }
 
-    .clear-history-btn:hover {
-      background: rgba(255, 111, 145, 0.1);
-    }
-
-    .history-list {
+    .history-scroll-panel {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 8px;
+      max-height: 250px;
       overflow-y: auto;
-      padding-right: 4px;
     }
 
-    .history-empty {
+    .history-empty-message {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      padding: 40px 0;
+      gap: 8px;
+      padding: 30px 0;
       color: var(--text-muted);
       text-align: center;
     }
 
-    .history-empty-icon {
-      font-size: 28px;
+    .history-empty-art {
+      font-size: 22px;
       opacity: 0.4;
     }
 
-    .history-item {
+    .history-row {
       display: flex;
-      gap: 12px;
-      padding: 10px;
+      align-items: center;
+      gap: 10px;
+      padding: 8px;
       background: var(--bg-pill);
       border: 1px solid var(--border-color);
-      border-radius: 14px;
+      border-radius: 10px;
       cursor: pointer;
       transition: all 0.2s;
-      align-items: center;
     }
 
-    .history-item:hover {
+    .history-row:active {
       border-color: var(--accent-primary);
       background: var(--bg-card-hover);
-      transform: translateY(-1px);
     }
 
-    .history-thumbnail-wrapper {
-      position: relative;
-      width: 80px;
+    .history-pic-box {
+      width: 60px;
       aspect-ratio: 16/9;
-      border-radius: 8px;
+      border-radius: 6px;
       overflow: hidden;
       flex-shrink: 0;
       border: 1px solid var(--border-color);
+      position: relative;
     }
 
-    .history-thumbnail {
+    .history-img {
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -1070,27 +929,27 @@
 
     .history-live-pill {
       position: absolute;
-      bottom: 2px;
-      right: 2px;
+      bottom: 1px;
+      right: 1px;
       background: var(--accent-secondary);
       color: #fff;
-      font-size: 7px;
+      font-size: 6px;
       font-weight: 800;
-      padding: 1px 4px;
-      border-radius: 4px;
+      padding: 1px 3px;
+      border-radius: 2px;
       text-transform: uppercase;
     }
 
-    .history-info {
+    .history-row-details {
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 1px;
       min-width: 0;
     }
 
-    .history-item-title {
-      font-size: 12px;
+    .history-row-title {
+      font-size: 11px;
       font-weight: 600;
       color: var(--text-main);
       white-space: nowrap;
@@ -1098,458 +957,419 @@
       text-overflow: ellipsis;
     }
 
-    .history-meta {
+    .history-row-meta {
       display: flex;
       justify-content: space-between;
-      font-size: 9px;
+      font-size: 8px;
       color: var(--text-muted);
     }
 
-    .history-delete-btn {
+    .history-row-remove {
       background: none;
       border: none;
       color: var(--text-muted);
       cursor: pointer;
-      font-size: 14px;
-      padding: 4px;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s;
-    }
-
-    .history-delete-btn:hover {
-      color: var(--accent-secondary);
-      background: rgba(255, 111, 145, 0.1);
-    }
-
-    /* Study Smart Panel */
-    .study-tips-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 24px;
-      padding: 24px;
-      box-shadow: var(--card-shadow);
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .tip-item {
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
       font-size: 12px;
-      color: var(--text-muted);
-      line-height: 1.5;
+      padding: 4px;
     }
 
-    .tip-bullet {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--accent-primary);
-      margin-top: 6px;
-      flex-shrink: 0;
-    }
-
-    /* Hosting Local File Warning Bar */
-    .host-warning-strip {
-      background: rgba(255, 179, 71, 0.08);
-      border: 1px solid rgba(255, 179, 71, 0.3);
-      padding: 14px 20px;
-      border-radius: 16px;
+    /* Hosting alert banner */
+    .local-warning-panel {
+      background: rgba(255, 179, 71, 0.07);
+      border: 1px solid rgba(255, 179, 71, 0.25);
+      border-radius: 12px;
+      padding: 8px 12px;
       display: none;
-      gap: 14px;
+      gap: 10px;
       align-items: center;
     }
 
-    .host-warning-icon {
-      font-size: 24px;
+    .warning-panel-icon {
+      font-size: 16px;
       color: var(--accent-yellow);
     }
 
-    .host-warning-text {
-      font-size: 12px;
+    .warning-panel-text {
+      font-size: 10px;
       color: var(--text-muted);
-      line-height: 1.5;
+      line-height: 1.4;
     }
 
-    .host-warning-text b {
-      color: var(--text-main);
-    }
-
-    .host-warning-text a {
+    .warning-panel-text a {
       color: var(--accent-primary);
       text-decoration: none;
       font-weight: 700;
     }
 
-    .host-warning-text a:hover {
-      text-decoration: underline;
-    }
-
-    /* Footer styling */
-    .footer {
-      text-align: center;
-      padding: 16px;
-      font-size: 11px;
-      color: var(--text-muted);
-      border-top: 1px solid var(--border-color);
-      margin-top: 24px;
+    /* Bottom sticky tabs for mobile look and feel */
+    .sticky-bottom-tab-bar {
       display: flex;
-      justify-content: center;
+      background: rgba(12, 13, 19, 0.85);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border-color);
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      z-index: 90;
+    }
+
+    .bottom-tab-btn {
+      flex: 1;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 6px;
+      justify-content: center;
+      gap: 4px;
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: 700;
     }
 
-    .footer span {
+    .bottom-tab-btn.active {
+      color: var(--accent-primary);
+    }
+
+    .bottom-tab-btn-icon {
+      font-size: 18px;
+    }
+
+    /* Footer adjustments */
+    .app-footer {
+      text-align: center;
+      padding: 10px;
+      font-size: 9px;
+      color: var(--text-label);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .app-footer span {
       color: var(--accent-secondary);
-      animation: heartbeat 1.5s infinite;
-    }
-
-    @keyframes heartbeat {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.15); }
     }
   </style>
 </head>
 <body>
 
-<div class="app-container">
+<div class="mobile-app-frame">
   
-  <!-- Header Bar -->
-  <header class="header">
-    <a href="#" class="logo-container">
-      <div class="logo-icon">
-        &#128065;
-        <span class="logo-badge">Pro</span>
+  <!-- App Top Header -->
+  <header class="app-header">
+    <div class="brand-group">
+      <div class="brand-icon">&#128065;</div>
+      <div class="brand-text">
+        <span class="brand-name">EasyEyes Pro</span>
+        <span class="brand-sub">Premium Mobile Study Station</span>
       </div>
-      <div class="logo-text-group">
-        <h1 class="logo-title">EasyEyes Pro</h1>
-        <span class="logo-subtitle">Premium YouTube Study Station</span>
-      </div>
-    </a>
+    </div>
     
-    <div class="header-controls">
-      <!-- Live badge -->
-      <div class="live-status" id="live-badge">
+    <div class="header-right">
+      <div class="live-indicator" id="live-badge">
         <div class="live-dot"></div>
-        <span>YouTube Live Stream</span>
+        <span>Live</span>
       </div>
       
-      <!-- Timer toggle badge -->
-      <div class="status-badge" onclick="toggleTimer()">
-        <div class="status-dot" id="timer-dot"></div>
-        <span class="status-text" id="timer-text">20:00</span>
+      <div class="timer-badge" onclick="switchMainTab('health')">
+        <div class="timer-dot" id="timer-dot"></div>
+        <span class="timer-val" id="timer-text">20:00</span>
       </div>
     </div>
   </header>
 
-  <!-- Local Host Warning banner -->
-  <div class="host-warning-strip" id="host-warning">
-    <div class="host-warning-icon">&#9888;</div>
-    <div class="host-warning-text">
-      <b>Running from a local file:</b> YouTube embeds might block playback due to cross-origin security rules. 
-      For a 100% seamless experience, drag-and-drop this HTML file onto <a href="https://app.netlify.com/drop" target="_blank">Netlify Drop</a> to get a free, secure HTTPS hosting link instantly!
-    </div>
-  </div>
-
-  <!-- Workspace Grid Layout -->
-  <main class="workspace-grid">
+  <!-- Main scrollable layout space -->
+  <main class="scrollable-content">
     
-    <!-- LEFT SIDE: Video Player and Controls -->
-    <div class="side-stack">
-      
-      <!-- Video Station Card -->
-      <section class="station-card">
-        
-        <!-- Video Input bar -->
-        <div class="url-bar-section">
-          <div class="input-label">
-            <span>Paste YouTube Live or Video Link</span>
-            <span style="color: var(--accent-primary);">Supports Live streams</span>
-          </div>
-          <div class="url-input-wrapper">
-            <input class="url-input" id="url-input" type="text" placeholder="e.g., https://www.youtube.com/watch?v=... or https://youtube.com/live/..." />
-            <button class="load-button" onclick="loadVideo()">
-              <span>&#9654;</span> Load
-            </button>
-          </div>
-        </div>
-
-        <!-- Video Screen Area -->
-        <div class="video-viewport">
-          
-          <!-- Zoom indicator -->
-          <div class="zoom-status-badge">
-            <div class="zoom-indicator-dot"></div>
-            <span id="zoom-percentage">Zoom: 100%</span>
-          </div>
-
-          <!-- Video viewport scale container -->
-          <div class="video-zoom-container" id="video-zoom-container">
-            <iframe id="yt-iframe" style="display:none" allowfullscreen allow="autoplay; encrypted-media"></iframe>
-          </div>
-
-          <!-- Transparent Interaction/Zoom Overlay -->
-          <div class="gesture-interactive-overlay" id="gesture-overlay">
-            <div class="gesture-hint-card" id="gesture-hint">
-              <span>👋 Pinch with 2 fingers to zoom</span>
-              <span style="font-size: 10px; color: var(--text-muted);">Drag with 1 finger to pan around</span>
-            </div>
-          </div>
-
-          <!-- Placeholder Screen -->
-          <div class="player-placeholder" id="placeholder">
-            <div class="placeholder-art">&#127891;</div>
-            <div class="placeholder-title">Ready for Deep Study</div>
-            <div class="placeholder-desc">Paste a regular YouTube link or a Live study stream above and click Load to begin.</div>
-          </div>
-        </div>
-
-        <!-- Premium Player Custom Toolstrip Bar -->
-        <div class="player-control-strip">
-          <div class="control-mode-group">
-            <button class="mode-btn active" id="mode-control" onclick="setInteractiveMode('control')">
-              &#127918; Player Controls
-            </button>
-            <button class="mode-btn" id="mode-gesture" onclick="setInteractiveMode('gesture')">
-              &#9995; Zoom & Pan
-            </button>
-          </div>
-
-          <!-- Zoom adjusters for desktop/mouse users -->
-          <div class="zoom-adjusters">
-            <button class="zoom-btn" onclick="adjustZoom(-0.1)" title="Zoom Out">-</button>
-            <span class="zoom-value" id="zoom-control-percentage">100%</span>
-            <button class="zoom-btn" onclick="adjustZoom(0.1)" title="Zoom In">+</button>
-            <button class="zoom-btn" onclick="resetZoom()" style="width: auto; padding: 0 10px; font-size: 11px;" title="Reset Zoom">Reset</button>
-          </div>
-        </div>
-
-      </section>
-
-      <!-- Premium Filters Presets Card -->
-      <section class="station-card">
-        <div>
-          <h2 class="panel-title" style="margin-bottom: 2px;">
-            <span>&#128065;</span> Premium Study Filters
-          </h2>
-          <span class="preset-card-desc" style="color: var(--text-muted);">Select premium color science settings formulated specifically for student eyes.</span>
-        </div>
-
-        <!-- Presets Grid -->
-        <div class="preset-grid">
-          
-          <!-- HD Premium -->
-          <div class="preset-card premium-glow" onclick="applyPreset('hd-premium')" id="p-hd-premium">
-            <div class="preset-badge">Premium</div>
-            <div class="preset-card-icon">&#128253;</div>
-            <div class="preset-card-details">
-              <span class="preset-card-title">HD Premium</span>
-              <span class="preset-card-desc">Crisp High-Fidelity</span>
-            </div>
-          </div>
-
-          <!-- Ultra Clarity Premium HD -->
-          <div class="preset-card premium-glow" onclick="applyPreset('premium-hd')" id="p-premium-hd">
-            <div class="preset-badge">Elite</div>
-            <div class="preset-card-icon">&#128142;</div>
-            <div class="preset-card-details">
-              <span class="preset-card-title">Premium HD</span>
-              <span class="preset-card-desc">Ultra Clear Contrast</span>
-            </div>
-          </div>
-
-          <!-- Super Focus Mode -->
-          <div class="preset-card" onclick="applyPreset('focus')" id="p-focus">
-            <div class="preset-card-icon">&#127919;</div>
-            <div class="preset-card-details">
-              <span class="preset-card-title">Super Focus</span>
-              <span class="preset-card-desc">Math & Coding</span>
-            </div>
-          </div>
-
-          <!-- Blue light block -->
-          <div class="preset-card" onclick="applyPreset('blue-block')" id="p-blue-block">
-            <div class="preset-card-icon">&#128214;</div>
-            <div class="preset-card-details">
-              <span class="preset-card-title">Reader Mode</span>
-              <span class="preset-card-desc">De-noise Blue Light</span>
-            </div>
-          </div>
-
-          <!-- Night mode preset -->
-          <div class="preset-card" onclick="applyPreset('night')" id="p-night">
-            <div class="preset-card-icon">&#127771;</div>
-            <div class="preset-card-details">
-              <span class="preset-card-title">Night Vision</span>
-              <span class="preset-card-desc">Warm Dim Overlay</span>
-            </div>
-          </div>
-
-          <!-- Reset Filter -->
-          <div class="preset-card" onclick="applyPreset('reset')" id="p-reset">
-            <div class="preset-card-icon">&#9728;</div>
-            <div class="preset-card-details">
-              <span class="preset-card-title">Original</span>
-              <span class="preset-card-desc">Reset filters</span>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- Invert toggle panel -->
-        <div class="invert-card" id="invert-toggle" onclick="toggleInvert()">
-          <div class="invert-text-group">
-            <div class="invert-icon">&#9681;</div>
-            <div class="invert-title-group">
-              <span class="invert-title">Deep Dark Inversion</span>
-              <span class="invert-desc">Inverts white pages to clean, non-glare black backgrounds. Excellent for code guides.</span>
-            </div>
-          </div>
-          <div class="switch-outer" id="invert-sw">
-            <div class="switch-inner"></div>
-          </div>
-        </div>
-
-        <!-- Manual tuning sliders -->
-        <div class="slider-tuning-panel">
-          <span class="filter-preset-label">Manual Fine Tuning</span>
-          
-          <div class="slider-row">
-            <div class="slider-info">
-              <span class="slider-title"><span>&#9788;</span> Brightness</span>
-              <span class="slider-val" id="brightness-val">100%</span>
-            </div>
-            <input class="slider-input" type="range" id="brightness" min="20" max="150" value="100" step="1" oninput="applyFilters()">
-          </div>
-
-          <div class="slider-row">
-            <div class="slider-info">
-              <span class="slider-title"><span>&#9651;</span> Contrast</span>
-              <span class="slider-val" id="contrast-val">100%</span>
-            </div>
-            <input class="slider-input" type="range" id="contrast" min="50" max="200" value="100" step="1" oninput="applyFilters()">
-          </div>
-
-          <div class="slider-row">
-            <div class="slider-info">
-              <span class="slider-title"><span>&#127769;</span> Warm Tone (Sepia)</span>
-              <span class="slider-val" id="sepia-val">0%</span>
-            </div>
-            <input class="slider-input" type="range" id="sepia" min="0" max="100" value="0" step="1" oninput="applyFilters()">
-          </div>
-
-          <div class="slider-row">
-            <div class="slider-info">
-              <span class="slider-title"><span>&#128065;</span> Saturation</span>
-              <span class="slider-val" id="saturate-val">100%</span>
-            </div>
-            <input class="slider-input" type="range" id="saturate" min="0" max="200" value="100" step="1" oninput="applyFilters()">
-          </div>
-        </div>
-
-      </section>
-
+    <!-- Local Hosting Notice -->
+    <div class="local-warning-panel" id="host-warning">
+      <span class="warning-panel-icon">&#9888;</span>
+      <div class="warning-panel-text">
+        Running from a local file. YouTube can block loads. Drag-and-drop onto <a href="https://app.netlify.com/drop" target="_blank">Netlify Drop</a> for a clean, secure HTTPS link instantly!
+      </div>
     </div>
 
-    <!-- RIGHT SIDE: Eye health countdown timer, Recently played history list, Study notes -->
-    <div class="side-stack">
+    <!-- paste YouTube Stream row -->
+    <section class="input-section">
+      <div class="presets-label" style="display: flex; justify-content: space-between; align-items: center;">
+        <span>Paste YouTube Video or Live Link</span>
+        <span style="color: var(--accent-primary); font-size: 8px; font-weight: 800;">Supports /live/ streams</span>
+      </div>
+      <div class="input-row">
+        <input class="url-input-box" id="url-input" type="text" placeholder="Watch link, Shorts or Live Stream..." />
+        <button class="load-btn" onclick="loadVideo()">
+          <span>&#9654;</span> Load
+        </button>
+      </div>
+    </section>
+
+    <!-- Professional viewport container -->
+    <section class="viewport-card">
+      <div class="viewport-container" id="viewport-container">
+        
+        <!-- Zoom scale indicator -->
+        <div class="gesture-indicator-badge">
+          <div class="indicator-blue-dot"></div>
+          <span id="zoom-percentage">Zoom: 100%</span>
+        </div>
+
+        <!-- Transform scaler layer -->
+        <div class="video-viewport-scaler" id="video-zoom-container">
+          <iframe id="yt-iframe" style="display:none" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+        </div>
+
+        <!-- Transparent Zoom overlay wrapper -->
+        <div class="gesture-tracker-overlay" id="gesture-overlay">
+          <div class="viewport-hint" id="gesture-hint">
+            <span>👋 Pinch with 2 fingers to zoom</span>
+            <span style="font-size: 9px; color: var(--text-muted);">Drag with 1 finger to pan around</span>
+          </div>
+        </div>
+
+        <!-- Screen Placeholder state -->
+        <div class="viewport-placeholder" id="placeholder">
+          <div class="placeholder-icon">&#127891;</div>
+          <span class="placeholder-title">Study Station Activated</span>
+          <span class="placeholder-desc">Paste a YouTube lecture link or live stream, then hit Load to apply student protection filters.</span>
+        </div>
+
+      </div>
+
+      <!-- Action custom control toolstrip -->
+      <div class="viewport-control-bar">
+        <div class="mode-tab-group">
+          <button class="mode-btn active" id="mode-control" onclick="setInteractiveMode('control')">
+            &#127918; Player Controls
+          </button>
+          <button class="mode-btn" id="mode-gesture" onclick="setInteractiveMode('gesture')">
+            &#9995; Zoom & Pan
+          </button>
+        </div>
+
+        <!-- Zoom HUD adjusters for precise alignment -->
+        <div class="zoom-hud-buttons">
+          <button class="hud-btn" onclick="adjustZoom(-0.1)" title="Zoom Out">-</button>
+          <span class="hud-zoom-value" id="zoom-control-percentage">100%</span>
+          <button class="hud-btn" onclick="adjustZoom(0.1)" title="Zoom In">+</button>
+          <button class="hud-btn" onclick="resetZoom()" style="width: auto; padding: 0 8px; font-size: 9px;">Reset</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Navigation Hub (Tabs) -->
+    <section class="tab-container-card">
       
-      <!-- 20-20-20 Eye Break Health Station -->
-      <section class="timer-card">
-        <div class="panel-header">
-          <h2 class="panel-title">
-            <span class="panel-title-icon">&#9811;</span> 20-20-20 Eye Timer
-          </h2>
-          <span class="health-badge">Ocular Health</span>
+      <!-- Headers -->
+      <div class="navigation-tabs-header">
+        <button class="nav-tab-item active" id="nav-filters" onclick="switchMainTab('filters')">
+          <span class="tab-icon">&#128065;</span>
+          <span>Filters</span>
+        </button>
+        <button class="nav-tab-item" id="nav-health" onclick="switchMainTab('health')">
+          <span class="tab-icon">&#9811;</span>
+          <span>Eye Health</span>
+        </button>
+        <button class="nav-tab-item" id="nav-history" onclick="switchMainTab('history')">
+          <span class="tab-icon">&#128338;</span>
+          <span>History</span>
+        </button>
+      </div>
+
+      <!-- TAB PANEL 1: Advanced eye filters & presets -->
+      <div class="tab-content-panel active" id="panel-filters">
+        <span class="presets-label">Student Eye Presets</span>
+        
+        <div class="presets-mobile-grid">
+          
+          <div class="preset-mobile-item premium-badge active" onclick="applyPreset('hd-premium')" id="p-hd-premium">
+            <div class="preset-mini-tag">Premium</div>
+            <div class="preset-item-art">&#128253;</div>
+            <div class="preset-item-details">
+              <span class="preset-item-name">HD Premium</span>
+              <span class="preset-item-sub">Crisp Clarity</span>
+            </div>
+          </div>
+
+          <div class="preset-mobile-item premium-badge" onclick="applyPreset('premium-hd')" id="p-premium-hd">
+            <div class="preset-mini-tag">Elite</div>
+            <div class="preset-item-art">&#128142;</div>
+            <div class="preset-item-details">
+              <span class="preset-item-name">Premium HD</span>
+              <span class="preset-item-sub">Deep Balance</span>
+            </div>
+          </div>
+
+          <div class="preset-mobile-item" onclick="applyPreset('focus')" id="p-focus">
+            <div class="preset-item-art">&#127919;</div>
+            <div class="preset-item-details">
+              <span class="preset-item-name">Super Focus</span>
+              <span class="preset-item-sub">Coding/Math</span>
+            </div>
+          </div>
+
+          <div class="preset-mobile-item" onclick="applyPreset('blue-block')" id="p-blue-block">
+            <div class="preset-item-art">&#128214;</div>
+            <div class="preset-item-details">
+              <span class="preset-item-name">Reader Mode</span>
+              <span class="preset-item-sub">Blue Light filter</span>
+            </div>
+          </div>
+
+          <div class="preset-mobile-item" onclick="applyPreset('night')" id="p-night">
+            <div class="preset-item-art">&#127771;</div>
+            <div class="preset-item-details">
+              <span class="preset-item-name">Night Vision</span>
+              <span class="preset-item-sub">Ultra Dim Tone</span>
+            </div>
+          </div>
+
+          <div class="preset-mobile-item" onclick="applyPreset('reset')" id="p-reset">
+            <div class="preset-item-art">&#9728;</div>
+            <div class="preset-item-details">
+              <span class="preset-item-name">Original</span>
+              <span class="preset-item-sub">Reset Filters</span>
+            </div>
+          </div>
+
         </div>
 
-        <div class="timer-dashboard">
-          <div class="timer-visual-circle">
-            <svg class="svg-ring">
-              <circle class="svg-ring-bg" cx="40" cy="40" r="36"></circle>
-              <circle class="svg-ring-fill" id="timer-ring" cx="40" cy="40" r="36"></circle>
+        <!-- Invert white background card toggle -->
+        <div class="inversion-card" id="invert-toggle" onclick="toggleInvert()">
+          <div class="inversion-info">
+            <span style="font-size: 18px; color: var(--accent-secondary);">&#9681;</span>
+            <div class="inversion-text">
+              <span class="inversion-heading">Deep Dark Inversion</span>
+              <span class="inversion-desc">Converts glaring whites to clean, deep black layout</span>
+            </div>
+          </div>
+          <div class="toggle-outer" id="invert-sw">
+            <div class="toggle-inner"></div>
+          </div>
+        </div>
+
+        <!-- Fine tuning adjustment sliders -->
+        <div class="fine-tuning-container">
+          <span class="presets-label">Manual Fine Tuning</span>
+          
+          <div class="slider-row">
+            <div class="slider-labels">
+              <span class="slider-title-text"><span>&#9788;</span> Brightness</span>
+              <span class="slider-value-badge" id="brightness-val">100%</span>
+            </div>
+            <input class="fine-slider" type="range" id="brightness" min="20" max="150" value="100" step="1" oninput="applyFilters()">
+          </div>
+
+          <div class="slider-row">
+            <div class="slider-labels">
+              <span class="slider-title-text"><span>&#9651;</span> Contrast</span>
+              <span class="slider-value-badge" id="contrast-val">100%</span>
+            </div>
+            <input class="fine-slider" type="range" id="contrast" min="50" max="200" value="100" step="1" oninput="applyFilters()">
+          </div>
+
+          <div class="slider-row">
+            <div class="slider-labels">
+              <span class="slider-title-text"><span>&#127769;</span> Warm Tone (Sepia)</span>
+              <span class="slider-value-badge" id="sepia-val">0%</span>
+            </div>
+            <input class="fine-slider" type="range" id="sepia" min="0" max="100" value="0" step="1" oninput="applyFilters()">
+          </div>
+
+          <div class="slider-row">
+            <div class="slider-labels">
+              <span class="slider-title-text"><span>&#128065;</span> Saturation</span>
+              <span class="slider-value-badge" id="saturate-val">100%</span>
+            </div>
+            <input class="fine-slider" type="range" id="saturate" min="0" max="200" value="100" step="1" oninput="applyFilters()">
+          </div>
+        </div>
+
+      </div>
+
+      <!-- TAB PANEL 2: Eye Health countdown & 20-20-20 alert rule -->
+      <div class="tab-content-panel" id="panel-health">
+        <span class="presets-label">Ocular Care System</span>
+        
+        <div class="health-dashboard">
+          <div class="circle-wrap">
+            <svg class="svg-circle">
+              <circle class="circle-bg" cx="34" cy="34" r="30"></circle>
+              <circle class="circle-fill" id="timer-ring" cx="34" cy="34" r="30"></circle>
             </svg>
-            <div class="timer-digits" id="timer-dashboard-text">20:00</div>
+            <div class="circle-text" id="timer-dashboard-text">20:00</div>
           </div>
 
-          <div class="timer-explanation">
-            <span class="timer-headline" id="timer-heading">Prevent Eye Strain</span>
-            <span class="timer-subheadline" id="timer-subheading">Every 20 minutes, look at an object 20 feet away for 20 seconds.</span>
+          <div class="health-info-block">
+            <span class="health-title" id="timer-heading">Prevent Eye Strain</span>
+            <span class="health-sub" id="timer-subheading">Every 20 minutes, look at an object 20 feet away for 20 seconds.</span>
           </div>
         </div>
 
-        <button class="timer-action-btn" id="timer-btn" onclick="toggleTimer()">
+        <button class="health-timer-btn" id="timer-btn" onclick="toggleTimer()">
           Start Session
         </button>
-      </section>
+      </div>
 
-      <!-- Recently Played Video History -->
-      <section class="history-card">
-        <div class="history-header">
-          <h2 class="panel-title">
-            <span>&#128338;</span> Recent History
-          </h2>
-          <button class="clear-history-btn" onclick="clearHistory()">
+      <!-- TAB PANEL 3: Recently played history list -->
+      <div class="tab-content-panel" id="panel-history">
+        <div class="history-log-header">
+          <span class="presets-label">Recently Played Videos</span>
+          <button class="history-clear-btn" onclick="clearHistory()">
             &#128465; Clear History
           </button>
         </div>
 
-        <div class="history-list" id="history-list">
-          <!-- Populated dynamically via JS -->
-          <div class="history-empty">
-            <div class="history-empty-icon">&#128229;</div>
-            <div style="font-size: 12px; font-weight: 600;">No history logged yet</div>
-            <div style="font-size: 10px; color: var(--text-muted);">Videos you study will appear here</div>
+        <div class="history-scroll-panel" id="history-list">
+          <div class="history-empty-message">
+            <div class="history-empty-art">&#128229;</div>
+            <span style="font-size: 11px; font-weight: 600;">No history logged yet</span>
+            <span style="font-size: 9px; color: var(--text-muted);">Videos you study will appear here</span>
           </div>
         </div>
-      </section>
+      </div>
 
-      <!-- Quick Study Stats & Guidance -->
-      <section class="study-tips-card">
-        <h2 class="panel-title">
-          <span>&#128161;</span> Study Tips & shortcuts
-        </h2>
-        <div class="tip-item">
-          <div class="tip-bullet"></div>
-          <div>Toggle <b>Zoom & Pan</b> to scale small code or graphics, then switch back to <b>Player Controls</b> to seek or pause.</div>
-        </div>
-        <div class="tip-item">
-          <div class="tip-bullet"></div>
-          <div>Drag around with your finger or mouse inside the viewport when zoomed to scan across different sections.</div>
-        </div>
-        <div class="tip-item">
-          <div class="tip-bullet"></div>
-          <div>Press the <b>Enter key</b> inside the input box to instantly compile and load video nodes.</div>
-        </div>
-      </section>
+    </section>
 
-    </div>
+    <footer class="app-footer">
+      Made with <span>&#9829;</span> for student eye protection
+    </footer>
 
   </main>
 
-  <footer class="footer">
-    Made with <span>&#9829;</span> for student eye health · Responsive Study Station Pro
-  </footer>
+  <!-- Sticky Bottom native-like app bar for navigation support -->
+  <nav class="sticky-bottom-tab-bar">
+    <button class="bottom-tab-btn active" id="b-tab-filters" onclick="switchMainTab('filters')">
+      <span class="bottom-tab-btn-icon">&#128065;</span>
+      <span>Filters</span>
+    </button>
+    <button class="bottom-tab-btn" id="b-tab-health" onclick="switchMainTab('health')">
+      <span class="bottom-tab-btn-icon">&#9811;</span>
+      <span>Eye Health</span>
+    </button>
+    <button class="bottom-tab-btn" id="b-tab-history" onclick="switchMainTab('history')">
+      <span class="bottom-tab-btn-icon">&#128338;</span>
+      <span>History</span>
+    </button>
+  </nav>
 
 </div>
 
-<!-- Self-contained JavaScript logic -->
 <script>
 // State Management
 let invertOn = false;
 let timerOn = false;
 let timerInterval = null;
-const totalTimerSeconds = 20 * 60; // 20 minutes
+const totalTimerSeconds = 20 * 60; 
 let timerSecondsLeft = totalTimerSeconds;
 let activePreset = null;
 let recentVideos = [];
 
-// Interactive zoom & pan variables
+// Stabilized zoom & drag variables
 let zoomLevel = 1.0;
 let panX = 0;
 let panY = 0;
@@ -1558,11 +1378,12 @@ let startX = 0;
 let startY = 0;
 let initialPinchDistance = 0;
 let initialZoom = 1.0;
-let interactiveMode = 'control'; // 'control' or 'gesture'
+let interactiveMode = 'control'; 
 
 // DOM Elements
 const iframe = document.getElementById('yt-iframe');
 const zoomContainer = document.getElementById('video-zoom-container');
+const viewportContainer = document.getElementById('viewport-container');
 const gestureOverlay = document.getElementById('gesture-overlay');
 const placeholder = document.getElementById('placeholder');
 const timerText = document.getElementById('timer-text');
@@ -1596,12 +1417,11 @@ window.onload = function() {
   }
 };
 
-// YouTube URL parser
+// YouTube URL parser supporting live, watches, embed, shorts
 function parseYouTubeId(url) {
   url = url.trim();
   let vid = '';
   
-  // Regex matchers for all YouTube variations (live streams, watches, embed, shorts)
   const regWatch = /[?&]v=([^&]+)/;
   const regShort = /youtu\.be\/([^?&]+)/;
   const regEmbed = /embed\/([^?&]+)/;
@@ -1623,7 +1443,7 @@ function parseYouTubeId(url) {
 
   return {
     id: vid,
-    isLive: regLive.test(url)
+    isLive: regLive.test(url) || url.includes('/live/')
   };
 }
 
@@ -1644,43 +1464,34 @@ function loadVideo(customId = null, isCustomLive = false) {
   }
 
   if (!vid) {
-    alert('Please insert a valid YouTube Video, Live Stream or Shorts link!');
+    alert('Please insert a valid YouTube link!');
     return;
   }
 
-  // Construct YouTube URL with modest branding
   iframe.src = 'https://www.youtube.com/embed/' + vid + '?rel=0&modestbranding=1&autoplay=1';
   iframe.style.display = 'block';
   placeholder.style.display = 'none';
 
-  // Toggle Live Badge state
   if (isLive) {
     liveBadge.style.display = 'flex';
   } else {
     liveBadge.style.display = 'none';
   }
 
-  // Reset zoom properties
   resetZoom();
   applyFilters();
-
-  // Save to history list
   addToHistory(vid, isLive);
 }
 
 // Add Item to History
 function addToHistory(vid, isLive) {
-  // Check if item already exists
   recentVideos = recentVideos.filter(item => item.id !== vid);
-
-  // Unshift new video details
   recentVideos.unshift({
     id: vid,
     isLive: isLive,
     timestamp: Date.now()
   });
 
-  // Keep it within max 10 records
   if (recentVideos.length > 10) {
     recentVideos.pop();
   }
@@ -1694,10 +1505,10 @@ function renderHistory() {
   const listEl = document.getElementById('history-list');
   if (recentVideos.length === 0) {
     listEl.innerHTML = `
-      <div class="history-empty">
-        <div class="history-empty-icon">&#128229;</div>
-        <div style="font-size: 12px; font-weight: 600;">No history logged yet</div>
-        <div style="font-size: 10px; color: var(--text-muted);">Videos you study will appear here</div>
+      <div class="history-empty-message">
+        <div class="history-empty-art">&#128229;</div>
+        <span style="font-size: 11px; font-weight: 600;">No history logged yet</span>
+        <span style="font-size: 9px; color: var(--text-muted);">Videos you study will appear here</span>
       </div>
     `;
     return;
@@ -1708,19 +1519,19 @@ function renderHistory() {
     const formattedDate = new Date(vid.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const liveIndicator = vid.isLive ? `<span class="history-live-pill">Live</span>` : '';
     html += `
-      <div class="history-item" onclick="loadVideo('${vid.id}', ${vid.isLive})">
-        <div class="history-thumbnail-wrapper">
-          <img class="history-thumbnail" src="https://img.youtube.com/vi/${vid.id}/mqdefault.jpg" alt="Thumbnail">
+      <div class="history-row" onclick="loadVideo('${vid.id}', ${vid.isLive})">
+        <div class="history-pic-box">
+          <img class="history-img" src="https://img.youtube.com/vi/${vid.id}/mqdefault.jpg" alt="Thumbnail">
           ${liveIndicator}
         </div>
-        <div class="history-info">
-          <span class="history-item-title">Video ID: ${vid.id}</span>
-          <div class="history-meta">
+        <div class="history-row-details">
+          <span class="history-row-title">Video ID: ${vid.id}</span>
+          <div class="history-row-meta">
             <span>Study Session</span>
             <span>${formattedDate}</span>
           </div>
         </div>
-        <button class="history-delete-btn" onclick="event.stopPropagation(); deleteHistoryItem('${vid.id}')" title="Remove from list">
+        <button class="history-row-remove" onclick="event.stopPropagation(); deleteHistoryItem('${vid.id}')" title="Remove">
           &times;
         </button>
       </div>
@@ -1738,14 +1549,14 @@ function deleteHistoryItem(id) {
 
 // Clear all history logs
 function clearHistory() {
-  if (confirm('Are you sure you want to clear your recently played history?')) {
+  if (confirm('Clear recently played history?')) {
     recentVideos = [];
     localStorage.removeItem('easyeyes_history');
     renderHistory();
   }
 }
 
-// Toggle interactive layout Modes
+// Toggle interactive layouts
 function setInteractiveMode(mode) {
   interactiveMode = mode;
   document.getElementById('mode-control').classList.toggle('active', mode === 'control');
@@ -1754,11 +1565,10 @@ function setInteractiveMode(mode) {
   if (mode === 'gesture') {
     gestureOverlay.classList.add('active');
     
-    // Display Hint
     const hint = document.getElementById('gesture-hint');
     hint.style.animation = 'none';
     setTimeout(() => {
-      hint.style.animation = 'fadeInOut 2.5s forwards';
+      hint.style.animation = 'fadeOut 2.2s forwards';
     }, 10);
   } else {
     gestureOverlay.classList.remove('active');
@@ -1767,7 +1577,7 @@ function setInteractiveMode(mode) {
 
 // Handle zoom Adjusters manually
 function adjustZoom(delta) {
-  zoomLevel = Math.max(1.0, Math.min(4.0, zoomLevel + delta));
+  zoomLevel = Math.max(1.0, Math.min(5.0, zoomLevel + delta));
   
   // Constrain boundary panning on smaller zooms
   if (zoomLevel === 1.0) {
@@ -1784,30 +1594,41 @@ function resetZoom() {
   updateZoomTransform();
 }
 
-// Apply css transform values
+// Apply CSS translate-first, scale-second transform pattern for linear drag speed compatibility
 function updateZoomTransform() {
-  zoomContainer.style.transform = `scale(${zoomLevel}) translate(${panX}px, ${panY}px)`;
+  // Constrain panning boundaries perfectly to keep video inside viewport frame boundaries
+  const viewportWidth = viewportContainer.clientWidth || 320;
+  const viewportHeight = viewportContainer.clientHeight || 180;
+  const maxPanX = ((zoomLevel - 1) * viewportWidth) / 2;
+  const maxPanY = ((zoomLevel - 1) * viewportHeight) / 2;
+  
+  panX = Math.max(-maxPanX, Math.min(maxPanX, panX));
+  panY = Math.max(-maxPanY, Math.min(maxPanY, panY));
+
+  zoomContainer.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
   
   const percentageText = `Zoom: ${Math.round(zoomLevel * 100)}%`;
   document.getElementById('zoom-percentage').textContent = percentageText;
   document.getElementById('zoom-control-percentage').textContent = `${Math.round(zoomLevel * 100)}%`;
 }
 
-// Touch gesture zoom and pan handling
+// Mobile Pinch-to-zoom and Drag Panning
 function setupGestureListeners() {
-  // Desktop Mouse Drag to Pan inside the Gesture Overlay
+  // Desktop Drag-Panning inside gestureOverlay
   gestureOverlay.addEventListener('mousedown', function(e) {
     if (interactiveMode !== 'gesture') return;
     isPanning = true;
-    startX = e.clientX - panX * zoomLevel;
-    startY = e.clientY - panY * zoomLevel;
+    startX = e.clientX - panX;
+    startY = e.clientY - panY;
+    e.preventDefault();
   });
 
   window.addEventListener('mousemove', function(e) {
     if (!isPanning || interactiveMode !== 'gesture') return;
-    panX = (e.clientX - startX) / zoomLevel;
-    panY = (e.clientY - startY) / zoomLevel;
+    panX = e.clientX - startX;
+    panY = e.clientY - startY;
     updateZoomTransform();
+    e.preventDefault();
   });
 
   window.addEventListener('mouseup', function() {
@@ -1819,32 +1640,32 @@ function setupGestureListeners() {
     if (interactiveMode !== 'gesture') return;
     
     if (e.touches.length === 1) {
-      // Panning initialization
       isPanning = true;
-      startX = e.touches[0].clientX - panX * zoomLevel;
-      startY = e.touches[0].clientY - panY * zoomLevel;
+      startX = e.touches[0].clientX - panX;
+      startY = e.touches[0].clientY - panY;
     } else if (e.touches.length === 2) {
-      // Zoom initialization
       isPanning = false;
       initialPinchDistance = getDistanceBetweenTouches(e.touches);
       initialZoom = zoomLevel;
     }
-  });
+    e.preventDefault();
+  }, { passive: false });
 
   gestureOverlay.addEventListener('touchmove', function(e) {
     if (interactiveMode !== 'gesture') return;
 
     if (e.touches.length === 1 && isPanning) {
-      panX = (e.touches[0].clientX - startX) / zoomLevel;
-      panY = (e.touches[0].clientY - startY) / zoomLevel;
+      panX = e.touches[0].clientX - startX;
+      panY = e.touches[0].clientY - startY;
       updateZoomTransform();
     } else if (e.touches.length === 2) {
       const currentDistance = getDistanceBetweenTouches(e.touches);
       const factor = currentDistance / initialPinchDistance;
-      zoomLevel = Math.max(1.0, Math.min(4.0, initialZoom * factor));
+      zoomLevel = Math.max(1.0, Math.min(5.0, initialZoom * factor));
       updateZoomTransform();
     }
-  });
+    e.preventDefault();
+  }, { passive: false });
 
   gestureOverlay.addEventListener('touchend', function(e) {
     isPanning = false;
@@ -1857,33 +1678,28 @@ function getDistanceBetweenTouches(touches) {
   return Math.sqrt(dx * dx + dy * dy);
 }
 
-// Eye Protection Filter Matrix
+// Student Protection Filters
 function applyFilters() {
   const br = document.getElementById('brightness').value;
   const co = document.getElementById('contrast').value;
   const se = document.getElementById('sepia').value;
   const sa = document.getElementById('saturate').value;
 
-  // Sync display counters
   document.getElementById('brightness-val').textContent = br + '%';
   document.getElementById('contrast-val').textContent = co + '%';
   document.getElementById('sepia-val').textContent = se + '%';
   document.getElementById('saturate-val').textContent = sa + '%';
 
   let filterStr = `brightness(${br}%) contrast(${co}%) sepia(${se}%) saturate(${sa}%)`;
-  
   if (invertOn) {
-    // Elegant inversion that preserves warm tones perfectly
     filterStr = `invert(100%) hue-rotate(180deg) ${filterStr}`;
   }
-
   iframe.style.filter = filterStr;
 }
 
 // Preset Filters Setup
 function applyPreset(name) {
-  // Remove active styling from all buttons
-  document.querySelectorAll('.preset-card').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.preset-mobile-item').forEach(c => c.classList.remove('active'));
   document.getElementById('p-' + name).classList.add('active');
   activePreset = name;
 
@@ -1902,9 +1718,8 @@ function applyPreset(name) {
   document.getElementById('sepia').value = p.se;
   document.getElementById('saturate').value = p.sa;
 
-  // Set invert state safely
   if (p.inv !== invertOn) {
-    toggleInvert(false); // Toggle silently without applying twice
+    toggleInvert(false);
   }
 
   applyFilters();
@@ -1912,7 +1727,6 @@ function applyPreset(name) {
 
 function toggleInvert(shouldApply = true) {
   invertOn = !invertOn;
-  
   const sw = document.getElementById('invert-sw');
   const card = document.getElementById('invert-toggle');
 
@@ -1929,41 +1743,34 @@ function toggleInvert(shouldApply = true) {
   }
 }
 
-// self-contained Eye Care Break Alarm Audio (Web Audio API Synthesizer)
+// Ocular Alarm Sound (Self-contained Web Audio API)
 function triggerBreakSound() {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    
-    // Play beautiful study chime sequence
     const playChime = (time, pitch) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      
       osc.type = 'sine';
       osc.frequency.setValueAtTime(pitch, time);
-      
       gain.gain.setValueAtTime(0, time);
-      gain.gain.linearRampToValueAtTime(0.3, time + 0.05);
-      gain.gain.exponentialRampToValueAtTime(0.0001, time + 1.2);
-      
+      gain.gain.linearRampToValueAtTime(0.25, time + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.0001, time + 1.0);
       osc.connect(gain);
       gain.connect(ctx.destination);
-      
       osc.start(time);
-      osc.stop(time + 1.3);
+      osc.stop(time + 1.1);
     };
 
     const now = ctx.currentTime;
-    playChime(now, 523.25); // C5
-    playChime(now + 0.25, 659.25); // E5
-    playChime(now + 0.5, 783.99); // G5
-    playChime(now + 0.75, 1046.50); // C6
+    playChime(now, 523.25); 
+    playChime(now + 0.2, 659.25); 
+    playChime(now + 0.4, 783.99); 
   } catch(e) {
-    console.log("Audio not enabled by browser environment restrictions yet.");
+    console.log("Audio not enabled by browser gesture context yet.");
   }
 }
 
-// 20-20-20 Timer Logic
+// 20-20-20 Eye break Timer Logic
 function updateTimerUI() {
   const m = Math.floor(timerSecondsLeft / 60);
   const s = timerSecondsLeft % 60;
@@ -1972,8 +1779,7 @@ function updateTimerUI() {
   timerText.textContent = timeString;
   timerDashboardText.textContent = timeString;
 
-  // Update ring progress
-  const offset = 226 - (226 * (timerSecondsLeft / totalTimerSeconds));
+  const offset = 188 - (188 * (timerSecondsLeft / totalTimerSeconds));
   timerRing.style.strokeDashoffset = offset;
 }
 
@@ -1993,7 +1799,6 @@ function toggleTimer() {
         clearInterval(timerInterval);
         timerOn = false;
         
-        // Notify eye break time
         timerBtn.textContent = 'Reset Session';
         timerDot.classList.remove('active');
         timerRing.style.stroke = 'var(--accent-secondary)';
@@ -2001,7 +1806,6 @@ function toggleTimer() {
         timerSubheading.textContent = 'Time for your 20-second eye break! Look 20 feet away.';
         triggerBreakSound();
 
-        // 20 seconds eye break countdown
         let breakSeconds = 20;
         timerDashboardText.textContent = '20s';
         
@@ -2012,9 +1816,8 @@ function toggleTimer() {
             timerSecondsLeft = totalTimerSeconds;
             updateTimerUI();
             
-            // Auto reset
             timerHeading.textContent = 'Ready for next round';
-            timerSubheading.textContent = 'Eye break finished! You can start the timer for the next session.';
+            timerSubheading.textContent = 'Eye break finished! Start the timer for the next session.';
             timerBtn.textContent = 'Start Session';
             timerRing.style.stroke = 'var(--accent-green)';
           } else {
@@ -2030,11 +1833,24 @@ function toggleTimer() {
     timerBtn.textContent = 'Resume Session';
     timerDot.classList.remove('active');
     timerHeading.textContent = 'Session Paused';
-    timerSubheading.textContent = 'Click resume to continue monitoring your ocular health.';
+    timerSubheading.textContent = 'Click resume to continue monitoring ocular health.';
   }
 }
 
-// Enter Key loading listener
+// Unified tab switching logic for body nav cards and sticky bottom bar
+function switchMainTab(tabId) {
+  // Hide all panels
+  document.querySelectorAll('.tab-content-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab-item').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.bottom-tab-btn').forEach(b => b.classList.remove('active'));
+
+  // Show selected panel
+  document.getElementById('panel-' + tabId).classList.add('active');
+  document.getElementById('nav-' + tabId).classList.add('active');
+  document.getElementById('b-tab-' + tabId).classList.add('active');
+}
+
+// Keyboards
 document.getElementById('url-input').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') {
     loadVideo();
