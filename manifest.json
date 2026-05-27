@@ -1,0 +1,22 @@
+{
+  "name": "EasyEyes Mobile Pro — The YouTube Study Station",
+  "short_name": "EasyEyes Pro",
+  "description": "Premium distraction-free YouTube mobile study station with high-fidelity student eye protection filters.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#060609",
+  "theme_color": "#060609",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
