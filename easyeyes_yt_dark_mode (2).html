@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>EasyEyes — YouTube Dark Mode for Students</title>
+</head>
+<body>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Syne:wght@700;800&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#0a0a0f;--surface:#111118;--surface2:#1a1a24;--surface3:#22222f;
+    --border:#2a2a3a;--accent:#7c6fff;--accent2:#ff6f91;--green:#4fffb0;
+    --text:#f0f0ff;--muted:#888aaa;--warn:#ffb347;
+  }
+  body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0}
+  .app{display:flex;flex-direction:column;min-height:100vh;max-width:430px;margin:0 auto;background:var(--bg)}
+  
+  .header{padding:18px 20px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+  .logo{display:flex;align-items:center;gap:10px}
+  .logo-icon{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+  .logo-text{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;letter-spacing:-0.5px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .logo-sub{font-size:11px;color:var(--muted);margin-top:1px}
+  .timer-badge{display:flex;align-items:center;gap:5px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:5px 10px;cursor:pointer}
+  .timer-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  .timer-text{font-size:12px;color:var(--green);font-weight:500}
+
+  .url-section{padding:16px 20px}
+  .url-label{font-size:12px;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;text-transform:uppercase;font-weight:500}
+  .url-row{display:flex;gap:8px}
+  .url-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:11px 14px;font-size:14px;color:var(--text);font-family:'Space Grotesk',sans-serif;outline:none;transition:border-color .2s}
+  .url-input:focus{border-color:var(--accent)}
+  .url-input::placeholder{color:var(--muted)}
+  .load-btn{background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:12px;padding:11px 16px;font-size:13px;font-weight:600;color:#fff;cursor:pointer;font-family:'Space Grotesk',sans-serif;white-space:nowrap;transition:opacity .2s}
+  .load-btn:active{opacity:.8}
+
+  .video-wrap{margin:0 20px;position:relative;border-radius:16px;overflow:hidden;background:#000;aspect-ratio:16/9;border:1px solid var(--border)}
+  .video-overlay{position:absolute;inset:0;pointer-events:none;z-index:2;border-radius:16px}
+  #yt-iframe{width:100%;height:100%;border:none;display:block}
+  .placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--muted)}
+  .placeholder-icon{font-size:42px;opacity:.3}
+  .placeholder-text{font-size:13px;opacity:.6}
+  .placeholder-arrow{font-size:11px;color:var(--accent);opacity:.7}
+
+  .presets{padding:16px 20px 8px}
+  .section-label{font-size:11px;color:var(--muted);letter-spacing:.6px;text-transform:uppercase;font-weight:500;margin-bottom:10px}
+  .preset-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .preset-btn{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;transition:all .2s;font-family:'Space Grotesk',sans-serif}
+  .preset-btn:active{transform:scale(.95)}
+  .preset-btn.active{border-color:var(--accent);background:rgba(124,111,255,.15)}
+  .preset-icon{font-size:18px}
+  .preset-name{font-size:10px;color:var(--muted);font-weight:500}
+  .preset-btn.active .preset-name{color:var(--accent)}
+
+  .controls{padding:8px 20px 16px}
+  .filter-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .filter-label{font-size:13px;color:var(--muted);width:80px;flex-shrink:0}
+  .filter-slider{flex:1;accent-color:var(--accent);height:4px;cursor:pointer}
+  .filter-val{font-size:12px;color:var(--text);width:36px;text-align:right;font-weight:500}
+
+  .big-toggle-row{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--surface2);border-radius:14px;border:1px solid var(--border);margin:0 20px 14px;cursor:pointer;transition:all .25s}
+  .big-toggle-row.on{border-color:var(--accent2);background:rgba(255,111,145,.08)}
+  .toggle-info{flex:1}
+  .toggle-title{font-size:14px;font-weight:600}
+  .toggle-desc{font-size:11px;color:var(--muted);margin-top:2px}
+  .toggle-switch{width:44px;height:24px;border-radius:12px;background:var(--border);position:relative;flex-shrink:0;transition:background .25s}
+  .toggle-switch.on{background:var(--accent2)}
+  .toggle-switch::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .25s}
+  .toggle-switch.on::after{transform:translateX(20px)}
+
+  .break-bar{margin:0 20px;padding:12px 16px;background:rgba(79,255,176,.05);border:1px solid rgba(79,255,176,.2);border-radius:14px;display:flex;align-items:center;gap:12px;margin-bottom:16px}
+  .break-icon{font-size:20px}
+  .break-info{flex:1}
+  .break-title{font-size:13px;font-weight:600;color:var(--green)}
+  .break-sub{font-size:11px;color:var(--muted)}
+  .break-btn{font-size:11px;background:rgba(79,255,176,.15);border:1px solid rgba(79,255,176,.3);color:var(--green);border-radius:8px;padding:5px 10px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-weight:500}
+
+
+  .host-warning{display:none;margin:0 20px 14px;padding:14px 16px;background:rgba(255,179,71,.08);border:1px solid rgba(255,179,71,.4);border-radius:14px}
+  .hw-title{font-size:13px;font-weight:700;color:var(--warn);margin-bottom:8px}
+  .hw-body{font-size:12px;color:var(--muted);line-height:1.9}
+  .hw-body b{color:var(--text)}
+  .hw-body a{color:var(--accent);font-weight:600;text-decoration:none}
+
+  .footer{padding:12px 20px;border-top:1px solid var(--border);text-align:center;font-size:11px;color:var(--muted)}
+  .footer span{color:var(--accent2)}
+</style>
+
+<h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">EasyEyes — YouTube dark mode and color filter web app for students</h2>
+
+<div class="app">
+  <div class="header">
+    <div class="logo">
+      <div class="logo-icon">&#128065;</div>
+      <div>
+        <div class="logo-text">EasyEyes</div>
+        <div class="logo-sub">YouTube filter for students</div>
+      </div>
+    </div>
+    <div class="timer-badge" onclick="toggleTimer()">
+      <div class="timer-dot" id="timer-dot"></div>
+      <div class="timer-text" id="timer-text">20:00</div>
+    </div>
+  </div>
+
+  <div class="url-section">
+    <div class="url-label">Paste YouTube Link</div>
+    <div class="url-row">
+      <input class="url-input" id="url-input" type="text" placeholder="https://youtube.com/watch?v=..." />
+      <button class="load-btn" onclick="loadVideo()">&#9654; Load</button>
+    </div>
+  </div>
+
+  <div class="host-warning" id="host-warning">
+    <div class="hw-title">&#9888; YouTube videos need an https:// page</div>
+    <div class="hw-body">
+      You opened this as a local file, so YouTube blocks loading.<br><br>
+      <b>Free fix (1 min):</b><br>
+      1. Visit <a href="https://app.netlify.com/drop" target="_blank">app.netlify.com/drop</a><br>
+      2. Drag &amp; drop this HTML file onto the page<br>
+      3. Netlify gives you a free link &#8212; open it in your browser<br>
+      4. Paste your YouTube link and enjoy! &#9989;
+    </div>
+  </div>
+
+  <div class="video-wrap">
+    <iframe id="yt-iframe" style="display:none" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+    <div id="vid-overlay" class="video-overlay"></div>
+    <div class="placeholder" id="placeholder">
+      <div class="placeholder-icon">&#127909;</div>
+      <div class="placeholder-text">Paste a link above to load video</div>
+      <div class="placeholder-arrow">&#8593; paste &amp; hit Load</div>
+    </div>
+  </div>
+
+  <div style="height:14px"></div>
+
+  <div class="big-toggle-row" id="invert-toggle" onclick="toggleInvert()">
+    <div>
+      <div style="font-size:22px;margin-bottom:4px">&#9681;</div>
+    </div>
+    <div class="toggle-info">
+      <div class="toggle-title">Dark Mode Invert</div>
+      <div class="toggle-desc">White &#8594; Black &nbsp;|&nbsp; Makes bright videos dark</div>
+    </div>
+    <div class="toggle-switch" id="invert-sw"></div>
+  </div>
+
+  <div class="presets" style="padding-top:4px">
+    <div class="section-label">Presets</div>
+    <div class="preset-grid">
+      <div class="preset-btn" onclick="applyPreset('night')" id="p-night">
+        <div class="preset-icon">&#127771;</div>
+        <div class="preset-name">Night</div>
+      </div>
+      <div class="preset-btn" onclick="applyPreset('study')" id="p-study">
+        <div class="preset-icon">&#128214;</div>
+        <div class="preset-name">Study</div>
+      </div>
+      <div class="preset-btn" onclick="applyPreset('cinema')" id="p-cinema">
+        <div class="preset-icon">&#127916;</div>
+        <div class="preset-name">Cinema</div>
+      </div>
+      <div class="preset-btn" onclick="applyPreset('reset')" id="p-reset">
+        <div class="preset-icon">&#9728;</div>
+        <div class="preset-name">Reset</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="section-label">Manual Controls</div>
+
+    <div class="filter-row">
+      <div class="filter-label">&#9788; Brightness</div>
+      <input class="filter-slider" type="range" id="brightness" min="20" max="150" value="100" step="1" oninput="applyFilters()">
+      <div class="filter-val" id="brightness-val">100%</div>
+    </div>
+    <div class="filter-row">
+      <div class="filter-label">&#9651; Contrast</div>
+      <input class="filter-slider" type="range" id="contrast" min="50" max="200" value="100" step="1" oninput="applyFilters()">
+      <div class="filter-val" id="contrast-val">100%</div>
+    </div>
+    <div class="filter-row">
+      <div class="filter-label">&#127769; Warm Tone</div>
+      <input class="filter-slider" type="range" id="sepia" min="0" max="100" value="0" step="1" oninput="applyFilters()">
+      <div class="filter-val" id="sepia-val">0%</div>
+    </div>
+    <div class="filter-row">
+      <div class="filter-label">&#128065; Saturation</div>
+      <input class="filter-slider" type="range" id="saturate" min="0" max="200" value="100" step="1" oninput="applyFilters()">
+      <div class="filter-val" id="saturate-val">100%</div>
+    </div>
+  </div>
+
+  <div class="break-bar">
+    <div class="break-icon">&#128064;</div>
+    <div class="break-info">
+      <div class="break-title" id="break-title">20-20-20 Eye Break Timer</div>
+      <div class="break-sub" id="break-sub">Look 20 ft away for 20 sec every 20 min</div>
+    </div>
+    <button class="break-btn" id="break-btn" onclick="toggleTimer()">Start</button>
+  </div>
+
+  <div class="footer">Made with <span>&#9829;</span> for student eyes &nbsp;·&nbsp; Works in mobile browser</div>
+</div>
+
+<script>
+let invertOn = false;
+let timerOn = false;
+let timerInterval = null;
+let timerSeconds = 20 * 60;
+let activePreset = null;
+
+function loadVideo() {
+  const raw = document.getElementById('url-input').value.trim();
+  let vid = '';
+  const m1 = raw.match(/[?&]v=([^&]+)/);
+  const m2 = raw.match(/youtu\.be\/([^?&]+)/);
+  const m3 = raw.match(/embed\/([^?&]+)/);
+  if (m1) vid = m1[1];
+  else if (m2) vid = m2[1];
+  else if (m3) vid = m3[1];
+  else if (/^[A-Za-z0-9_-]{11}$/.test(raw)) vid = raw;
+
+  if (!vid) { alert('Please paste a valid YouTube link!'); return; }
+
+  const iframe = document.getElementById('yt-iframe');
+  iframe.src = 'https://www.youtube.com/embed/' + vid + '?rel=0&modestbranding=1';
+  iframe.style.display = 'block';
+  document.getElementById('placeholder').style.display = 'none';
+  applyFilters();
+}
+
+function applyFilters() {
+  const br = document.getElementById('brightness').value;
+  const co = document.getElementById('contrast').value;
+  const se = document.getElementById('sepia').value;
+  const sa = document.getElementById('saturate').value;
+
+  document.getElementById('brightness-val').textContent = br + '%';
+  document.getElementById('contrast-val').textContent = co + '%';
+  document.getElementById('sepia-val').textContent = se + '%';
+  document.getElementById('saturate-val').textContent = sa + '%';
+
+  let filter = 'brightness(' + br + '%) contrast(' + co + '%) sepia(' + se + '%) saturate(' + sa + '%)';
+  if (invertOn) filter = 'invert(100%) ' + filter;
+  document.getElementById('yt-iframe').style.filter = filter;
+}
+
+function toggleInvert() {
+  invertOn = !invertOn;
+  const sw = document.getElementById('invert-sw');
+  const row = document.getElementById('invert-toggle');
+  sw.className = 'toggle-switch' + (invertOn ? ' on' : '');
+  row.className = 'big-toggle-row' + (invertOn ? ' on' : '');
+  applyFilters();
+}
+
+function applyPreset(name) {
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+  if (name !== 'reset') document.getElementById('p-' + name).classList.add('active');
+  activePreset = name;
+
+  const presets = {
+    night: {br:70, co:120, se:10, sa:80, inv:true},
+    study: {br:85, co:100, se:30, sa:70, inv:false},
+    cinema: {br:90, co:140, se:5, sa:110, inv:false},
+    reset: {br:100, co:100, se:0, sa:100, inv:false}
+  };
+  const p = presets[name];
+  document.getElementById('brightness').value = p.br;
+  document.getElementById('contrast').value = p.co;
+  document.getElementById('sepia').value = p.se;
+  document.getElementById('saturate').value = p.sa;
+
+  if (p.inv !== invertOn) toggleInvert();
+  else applyFilters();
+}
+
+function toggleTimer() {
+  timerOn = !timerOn;
+  document.getElementById('break-btn').textContent = timerOn ? 'Stop' : 'Start';
+  const dot = document.getElementById('timer-dot');
+  dot.style.background = timerOn ? 'var(--green)' : 'var(--muted)';
+
+  if (timerOn) {
+    timerSeconds = 20 * 60;
+    timerInterval = setInterval(() => {
+      timerSeconds--;
+      if (timerSeconds <= 0) {
+        clearInterval(timerInterval);
+        timerOn = false;
+        document.getElementById('break-btn').textContent = 'Start';
+        document.getElementById('timer-text').textContent = '20:00';
+        document.getElementById('break-title').innerHTML = '&#128064; Time for an eye break!';
+        document.getElementById('break-sub').textContent = 'Look 20ft away for 20 seconds now!';
+        document.getElementById('timer-dot').style.background = 'var(--accent2)';
+        setTimeout(() => {
+          timerSeconds = 20 * 60;
+          document.getElementById('break-title').textContent = '20-20-20 Eye Break Timer';
+          document.getElementById('break-sub').textContent = 'Look 20 ft away for 20 sec every 20 min';
+          document.getElementById('timer-dot').style.background = 'var(--muted)';
+        }, 20000);
+        return;
+      }
+      const m = Math.floor(timerSeconds / 60);
+      const s = timerSeconds % 60;
+      document.getElementById('timer-text').textContent = m + ':' + String(s).padStart(2,'0');
+    }, 1000);
+  } else {
+    clearInterval(timerInterval);
+    timerSeconds = 20 * 60;
+    document.getElementById('timer-text').textContent = '20:00';
+    dot.style.background = 'var(--muted)';
+  }
+}
+
+
+// Show hosting warning if opened as local file
+(function() {
+  const proto = window.location.protocol;
+  if (proto === 'file:' || proto === 'content:' || proto === 'blob:') {
+    document.getElementById('host-warning').style.display = 'block';
+  }
+})();
+
+document.getElementById('url-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') loadVideo();
+});
+</script>
+</body>
+</html>
