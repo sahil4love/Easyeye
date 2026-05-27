@@ -11,6 +11,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   
+  <!-- Load YouTube API script -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+
   <style>
     :root {
       --bg-dark: #060609;
@@ -79,7 +82,7 @@
       justify-content: space-between;
       align-items: center;
       padding: 12px 16px;
-      background: rgba(12, 13, 19, 0.8);
+      background: rgba(12, 13, 19, 0.85);
       backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border-color);
       position: sticky;
@@ -282,9 +285,9 @@
       height: 100%;
       position: relative;
       transform-origin: center center;
-      transition: none; /* Removed transition for ultra-smooth instantaneous drag/pinch responses */
     }
 
+    /* Div placeholder to be replaced by YouTube Player IFrame API */
     #yt-iframe {
       width: 100%;
       height: 100%;
@@ -409,6 +412,121 @@
       font-size: 11px;
       max-width: 220px;
       line-height: 1.5;
+    }
+
+    /* Highly Ingenious Custom Video Control Bar (OUTSIDE the scaler container so controls NEVER zoom!) */
+    .custom-video-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border-color);
+      padding: 10px 14px;
+      gap: 12px;
+    }
+
+    .play-pause-btn {
+      background: var(--bg-pill);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      flex-shrink: 0;
+    }
+
+    .play-pause-btn:active {
+      border-color: var(--accent-primary);
+      transform: scale(0.92);
+    }
+
+    .seek-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .seek-slider {
+      flex: 1;
+      -webkit-appearance: none;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--bg-pill);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .seek-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--accent-primary);
+      border: 1.5px solid #fff;
+      cursor: pointer;
+    }
+
+    .time-display {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+      font-family: monospace;
+      white-space: nowrap;
+    }
+
+    .control-right-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .volume-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 14px;
+      padding: 4px;
+    }
+
+    .volume-slider {
+      width: 50px;
+      -webkit-appearance: none;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--bg-pill);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .volume-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent-primary);
+      cursor: pointer;
+    }
+
+    .live-control-display {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--accent-secondary);
+      text-transform: uppercase;
     }
 
     /* Viewport Control Strip */
@@ -1098,7 +1216,7 @@
     <section class="input-section">
       <div class="presets-label" style="display: flex; justify-content: space-between; align-items: center;">
         <span>Paste YouTube Video or Live Link</span>
-        <span style="color: var(--accent-primary); font-size: 8px; font-weight: 800;">Supports /live/ streams</span>
+        <span style="color: var(--accent-primary); font-size: 8px; font-weight: 800;">Supports Live/Shorts</span>
       </div>
       <div class="input-row">
         <input class="url-input-box" id="url-input" type="text" placeholder="Watch link, Shorts or Live Stream..." />
@@ -1118,9 +1236,9 @@
           <span id="zoom-percentage">Zoom: 100%</span>
         </div>
 
-        <!-- Transform scaler layer -->
+        <!-- Transform scaler layer (ONLY zooms the video player iframe) -->
         <div class="video-viewport-scaler" id="video-zoom-container">
-          <iframe id="yt-iframe" style="display:none" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+          <div id="yt-iframe"></div>
         </div>
 
         <!-- Transparent Zoom overlay wrapper -->
@@ -1135,9 +1253,31 @@
         <div class="viewport-placeholder" id="placeholder">
           <div class="placeholder-icon">&#127891;</div>
           <span class="placeholder-title">Study Station Activated</span>
-          <span class="placeholder-desc">Paste a YouTube lecture link or live stream, then hit Load to apply student protection filters.</span>
+          <span class="placeholder-desc">Paste a YouTube lecture link or live stream, then hit Load to begin. Hides YouTube controls and unlocks zoom!</span>
         </div>
 
+      </div>
+
+      <!-- Ingenious Custom Video Controls (Hides native YT controls, stays fixed and crisp when video scales!) -->
+      <div class="custom-video-controls" id="custom-controls" style="display:none;">
+        <button class="play-pause-btn" id="custom-play-btn" onclick="togglePlayPause()">&#9654;</button>
+        
+        <!-- Regular Video seeking (automatically hidden for Live streams) -->
+        <div class="seek-container" id="custom-seek-container">
+          <input type="range" class="seek-slider" id="custom-seek" min="0" max="100" value="0" oninput="onSeekInput()" onchange="onSeekChange()">
+          <span class="time-display" id="custom-time">0:00 / 0:00</span>
+        </div>
+
+        <!-- Live stream indicator display -->
+        <div class="live-control-display" id="custom-live-display" style="display:none;">
+          <div class="live-dot"></div>
+          <span>Live Stream Mode</span>
+        </div>
+
+        <div class="control-right-group">
+          <button class="volume-btn" id="custom-volume-btn" onclick="toggleMute()">&#128266;</button>
+          <input type="range" class="volume-slider" id="custom-volume" min="0" max="100" value="100" oninput="onVolumeChange()">
+        </div>
       </div>
 
       <!-- Action custom control toolstrip -->
@@ -1224,7 +1364,7 @@
             <div class="preset-item-art">&#127771;</div>
             <div class="preset-item-details">
               <span class="preset-item-name">Night Vision</span>
-              <span class="preset-item-sub">Ultra Dim Tone</span>
+              <span class="preset-item-sub">Warm Dim Tone</span>
             </div>
           </div>
 
@@ -1369,6 +1509,13 @@ let timerSecondsLeft = totalTimerSeconds;
 let activePreset = null;
 let recentVideos = [];
 
+// YouTube Player state
+let player = null;
+let isSeeking = false;
+let isMuted = false;
+let currentVolume = 100;
+let isLiveStream = false;
+
 // Stabilized zoom & drag variables
 let zoomLevel = 1.0;
 let panX = 0;
@@ -1381,7 +1528,6 @@ let initialZoom = 1.0;
 let interactiveMode = 'control'; 
 
 // DOM Elements
-const iframe = document.getElementById('yt-iframe');
 const zoomContainer = document.getElementById('video-zoom-container');
 const viewportContainer = document.getElementById('viewport-container');
 const gestureOverlay = document.getElementById('gesture-overlay');
@@ -1415,7 +1561,15 @@ window.onload = function() {
   if (proto === 'file:' || proto === 'content:' || proto === 'blob:') {
     document.getElementById('host-warning').style.display = 'flex';
   }
+
+  // Start polling player position for custom seekbar updates
+  startTimeUpdateLoop();
 };
+
+// YouTube API Ready hook
+function onYouTubeIframeAPIReady() {
+  // Loaded successfully and waiting for video call trigger
+}
 
 // YouTube URL parser supporting live, watches, embed, shorts
 function parseYouTubeId(url) {
@@ -1447,7 +1601,7 @@ function parseYouTubeId(url) {
   };
 }
 
-// Loads video into iframe and registers in history
+// Loads video into API player securely
 function loadVideo(customId = null, isCustomLive = false) {
   let vid = '';
   let isLive = false;
@@ -1468,19 +1622,152 @@ function loadVideo(customId = null, isCustomLive = false) {
     return;
   }
 
-  iframe.src = 'https://www.youtube.com/embed/' + vid + '?rel=0&modestbranding=1&autoplay=1';
-  iframe.style.display = 'block';
   placeholder.style.display = 'none';
+  isLiveStream = isLive;
 
+  // Configure badges and displays
   if (isLive) {
     liveBadge.style.display = 'flex';
+    document.getElementById('custom-live-display').style.display = 'flex';
+    document.getElementById('custom-seek-container').style.display = 'none';
   } else {
     liveBadge.style.display = 'none';
+    document.getElementById('custom-live-display').style.display = 'none';
+    document.getElementById('custom-seek-container').style.display = 'flex';
   }
 
   resetZoom();
-  applyFilters();
   addToHistory(vid, isLive);
+
+  // Initialize or reload YouTube Player via IFrame API
+  if (player) {
+    try {
+      player.loadVideoById({
+        videoId: vid
+      });
+      applyFilters();
+    } catch(e) {
+      // Re-create if destroyed
+      createPlayer(vid);
+    }
+  } else {
+    createPlayer(vid);
+  }
+}
+
+function createPlayer(vid) {
+  player = new YT.Player('yt-iframe', {
+    height: '100%',
+    width: '100%',
+    videoId: vid,
+    playerVars: {
+      'playsinline': 1,
+      'controls': 0, // Hides native YouTube controls entirely!
+      'rel': 0,
+      'modestbranding': 1,
+      'enablejsapi': 1,
+      'origin': window.location.origin
+    },
+    events: {
+      'onReady': onPlayerReady,
+      'onStateChange': onPlayerStateChange
+    }
+  });
+}
+
+function onPlayerReady(event) {
+  // Sync state
+  document.getElementById('custom-controls').style.display = 'flex';
+  player.playVideo();
+  applyFilters();
+}
+
+function onPlayerStateChange(event) {
+  const playBtn = document.getElementById('custom-play-btn');
+  // Sync Play / Pause custom indicator states
+  if (event.data === YT.PlayerState.PLAYING) {
+    playBtn.innerHTML = '&#10074;&#10074;'; // Pause Symbol
+    document.getElementById('custom-controls').style.display = 'flex';
+  } else {
+    playBtn.innerHTML = '&#9654;'; // Play Symbol
+  }
+}
+
+// Custom Player Controls Actions
+function togglePlayPause() {
+  if (!player || !player.getPlayerState) return;
+  const state = player.getPlayerState();
+  if (state === YT.PlayerState.PLAYING) {
+    player.pauseVideo();
+  } else {
+    player.playVideo();
+  }
+}
+
+function toggleMute() {
+  if (!player || !player.mute) return;
+  isMuted = !isMuted;
+  if (isMuted) {
+    player.mute();
+    document.getElementById('custom-volume-btn').innerHTML = '&#128263;';
+  } else {
+    player.unMute();
+    document.getElementById('custom-volume-btn').innerHTML = '&#128266;';
+  }
+}
+
+function onVolumeChange() {
+  if (!player || !player.setVolume) return;
+  currentVolume = document.getElementById('custom-volume').value;
+  player.setVolume(currentVolume);
+  
+  if (currentVolume == 0) {
+    document.getElementById('custom-volume-btn').innerHTML = '&#128263;';
+  } else {
+    document.getElementById('custom-volume-btn').innerHTML = '&#128266;';
+  }
+}
+
+function onSeekInput() {
+  isSeeking = true;
+}
+
+function onSeekChange() {
+  if (!player || !player.getDuration) return;
+  const seekVal = document.getElementById('custom-seek').value;
+  const duration = player.getDuration();
+  
+  if (duration > 0) {
+    const newTime = (seekVal / 100) * duration;
+    player.seekTo(newTime, true);
+  }
+  isSeeking = false;
+}
+
+function startTimeUpdateLoop() {
+  setInterval(() => {
+    if (!player || isSeeking || isLiveStream || !player.getCurrentTime || !player.getDuration) return;
+    
+    try {
+      const state = player.getPlayerState();
+      if (state === YT.PlayerState.PLAYING) {
+        const currentTime = player.getCurrentTime();
+        const duration = player.getDuration();
+        
+        if (duration > 0) {
+          const pct = (currentTime / duration) * 100;
+          document.getElementById('custom-seek').value = pct;
+          document.getElementById('custom-time').textContent = `${formatTime(currentTime)} / ${formatTime(duration)}`;
+        }
+      }
+    } catch(e) {}
+  }, 300);
+}
+
+function formatTime(sec) {
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${m}:${String(s).padStart(2, '0')}`;
 }
 
 // Add Item to History
@@ -1500,7 +1787,7 @@ function addToHistory(vid, isLive) {
   renderHistory();
 }
 
-// Render History
+// Render History Panel
 function renderHistory() {
   const listEl = document.getElementById('history-list');
   if (recentVideos.length === 0) {
@@ -1579,7 +1866,6 @@ function setInteractiveMode(mode) {
 function adjustZoom(delta) {
   zoomLevel = Math.max(1.0, Math.min(5.0, zoomLevel + delta));
   
-  // Constrain boundary panning on smaller zooms
   if (zoomLevel === 1.0) {
     panX = 0;
     panY = 0;
@@ -1596,7 +1882,6 @@ function resetZoom() {
 
 // Apply CSS translate-first, scale-second transform pattern for linear drag speed compatibility
 function updateZoomTransform() {
-  // Constrain panning boundaries perfectly to keep video inside viewport frame boundaries
   const viewportWidth = viewportContainer.clientWidth || 320;
   const viewportHeight = viewportContainer.clientHeight || 180;
   const maxPanX = ((zoomLevel - 1) * viewportWidth) / 2;
@@ -1690,11 +1975,15 @@ function applyFilters() {
   document.getElementById('sepia-val').textContent = se + '%';
   document.getElementById('saturate-val').textContent = sa + '%';
 
-  let filterStr = `brightness(${br}%) contrast(${co}%) sepia(${se}%) saturate(${sa}%)`;
-  if (invertOn) {
-    filterStr = `invert(100%) hue-rotate(180deg) ${filterStr}`;
+  // Apply filters directly to target iframe elements
+  const targetIframe = document.querySelector('#video-zoom-container iframe');
+  if (targetIframe) {
+    let filterStr = `brightness(${br}%) contrast(${co}%) sepia(${se}%) saturate(${sa}%)`;
+    if (invertOn) {
+      filterStr = `invert(100%) hue-rotate(180deg) ${filterStr}`;
+    }
+    targetIframe.style.filter = filterStr;
   }
-  iframe.style.filter = filterStr;
 }
 
 // Preset Filters Setup
@@ -1839,12 +2128,10 @@ function toggleTimer() {
 
 // Unified tab switching logic for body nav cards and sticky bottom bar
 function switchMainTab(tabId) {
-  // Hide all panels
   document.querySelectorAll('.tab-content-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-tab-item').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.bottom-tab-btn').forEach(b => b.classList.remove('active'));
 
-  // Show selected panel
   document.getElementById('panel-' + tabId).classList.add('active');
   document.getElementById('nav-' + tabId).classList.add('active');
   document.getElementById('b-tab-' + tabId).classList.add('active');
