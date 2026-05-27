@@ -1,3 +1,4 @@
+[ignoring loop detection]
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -284,28 +285,285 @@
       transform-origin: center center;
     }
 
-    #yt-player-target {
+    #yt-iframe {
       width: 100%;
       height: 100%;
       border: none;
       transition: filter 0.3s;
     }
 
-    /* Transparent Overlay for tracking touch gestures securely */
+    /* Transparent Overlay for tracking touch gestures and custom HUD controls */
     .gesture-tracker-overlay {
       position: absolute;
       inset: 0;
       z-index: 10;
       background: rgba(0, 0, 0, 0);
-      display: flex; /* Active by default both in portrait and landscape */
+      display: none; /* Displays only when video is loaded */
+      flex-direction: column;
+      justify-content: space-between;
       cursor: grab;
-      align-items: center;
-      justify-content: center;
-      pointer-events: auto; /* Active by default */
+      pointer-events: auto;
+      overflow: hidden;
     }
 
     .gesture-tracker-overlay:active {
       cursor: grabbing;
+    }
+
+    /* Glassmorphic Control Strips */
+    .hud-strip {
+      background: linear-gradient(to bottom, rgba(12, 13, 19, 0.95), rgba(6, 6, 9, 0.8));
+      backdrop-filter: blur(12px);
+      padding: 10px 14px;
+      display: flex;
+      transition: transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 0.3s ease;
+      z-index: 35;
+    }
+
+    .top-hud-strip {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      border-bottom: 1px solid var(--border-color);
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      transform: translateY(-100%);
+      opacity: 0;
+    }
+
+    .bottom-hud-strip {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      border-top: 1px solid var(--border-color);
+      flex-direction: column;
+      gap: 8px;
+      transform: translateY(100%);
+      opacity: 0;
+    }
+
+    /* Active visibility for the strips */
+    .gesture-tracker-overlay.hud-visible .top-hud-strip {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .gesture-tracker-overlay.hud-visible .bottom-hud-strip {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .gesture-tracker-overlay.hud-visible .hud-center-group {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    /* Top HUD Elements */
+    .hud-left-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hud-glass-badge {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 9px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .hud-btn {
+      background: rgba(124, 111, 255, 0.2);
+      border: 1px solid rgba(124, 111, 255, 0.4);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .hud-btn:active {
+      background: var(--accent-primary);
+    }
+
+    /* Center Play HUD Group */
+    .hud-center-group {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      pointer-events: none;
+      z-index: 25;
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
+    }
+
+    .hud-center-btn {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: rgba(124, 111, 255, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #fff;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      pointer-events: auto;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      transition: transform 0.2s;
+    }
+
+    .hud-center-btn:active {
+      transform: scale(0.9);
+    }
+
+    /* Seeker timeline details */
+    .timeline-container {
+      width: 100%;
+      position: relative;
+      height: 16px;
+      display: flex;
+      align-items: center;
+    }
+
+    .timeline-slider {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.15);
+      outline: none;
+      cursor: pointer;
+      position: relative;
+      z-index: 5;
+    }
+
+    .timeline-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--accent-primary);
+      border: 1.5px solid #fff;
+      cursor: pointer;
+      box-shadow: 0 0 6px var(--accent-primary);
+    }
+
+    .timeline-fill {
+      position: absolute;
+      left: 0;
+      top: 6px;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+      border-radius: 2px;
+      pointer-events: none;
+      z-index: 2;
+      width: 0%;
+    }
+
+    /* Live Badge Seeker block */
+    .live-timeline-badge {
+      display: none;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255, 111, 145, 0.15);
+      border: 1px solid rgba(255, 111, 145, 0.3);
+      padding: 3px 10px;
+      border-radius: 6px;
+      color: var(--accent-secondary);
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 0 auto;
+    }
+
+    .live-timeline-dot {
+      width: 6px;
+      height: 6px;
+      background-color: var(--accent-secondary);
+      border-radius: 50%;
+      box-shadow: 0 0 6px var(--accent-secondary);
+      animation: pulseLive 1.5s infinite;
+    }
+
+    /* Controls Strip Row */
+    .hud-controls-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+
+    .hud-controls-left, .hud-controls-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .hud-control-icon-btn {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+      transition: opacity 0.2s;
+    }
+
+    .hud-control-icon-btn:active {
+      opacity: 0.7;
+    }
+
+    .hud-control-icon-btn.seek-btn {
+      font-size: 10px;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+
+    .time-display {
+      font-family: monospace;
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    /* Floating instructional hint inside viewport */
+    .viewport-hint {
+      background: rgba(12, 13, 19, 0.95);
+      border: 1px solid var(--accent-primary);
+      padding: 8px 14px;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 600;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      pointer-events: none;
+      margin-top: 8px;
     }
 
     /* Landscape Fullscreen styles automatically triggered */
@@ -331,176 +589,6 @@
     body.landscape-active .app-header,
     body.landscape-active .scrollable-content > *:not(.viewport-card) {
       display: none !important;
-    }
-
-    /* Translucent HUD Overlay for Cinema Mode */
-    .landscape-overlay-hud {
-      position: absolute;
-      inset: 0;
-      z-index: 30;
-      display: none;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 16px;
-      background: rgba(6, 6, 9, 0.4);
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-
-    .landscape-overlay-hud.visible {
-      opacity: 1;
-    }
-
-    body.landscape-active .landscape-overlay-hud {
-      display: flex;
-    }
-
-    .hud-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      pointer-events: auto;
-    }
-
-    .hud-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: #fff;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .hud-exit-btn {
-      background: rgba(255, 255, 255, 0.15);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: #fff;
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-size: 11px;
-      font-weight: 700;
-      cursor: pointer;
-      backdrop-filter: blur(8px);
-    }
-
-    .hud-center-play {
-      align-self: center;
-      width: 58px;
-      height: 58px;
-      border-radius: 50%;
-      background: rgba(124, 111, 255, 0.85);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      color: #fff;
-      font-size: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      pointer-events: auto;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-      transition: transform 0.2s;
-    }
-
-    .hud-center-play:active {
-      transform: scale(0.9);
-    }
-
-    .hud-bottom-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      pointer-events: auto;
-      margin-bottom: 75px; /* Stay clear of custom controls bar in landscape */
-    }
-
-    .hud-scale-badge {
-      background: rgba(12, 13, 19, 0.8);
-      border: 1px solid rgba(255,255,255,0.1);
-      padding: 4px 10px;
-      border-radius: 8px;
-      color: #fff;
-      font-size: 10px;
-      font-weight: 700;
-      backdrop-filter: blur(6px);
-    }
-
-    /* Sleek Floating Landscape trigger button in Portrait Mode */
-    .portrait-cinema-trigger {
-      position: absolute;
-      bottom: 12px;
-      right: 12px;
-      z-index: 15;
-      background: rgba(12, 13, 19, 0.85);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: #fff;
-      padding: 6px 12px;
-      border-radius: 10px;
-      font-size: 10px;
-      font-weight: 700;
-      cursor: pointer;
-      display: none; /* Shows up once video loaded */
-      align-items: center;
-      gap: 5px;
-      backdrop-filter: blur(8px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-    }
-
-    .portrait-cinema-trigger:active {
-      transform: scale(0.95);
-    }
-
-    .gesture-indicator-badge {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: rgba(12, 13, 19, 0.85);
-      border: 1px solid rgba(255,255,255,0.1);
-      padding: 4px 8px;
-      border-radius: 8px;
-      color: #fff;
-      font-size: 10px;
-      font-weight: 700;
-      z-index: 20;
-      backdrop-filter: blur(6px);
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      pointer-events: none;
-    }
-
-    .indicator-blue-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background-color: var(--accent-blue);
-    }
-
-    /* Floating instructional hint inside viewport */
-    .viewport-hint {
-      background: rgba(12, 13, 19, 0.9);
-      border: 1px solid var(--accent-primary);
-      padding: 10px 16px;
-      border-radius: 10px;
-      color: #fff;
-      font-size: 11px;
-      font-weight: 600;
-      text-align: center;
-      pointer-events: none;
-      animation: fadeOut 2.2s forwards;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    }
-
-    @keyframes fadeOut {
-      0% { opacity: 0; transform: scale(0.9); }
-      10% { opacity: 1; transform: scale(1); }
-      80% { opacity: 1; }
-      100% { opacity: 0; transform: scale(1.05); }
     }
 
     /* Screen Placeholder */
@@ -550,151 +638,7 @@
       line-height: 1.5;
     }
 
-    /* Premium Custom Controls Interface Dashboard */
-    .custom-player-controls {
-      background: var(--bg-pill);
-      border-top: 1px solid var(--border-color);
-      padding: 12px 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      transition: all 0.3s;
-    }
-
-    .progress-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .time-stamp {
-      font-family: monospace;
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--text-muted);
-      min-width: 38px;
-    }
-
-    .progress-slider {
-      flex: 1;
-      -webkit-appearance: none;
-      height: 5px;
-      background: var(--bg-card);
-      border-radius: 2.5px;
-      outline: none;
-      cursor: pointer;
-    }
-
-    .progress-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: var(--accent-primary);
-      border: 1.5px solid #fff;
-      cursor: pointer;
-      box-shadow: 0 0 6px var(--accent-primary);
-    }
-
-    .controls-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .controls-left, .controls-right {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .control-btn {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      padding: 6px 10px;
-      border-radius: 8px;
-      font-size: 11px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      transition: all 0.2s;
-    }
-
-    .control-btn:active {
-      transform: scale(0.95);
-      background: rgba(124, 111, 255, 0.12);
-      border-color: var(--accent-primary);
-    }
-
-    .play-pause-btn {
-      background: linear-gradient(135deg, var(--accent-primary), #6654ff);
-      color: #fff;
-      border: none;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      font-size: 12px;
-      box-shadow: 0 4px 10px rgba(124, 111, 255, 0.3);
-    }
-
-    .volume-container {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid var(--border-color);
-      padding: 4px 8px;
-      border-radius: 8px;
-    }
-
-    .volume-slider {
-      -webkit-appearance: none;
-      width: 45px;
-      height: 3px;
-      background: var(--bg-card);
-      border-radius: 1.5px;
-      outline: none;
-    }
-
-    .volume-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--text-muted);
-      cursor: pointer;
-    }
-
-    .lock-btn-custom {
-      border-color: rgba(255, 255, 255, 0.1);
-    }
-
-    .lock-btn-custom.unlocked {
-      border-color: var(--accent-secondary);
-      color: var(--accent-secondary);
-      background: rgba(255, 111, 145, 0.08);
-    }
-
-    /* Cinema Mode custom controls transition */
-    body.landscape-active .custom-player-controls {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 999999;
-      background: rgba(12, 13, 19, 0.9);
-      backdrop-filter: blur(25px);
-      border-top: 1px solid var(--border-color);
-      padding: 12px 24px;
-      border-radius: 0;
-      display: flex !important;
-    }
-
-    /* Interactive Bottom Navigation Hub (Filter / Ocular Care / History tabs) */
+    /* Interactive Bottom Navigation Hub */
     .tab-container-card {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
@@ -706,7 +650,6 @@
       box-shadow: var(--card-shadow);
     }
 
-    /* Navigation Headers for Tabs */
     .navigation-tabs-header {
       display: flex;
       background: var(--bg-pill);
@@ -742,7 +685,6 @@
       font-size: 16px;
     }
 
-    /* Tab Contents styling */
     .tab-content-panel {
       display: none;
       flex-direction: column;
@@ -753,7 +695,6 @@
       display: flex;
     }
 
-    /* Tab 1: Filters details */
     .presets-label {
       font-size: 10px;
       font-weight: 700;
@@ -845,7 +786,6 @@
       color: var(--text-muted);
     }
 
-    /* Dark mode invert bar toggle */
     .inversion-card {
       display: flex;
       align-items: center;
@@ -908,7 +848,6 @@
       transform: translateX(18px);
     }
 
-    /* Fine tuning manual sliders */
     .fine-tuning-container {
       background: var(--bg-pill);
       border: 1px solid var(--border-color);
@@ -973,7 +912,7 @@
       border: 1.5px solid #fff;
     }
 
-    /* Tab 2: Ocular Health Care details */
+    /* Tab 2: Ocular Care dashboard */
     .health-dashboard {
       background: var(--bg-pill);
       border: 1px solid var(--border-color);
@@ -1061,7 +1000,7 @@
       color: var(--accent-green);
     }
 
-    /* Tab 3: History log styling */
+    /* Tab 3: History log */
     .history-log-header {
       display: flex;
       justify-content: space-between;
@@ -1183,7 +1122,7 @@
       padding: 4px;
     }
 
-    /* Hosting alert banner */
+    /* Local Hosting Notice Alert */
     .local-warning-panel {
       background: rgba(255, 179, 71, 0.07);
       border: 1px solid rgba(255, 179, 71, 0.25);
@@ -1211,7 +1150,7 @@
       font-weight: 700;
     }
 
-    /* Bottom sticky tabs for mobile look and feel */
+    /* Sticky Bottom native-like app bar */
     .sticky-bottom-tab-bar {
       display: flex;
       background: rgba(12, 13, 19, 0.85);
@@ -1248,7 +1187,6 @@
       font-size: 18px;
     }
 
-    /* Footer adjustments */
     .app-footer {
       text-align: center;
       padding: 10px;
@@ -1270,7 +1208,7 @@
 
 <div class="mobile-app-frame">
   
-  <!-- App Top Header -->
+  <!-- App Top Header Bar -->
   <header class="app-header">
     <div class="brand-group">
       <div class="brand-icon">&#128065;</div>
@@ -1293,10 +1231,10 @@
     </div>
   </header>
 
-  <!-- Main scrollable layout space -->
+  <!-- Main scrollable panel content -->
   <main class="scrollable-content">
     
-    <!-- Local Hosting Notice -->
+    <!-- Local file notice alert -->
     <div class="local-warning-panel" id="host-warning">
       <span class="warning-panel-icon">&#9888;</span>
       <div class="warning-panel-text">
@@ -1304,7 +1242,7 @@
       </div>
     </div>
 
-    <!-- paste YouTube Stream row -->
+    <!-- Paste YouTube link field -->
     <section class="input-section">
       <div class="presets-label" style="display: flex; justify-content: space-between; align-items: center;">
         <span>Paste YouTube Video or Live Link</span>
@@ -1318,57 +1256,89 @@
       </div>
     </section>
 
-    <!-- Professional viewport container -->
+    <!-- Professional Custom-Controlled Video Viewport Card -->
     <section class="viewport-card">
       <div class="viewport-container" id="viewport-container">
         
-        <!-- Zoom scale indicator (only when zoomed) -->
-        <div class="gesture-indicator-badge" id="zoom-badge" style="display: none;">
-          <div class="indicator-blue-dot"></div>
-          <span id="zoom-percentage">Zoom: 100%</span>
-        </div>
-
-        <!-- Transform scaler layer -->
+        <!-- Transform scaler layer containing iframe -->
         <div class="video-viewport-scaler" id="video-zoom-container">
-          <div id="yt-player-target"></div>
+          <iframe id="yt-iframe" style="display:none" allowfullscreen allow="autoplay; encrypted-media"></iframe>
         </div>
 
-        <!-- Transparent Zoom overlay wrapper -->
-        <div class="gesture-tracker-overlay" id="gesture-overlay">
-          <div class="viewport-hint" id="gesture-hint">
-            <span>👋 Pinch with 2 fingers to zoom</span>
-            <span style="font-size: 9px; color: var(--text-muted);">Drag with 1 finger to pan around</span>
-          </div>
-        </div>
-
-        <!-- Translucent Custom Landscape Controls HUD -->
-        <div class="landscape-overlay-hud" id="landscape-hud" onclick="toggleHUD(event)">
-          <div class="hud-header">
-            <div class="hud-title">
-              <span style="color: var(--accent-secondary); font-size: 16px;">&#128065;</span>
-              <span>Cinema Zoom Mode</span>
+        <!-- Transparent Zoom Overlay with Custom Netflix-Style controls -->
+        <div class="gesture-tracker-overlay hud-visible" id="gesture-overlay">
+          
+          <!-- Top HUD Strip bar -->
+          <div class="hud-strip top-hud-strip" onclick="event.stopPropagation()">
+            <div class="hud-left-group">
+              <span class="hud-glass-badge" id="hud-zoom-indicator">🔍 Zoom: 100%</span>
+              <span class="hud-glass-badge" id="hud-filter-indicator" style="border-color: var(--accent-secondary); color: var(--accent-secondary);">HD Premium</span>
             </div>
-            <button class="hud-exit-btn" onclick="toggleCinemaMode(false); event.stopPropagation();">
-              Exit Fullscreen
+            
+            <button class="hud-btn" id="hud-cinema-toggle" onclick="toggleCinemaModeClicked(event)">
+              📺 Cinema Mode
             </button>
           </div>
 
-          <button class="hud-center-play" id="hud-play-btn" onclick="togglePlayPause(event)" title="Play/Pause">
-            &#9646;&#9646;
-          </button>
-
-          <div class="hud-bottom-bar">
-            <span class="hud-scale-badge" id="hud-scale-val">Zoom: 100%</span>
-            <span style="font-size: 9px; color: #fff; text-shadow: 0 1px 2px #000; opacity: 0.8;">Double tap to play/pause</span>
+          <!-- Central Play / Pause HUD & Gesture hint Fader -->
+          <div class="hud-center-group">
+            <button class="hud-center-btn" id="hud-center-play-btn" onclick="togglePlayPause(event)" title="Play/Pause">
+              &#9654;
+            </button>
+            
+            <div class="viewport-hint" id="gesture-hint">
+              <span>👋 Pinch with 2 fingers to zoom anytime</span>
+              <span style="font-size: 8px; color: var(--text-muted); font-weight: 500;">Drag 1 finger to pan | Tap video to toggle controls</span>
+            </div>
           </div>
+
+          <!-- Bottom HUD Strip controls -->
+          <div class="hud-strip bottom-hud-strip" onclick="event.stopPropagation()">
+            
+            <!-- Seekbar Timeline slider -->
+            <div class="timeline-container">
+              <input type="range" class="timeline-slider" id="timeline-slider" min="0" max="100" value="0" step="0.1" onchange="seekTimeline(this.value)" oninput="timelineSliderDragged(this.value)">
+              <div class="timeline-fill" id="timeline-fill"></div>
+              
+              <!-- Special Live badge showing instead of progress when studying live feed -->
+              <div class="live-timeline-badge" id="live-timeline-pill">
+                <div class="live-timeline-dot"></div>
+                <span>● Live Stream</span>
+              </div>
+            </div>
+
+            <!-- Controls row -->
+            <div class="hud-controls-row">
+              <div class="hud-controls-left">
+                <button class="hud-control-icon-btn" onclick="togglePlayPause(event)" id="bottom-play-btn" title="Play/Pause">
+                  &#9654;
+                </button>
+                
+                <button class="hud-control-icon-btn seek-btn" onclick="seekRelative(-10)" title="Rewind 10s">
+                  &#8634; 10s
+                </button>
+                <button class="hud-control-icon-btn seek-btn" onclick="seekRelative(10)" title="Forward 10s">
+                  &#8635; 10s
+                </button>
+
+                <span class="time-display" id="time-display">0:00 / 0:00</span>
+              </div>
+
+              <div class="hud-controls-right">
+                <button class="hud-control-icon-btn" onclick="toggleMute(event)" id="mute-btn" title="Mute/Unmute">
+                  🔊
+                </button>
+                <button class="hud-control-icon-btn" onclick="resetZoom(event)" title="Reset Zoom" style="font-size: 11px; background: rgba(255,255,255,0.08); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.12);">
+                  🔄 Reset Zoom
+                </button>
+              </div>
+            </div>
+
+          </div>
+
         </div>
 
-        <!-- Floating Cinema Mode button in Portrait Mode -->
-        <button class="portrait-cinema-trigger" id="cinema-trigger-btn" onclick="toggleCinemaMode(true)" title="Landscape Cinema Mode">
-          <span>📺</span> Cinema Mode & Zoom
-        </button>
-
-        <!-- Screen Placeholder state -->
+        <!-- Viewport Empty Placeholder -->
         <div class="viewport-placeholder" id="placeholder">
           <div class="placeholder-icon">&#127891;</div>
           <span class="placeholder-title">Study Station Activated</span>
@@ -1376,51 +1346,12 @@
         </div>
 
       </div>
-
-      <!-- Custom Player Controls Bar stacked inside viewport card -->
-      <div class="custom-player-controls" id="custom-controls" style="display: none;">
-        <!-- Scrubber progress bar -->
-        <div class="progress-row">
-          <span class="time-stamp" id="current-time">0:00</span>
-          <input type="range" class="progress-slider" id="progress-slider" min="0" max="100" value="0" step="0.1" oninput="onProgressSeek()">
-          <span class="time-stamp" id="total-duration">0:00</span>
-        </div>
-
-        <!-- Action controllers row -->
-        <div class="controls-row">
-          <div class="controls-left">
-            <button class="control-btn" onclick="seekRelative(-10)" title="Rewind 10s">
-              <span>⏪</span> <span style="font-size: 8px; margin-left: -2px;">10</span>
-            </button>
-            <button class="control-btn play-pause-btn" id="pp-main-btn" onclick="toggleCustomPlayPause()" title="Play/Pause">
-              &#9646;&#9646;
-            </button>
-            <button class="control-btn" onclick="seekRelative(10)" title="Forward 10s">
-              <span>⏩</span> <span style="font-size: 8px; margin-left: -2px;">10</span>
-            </button>
-
-            <!-- Volume slider -->
-            <div class="volume-container">
-              <button class="control-btn" id="volume-mute-btn" onclick="toggleMute()" style="border: none; background: none; padding: 2px;" title="Mute/Unmute">🔊</button>
-              <input type="range" class="volume-slider" id="volume-slider" min="0" max="100" value="100" step="1" oninput="onVolumeChange()">
-            </div>
-          </div>
-
-          <div class="controls-right">
-            <!-- Lock active zoom mode / click-through key -->
-            <button class="control-btn lock-btn-custom" id="lock-btn-custom" onclick="toggleOverlayLock(event)" title="Toggle Screen Lock Mode">
-              <span id="lock-icon-custom">🔒</span> <span id="lock-text-custom">Zoom Active</span>
-            </button>
-            <button class="control-btn" id="cinema-inline-btn" onclick="toggleCinemaMode(true)" title="Fullscreen Landscape View">📺 Fullscreen</button>
-          </div>
-        </div>
-      </div>
     </section>
 
-    <!-- Main Navigation Hub (Tabs) -->
+    <!-- Bottom Navigation Hub cards -->
     <section class="tab-container-card">
       
-      <!-- Headers -->
+      <!-- Tab selections -->
       <div class="navigation-tabs-header">
         <button class="nav-tab-item active" id="nav-filters" onclick="switchMainTab('filters')">
           <span class="tab-icon">&#128065;</span>
@@ -1480,7 +1411,7 @@
             <div class="preset-item-art">&#127771;</div>
             <div class="preset-item-details">
               <span class="preset-item-name">Night Vision</span>
-              <span class="preset-item-sub">Ultra Dim Tone</span>
+              <span class="preset-item-sub">Dim Warm Glow</span>
             </div>
           </div>
 
@@ -1494,7 +1425,7 @@
 
         </div>
 
-        <!-- Invert white background card toggle -->
+        <!-- Invert whites dark mode card toggle -->
         <div class="inversion-card" id="invert-toggle" onclick="toggleInvert()">
           <div class="inversion-info">
             <span style="font-size: 18px; color: var(--accent-secondary);">&#9681;</span>
@@ -1547,7 +1478,7 @@
 
       </div>
 
-      <!-- TAB PANEL 2: Eye Health countdown & 20-20-20 alert rule -->
+      <!-- TAB PANEL 2: Eye Health monitor -->
       <div class="tab-content-panel" id="panel-health">
         <span class="presets-label">Ocular Care System</span>
         
@@ -1597,7 +1528,7 @@
 
   </main>
 
-  <!-- Sticky Bottom native-like app bar for navigation support -->
+  <!-- Sticky Bottom app bar for navigation support -->
   <nav class="sticky-bottom-tab-bar">
     <button class="bottom-tab-btn active" id="b-tab-filters" onclick="switchMainTab('filters')">
       <span class="bottom-tab-btn-icon">&#128065;</span>
@@ -1615,14 +1546,6 @@
 
 </div>
 
-<!-- Load YouTube Iframe Player API asynchronously -->
-<script>
-  const tag = document.createElement('script');
-  tag.src = "https://www.youtube.com/iframe_api";
-  const firstScriptTag = document.getElementsByTagName('script')[0];
-  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-</script>
-
 <script>
 // State Management
 let invertOn = false;
@@ -1630,15 +1553,21 @@ let timerOn = false;
 let timerInterval = null;
 const totalTimerSeconds = 20 * 60; 
 let timerSecondsLeft = totalTimerSeconds;
-let activePreset = null;
+let activePreset = 'hd-premium';
 let recentVideos = [];
 
-// YouTube API variables
-let ytPlayer = null;
-let isPlayerApiReady = false;
-let progressInterval = null;
+// Video Details & API variables
+let videoDuration = 0;
+let currentVideoTime = 0;
+let playerState = -1;
+let isMuted = false;
+let isSeeking = false;
+let isLiveVideo = false;
+let isPlaying = false;
+let hudVisible = true;
+let hudTimeout = null;
 
-// Stabilized linear zoom & drag panning variables
+// Gestures parameters
 let zoomLevel = 1.0;
 let panX = 0;
 let panY = 0;
@@ -1647,11 +1576,10 @@ let startX = 0;
 let startY = 0;
 let initialPinchDistance = 0;
 let initialZoom = 1.0;
-let isPlaying = true;
 let lastTapTime = 0;
-let isOverlayLocked = true; // default Zoom Mode active
 
 // DOM Elements
+const iframe = document.getElementById('yt-iframe');
 const zoomContainer = document.getElementById('video-zoom-container');
 const viewportContainer = document.getElementById('viewport-container');
 const gestureOverlay = document.getElementById('gesture-overlay');
@@ -1664,13 +1592,6 @@ const timerDot = document.getElementById('timer-dot');
 const timerHeading = document.getElementById('timer-heading');
 const timerSubheading = document.getElementById('timer-subheading');
 const liveBadge = document.getElementById('live-badge');
-const landscapeHUD = document.getElementById('landscape-hud');
-const cinemaTriggerBtn = document.getElementById('cinema-trigger-btn');
-const lockBtnCustom = document.getElementById('lock-btn-custom');
-
-function onYouTubeIframeAPIReady() {
-  isPlayerApiReady = true;
-}
 
 // Load video history on start
 window.onload = function() {
@@ -1683,6 +1604,9 @@ window.onload = function() {
       recentVideos = [];
     }
   }
+
+  // Setup IFrame API Event Message Listeners
+  setupPlayerApiListener();
 
   // Setup Gesture overlay listeners
   setupGestureListeners();
@@ -1699,25 +1623,24 @@ window.onload = function() {
   }
 };
 
-// Auto Landscape Switcher & Zoom overlay enabler
+// Handle orientation change to automatically launch cinema mode
 function handleAutoOrientation() {
   const isLandscape = window.innerWidth > window.innerHeight;
-  if (isLandscape && ytPlayer) {
-    // Rotated to landscape while playing -> Automatically go Fullscreen & active zoom!
+  if (isLandscape && iframe.style.display !== 'none') {
     toggleCinemaMode(true);
   }
 }
 
-// Fullscreen Cinema mode switcher
+// Fullscreen Cinema Mode switch toggler
 function toggleCinemaMode(enable) {
   const body = document.body;
+  const toggleBtn = document.getElementById('hud-cinema-toggle');
+  
   if (enable) {
     body.classList.add('landscape-active');
+    toggleBtn.textContent = 'Exit Fullscreen';
+    toggleBtn.style.borderColor = 'var(--accent-secondary)';
     
-    // Automatically make sure overlay is locked (Zoom active) in Landscape Cinema Mode
-    isOverlayLocked = false;
-    toggleOverlayLock();
-
     // Animate viewport hint briefly
     const hint = document.getElementById('gesture-hint');
     hint.style.animation = 'none';
@@ -1725,190 +1648,194 @@ function toggleCinemaMode(enable) {
       hint.style.animation = 'fadeOut 2.2s forwards';
     }, 10);
 
-    // Show initial Native Playback HUD controls
-    showLandscapeHUD();
+    toggleHUDVisibility(true);
   } else {
     body.classList.remove('landscape-active');
+    toggleBtn.textContent = '📺 Cinema Mode';
+    toggleBtn.style.borderColor = 'rgba(124, 111, 255, 0.4)';
     resetZoom();
   }
 }
 
-// Translucent HUD management
-let hudTimeout = null;
-function showLandscapeHUD() {
-  landscapeHUD.classList.add('visible');
+function toggleCinemaModeClicked(e) {
+  if (e) e.stopPropagation();
+  const isCurrentlyCinema = document.body.classList.contains('landscape-active');
+  toggleCinemaMode(!isCurrentlyCinema);
+}
+
+// Premium HUD custom visibility toggles
+function toggleHUDVisibility(show = null) {
+  if (show !== null) {
+    hudVisible = show;
+  } else {
+    hudVisible = !hudVisible;
+  }
+  
+  if (hudVisible) {
+    gestureOverlay.classList.add('hud-visible');
+    if (isPlaying) {
+      startHUDAutoHideTimer();
+    }
+  } else {
+    gestureOverlay.classList.remove('hud-visible');
+  }
+}
+
+function startHUDAutoHideTimer() {
   clearTimeout(hudTimeout);
   hudTimeout = setTimeout(() => {
-    landscapeHUD.classList.remove('visible');
+    if (isPlaying && hudVisible) {
+      toggleHUDVisibility(false);
+    }
   }, 3500);
 }
 
-function toggleHUD(e) {
-  if (e.target === landscapeHUD) {
-    if (landscapeHUD.classList.contains('visible')) {
-      landscapeHUD.classList.remove('visible');
-      clearTimeout(hudTimeout);
-    } else {
-      showLandscapeHUD();
-    }
-  }
+// Youtube API Message listener system for progress bar tracking
+function setupPlayerApiListener() {
+  window.addEventListener('message', function(event) {
+    try {
+      const data = JSON.parse(event.data);
+      
+      // Look for info updates from YouTube Iframe JS API
+      if (data.event === 'infoDelivery' && data.info) {
+        const info = data.info;
+        
+        if (info.currentTime !== undefined) {
+          currentVideoTime = info.currentTime;
+        }
+        if (info.duration !== undefined) {
+          videoDuration = info.duration;
+        }
+        if (info.playerState !== undefined) {
+          playerState = info.playerState;
+          // State codes: 1 = playing, 2 = paused, 3 = buffering, 0 = ended, -1 = unstarted
+          if (playerState === 1) {
+            isPlaying = true;
+            updatePlaybackButtons(true);
+          } else if (playerState === 2 || playerState === 0) {
+            isPlaying = false;
+            updatePlaybackButtons(false);
+          }
+        }
+        if (info.muted !== undefined) {
+          isMuted = info.muted;
+          document.getElementById('mute-btn').innerHTML = isMuted ? '🔇' : '🔊';
+        }
+        
+        // Sync seekbar UI unless actively dragging
+        if (!isSeeking) {
+          updateSeekbarUI();
+        }
+      }
+    } catch(e) {}
+  });
 }
 
-// Controls Lock & Zoom overlay toggle switch
-function toggleOverlayLock(e) {
-  if (e) e.stopPropagation();
-  isOverlayLocked = !isOverlayLocked;
+function updatePlaybackButtons(playing) {
+  const centerBtn = document.getElementById('hud-center-play-btn');
+  const bottomBtn = document.getElementById('bottom-play-btn');
   
-  const icon = document.getElementById('lock-icon-custom');
-  const text = document.getElementById('lock-text-custom');
+  centerBtn.innerHTML = playing ? '&#9646;&#9646;' : '&#9654;';
+  bottomBtn.innerHTML = playing ? '&#9646;&#9646;' : '&#9654;';
   
-  if (isOverlayLocked) {
-    gestureOverlay.style.pointerEvents = 'auto';
-    lockBtnCustom.classList.remove('unlocked');
-    icon.innerHTML = '🔒'; // Lock icon
-    text.textContent = 'Zoom Active';
+  if (playing) {
+    startHUDAutoHideTimer();
   } else {
-    gestureOverlay.style.pointerEvents = 'none';
-    lockBtnCustom.classList.add('unlocked');
-    icon.innerHTML = '🔓'; // Unlock icon
-    text.textContent = 'Direct Controls';
+    clearTimeout(hudTimeout);
+    toggleHUDVisibility(true); // Keep controls visible when paused
   }
 }
 
-// YouTube Player Event Handlers
-function onPlayerReady(event) {
-  event.target.playVideo();
-  startProgressTracking();
-  isPlaying = true;
-  document.getElementById('pp-main-btn').innerHTML = '&#9646;&#9646;';
-  document.getElementById('hud-play-btn').innerHTML = '&#9646;&#9646;';
+function updateSeekbarUI() {
+  const slider = document.getElementById('timeline-slider');
+  const fill = document.getElementById('timeline-fill');
+  const display = document.getElementById('time-display');
   
-  // Sync initial volume
-  const vol = document.getElementById('volume-slider').value;
-  ytPlayer.setVolume(vol);
-}
-
-function onPlayerStateChange(event) {
-  if (event.data === YT.PlayerState.PLAYING) {
-    isPlaying = true;
-    document.getElementById('pp-main-btn').innerHTML = '&#9646;&#9646;';
-    document.getElementById('hud-play-btn').innerHTML = '&#9646;&#9646;';
-    startProgressTracking();
-  } else if (event.data === YT.PlayerState.PAUSED) {
-    isPlaying = false;
-    document.getElementById('pp-main-btn').innerHTML = '&#9654;';
-    document.getElementById('hud-play-btn').innerHTML = '&#9654;';
-    stopProgressTracking();
-  } else if (event.data === YT.PlayerState.ENDED) {
-    isPlaying = false;
-    document.getElementById('pp-main-btn').innerHTML = '&#9654;';
-    document.getElementById('hud-play-btn').innerHTML = '&#9654;';
-    stopProgressTracking();
+  if (isLiveVideo) {
+    slider.style.display = 'none';
+    fill.style.width = '0%';
+    document.getElementById('live-timeline-pill').style.display = 'flex';
+    display.textContent = 'LIVE STREAM';
+    return;
   }
-}
 
-// Custom Player controllers
-function toggleCustomPlayPause() {
-  if (!ytPlayer || !ytPlayer.getPlayerState) return;
-  const state = ytPlayer.getPlayerState();
-  if (state === YT.PlayerState.PLAYING) {
-    ytPlayer.pauseVideo();
+  slider.style.display = 'block';
+  document.getElementById('live-timeline-pill').style.display = 'none';
+
+  if (videoDuration > 0) {
+    const pct = (currentVideoTime / videoDuration) * 100;
+    slider.value = pct;
+    fill.style.width = `${pct}%`;
+    display.textContent = `${formatTime(currentVideoTime)} / ${formatTime(videoDuration)}`;
   } else {
-    ytPlayer.playVideo();
+    slider.value = 0;
+    fill.style.width = '0%';
+    display.textContent = '0:00 / 0:00';
   }
 }
 
-function togglePlayPause(e) {
-  if (e) e.stopPropagation();
-  toggleCustomPlayPause();
-}
-
-function seekRelative(delta) {
-  if (ytPlayer && ytPlayer.getCurrentTime) {
-    const cur = ytPlayer.getCurrentTime();
-    const dur = ytPlayer.getDuration() || 0;
-    const target = Math.max(0, Math.min(dur, cur + delta));
-    ytPlayer.seekTo(target, true);
-    updateTimelineUI(target, dur);
+function formatTime(seconds) {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = Math.floor(seconds % 60);
+  if (h > 0) {
+    return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
   }
-}
-
-function onProgressSeek() {
-  if (ytPlayer && ytPlayer.getDuration) {
-    const slider = document.getElementById('progress-slider');
-    const dur = ytPlayer.getDuration();
-    const target = (slider.value / 100) * dur;
-    ytPlayer.seekTo(target, true);
-  }
-}
-
-function onVolumeChange() {
-  if (ytPlayer && ytPlayer.setVolume) {
-    const vol = document.getElementById('volume-slider').value;
-    ytPlayer.setVolume(vol);
-    const muteBtn = document.getElementById('volume-mute-btn');
-    if (vol == 0) {
-      muteBtn.textContent = '🔇';
-    } else if (vol < 50) {
-      muteBtn.textContent = '🔉';
-    } else {
-      muteBtn.textContent = '🔊';
-    }
-  }
-}
-
-function toggleMute() {
-  if (ytPlayer && ytPlayer.isMuted) {
-    const muteBtn = document.getElementById('volume-mute-btn');
-    const slider = document.getElementById('volume-slider');
-    if (ytPlayer.isMuted()) {
-      ytPlayer.unmute();
-      muteBtn.textContent = '🔊';
-      slider.value = ytPlayer.getVolume() || 100;
-    } else {
-      ytPlayer.mute();
-      muteBtn.textContent = '🔇';
-      slider.value = 0;
-    }
-  }
-}
-
-// Progress Bar timer sync tracker
-function startProgressTracking() {
-  clearInterval(progressInterval);
-  progressInterval = setInterval(() => {
-    if (ytPlayer && ytPlayer.getCurrentTime && ytPlayer.getDuration) {
-      const cur = ytPlayer.getCurrentTime();
-      const dur = ytPlayer.getDuration() || 0;
-      updateTimelineUI(cur, dur);
-    }
-  }, 250);
-}
-
-function stopProgressTracking() {
-  clearInterval(progressInterval);
-}
-
-function updateTimelineUI(cur, dur) {
-  document.getElementById('current-time').textContent = formatTime(cur);
-  document.getElementById('total-duration').textContent = formatTime(dur);
-  
-  if (dur > 0) {
-    const slider = document.getElementById('progress-slider');
-    // Only update if user is not actively dragging the slider
-    if (document.activeElement !== slider) {
-      slider.value = (cur / dur) * 100;
-    }
-  }
-}
-
-function formatTime(sec) {
-  const m = Math.floor(sec / 60);
-  const s = Math.floor(sec % 60);
   return `${m}:${String(s).padStart(2, '0')}`;
 }
 
-// YouTube URL Parser
+// Action controllers via YouTube embed Iframe API
+function togglePlayPause(e) {
+  if (e) e.stopPropagation();
+  isPlaying = !isPlaying;
+  
+  const cmd = isPlaying ? 'playVideo' : 'pauseVideo';
+  sendIframeCommand(cmd);
+}
+
+function seekTimeline(pctValue) {
+  isSeeking = false;
+  if (videoDuration > 0) {
+    const targetSeconds = (pctValue / 100) * videoDuration;
+    sendIframeCommand('seekTo', [targetSeconds, true]);
+  }
+}
+
+function timelineSliderDragged(pctValue) {
+  isSeeking = true;
+  const fill = document.getElementById('timeline-fill');
+  fill.style.width = `${pctValue}%`;
+  
+  if (videoDuration > 0) {
+    const targetSeconds = (pctValue / 100) * videoDuration;
+    document.getElementById('time-display').textContent = `${formatTime(targetSeconds)} / ${formatTime(videoDuration)}`;
+  }
+}
+
+function seekRelative(seconds) {
+  if (videoDuration > 0) {
+    const target = Math.max(0, Math.min(videoDuration, currentVideoTime + seconds));
+    sendIframeCommand('seekTo', [target, true]);
+  }
+}
+
+function toggleMute(e) {
+  if (e) e.stopPropagation();
+  isMuted = !isMuted;
+  const cmd = isMuted ? 'mute' : 'unmute';
+  sendIframeCommand(cmd);
+  document.getElementById('mute-btn').innerHTML = isMuted ? '🔇' : '🔊';
+}
+
+function sendIframeCommand(funcName, args = '') {
+  iframe.contentWindow.postMessage(JSON.stringify({
+    event: 'command',
+    func: funcName,
+    args: args
+  }), '*');
+}
+
+// Youtube URL Parser
 function parseYouTubeId(url) {
   url = url.trim();
   let vid = '';
@@ -1938,7 +1865,7 @@ function parseYouTubeId(url) {
   };
 }
 
-// Loads video into player viewport utilizing official YT Iframe Player API
+// Loads video into player viewport
 function loadVideo(customId = null, isCustomLive = false) {
   let vid = '';
   let isLive = false;
@@ -1959,47 +1886,13 @@ function loadVideo(customId = null, isCustomLive = false) {
     return;
   }
 
-  // Destroy previous player safely
-  if (ytPlayer && ytPlayer.destroy) {
-    try {
-      ytPlayer.destroy();
-    } catch(e) {
-      console.log(e);
-    }
-  }
+  isLiveVideo = isLive;
 
-  // Inject a clean target div for YT Player
-  document.getElementById('video-zoom-container').innerHTML = `<div id="yt-player-target"></div>`;
-
-  // Initialize official YT Player constructor
-  ytPlayer = new YT.Player('yt-player-target', {
-    height: '100%',
-    width: '100%',
-    videoId: vid,
-    playerVars: {
-      'autoplay': 1,
-      'controls': 0, // hide native controls entirely to prevent layout clash
-      'modestbranding': 1,
-      'rel': 0,
-      'showinfo': 0,
-      'iv_load_policy': 3,
-      'disablekb': 1,
-      'fs': 0, // hide fullscreen native button
-      'enablejsapi': 1
-    },
-    events: {
-      'onReady': onPlayerReady,
-      'onStateChange': onPlayerStateChange
-    }
-  });
-
+  // Load Iframe with completely clean player configurations (hides standard YT overlay controls)
+  iframe.src = 'https://www.youtube.com/embed/' + vid + '?rel=0&controls=0&disablekb=1&fs=0&modestbranding=1&autoplay=1&enablejsapi=1';
+  iframe.style.display = 'block';
   placeholder.style.display = 'none';
-  cinemaTriggerBtn.style.display = 'flex'; // reveal fullscreen zoom shortcut
-  document.getElementById('custom-controls').style.display = 'flex'; // reveal custom bar
-
-  // Make sure overlay starts as Zoom Active by default for immediate zoom compatibility
-  isOverlayLocked = false;
-  toggleOverlayLock();
+  gestureOverlay.style.display = 'flex'; // reveal custom gesture controls overlay
 
   if (isLive) {
     liveBadge.style.display = 'flex';
@@ -2008,11 +1901,13 @@ function loadVideo(customId = null, isCustomLive = false) {
   }
 
   isPlaying = true;
-  document.getElementById('hud-play-btn').innerHTML = '&#9646;&#9646;';
-
+  updatePlaybackButtons(true);
   resetZoom();
   applyFilters();
   addToHistory(vid, isLive);
+  
+  // Make HUD visible immediately with brief hint overlay
+  toggleHUDVisibility(true);
 }
 
 // Panning boundary calculations
@@ -2032,14 +1927,11 @@ function updateZoomTransform() {
   
   // Update Indicators
   const pct = `${Math.round(zoomLevel * 100)}%`;
-  document.getElementById('zoom-percentage').textContent = `Zoom: ${pct}`;
-  document.getElementById('hud-scale-val').textContent = `Zoom: ${pct}`;
-  
-  // Toggle inline indicator display
-  document.getElementById('zoom-badge').style.display = zoomLevel > 1.0 ? 'flex' : 'none';
+  document.getElementById('hud-zoom-indicator').textContent = `🔍 Zoom: ${pct}`;
 }
 
-function resetZoom() {
+function resetZoom(e) {
+  if (e) e.stopPropagation();
   zoomLevel = 1.0;
   panX = 0;
   panY = 0;
@@ -2051,6 +1943,9 @@ function setupGestureListeners() {
   
   // Desktop Drag-Panning
   gestureOverlay.addEventListener('mousedown', function(e) {
+    // Prevent dragging action triggering on control strips
+    if (e.target.closest('.hud-strip') || e.target.closest('.hud-center-btn')) return;
+    
     isPanning = true;
     startX = e.clientX - panX;
     startY = e.clientY - panY;
@@ -2071,6 +1966,9 @@ function setupGestureListeners() {
 
   // Mobile multi-touch gesturer
   gestureOverlay.addEventListener('touchstart', function(e) {
+    // Prevent gesture actions triggering on control strips
+    if (e.target.closest('.hud-strip') || e.target.closest('.hud-center-btn')) return;
+
     if (e.touches.length === 1) {
       isPanning = true;
       startX = e.touches[0].clientX - panX;
@@ -2110,16 +2008,29 @@ function setupGestureListeners() {
     const now = Date.now();
     const delay = now - lastTapTime;
     
+    // Avoid double taps triggering on buttons
+    const isControl = e.target.closest('.hud-strip') || e.target.closest('.hud-center-btn');
+    
     if (delay < 250 && delay > 0) {
-      // Double Tap -> Play Pause
-      toggleCustomPlayPause();
+      if (!isControl) {
+        // Double Tap -> Play Pause
+        togglePlayPause();
+      }
     } else {
-      // Single Tap -> reveal HUD if in Cinema landscape
-      if (document.body.classList.contains('landscape-active')) {
-        showLandscapeHUD();
+      if (!isControl) {
+        // Single Tap -> toggle HUD visibility
+        toggleHUDVisibility();
       }
     }
     lastTapTime = now;
+  });
+
+  // Desktop Click toggler for HUD visibility
+  gestureOverlay.addEventListener('click', function(e) {
+    const isControl = e.target.closest('.hud-strip') || e.target.closest('.hud-center-btn');
+    if (!isControl) {
+      toggleHUDVisibility();
+    }
   });
 }
 
@@ -2145,10 +2056,7 @@ function applyFilters() {
   if (invertOn) {
     filterStr = `invert(100%) hue-rotate(180deg) ${filterStr}`;
   }
-  const scaler = document.getElementById('video-zoom-container');
-  if (scaler) {
-    scaler.style.filter = filterStr;
-  }
+  iframe.style.filter = filterStr;
 }
 
 // Presets
@@ -2156,6 +2064,16 @@ function applyPreset(name) {
   document.querySelectorAll('.preset-mobile-item').forEach(c => c.classList.remove('active'));
   document.getElementById('p-' + name).classList.add('active');
   activePreset = name;
+
+  const prettyNames = {
+    'hd-premium': 'HD Premium',
+    'premium-hd': 'Premium HD',
+    'focus': 'Super Focus',
+    'blue-block': 'Reader Mode',
+    'night': 'Night Vision',
+    'reset': 'Original'
+  };
+  document.getElementById('hud-filter-indicator').textContent = prettyNames[name] || 'Custom';
 
   const presetsList = {
     'hd-premium': { br: 104, co: 116, se: 0, sa: 110, inv: false },
