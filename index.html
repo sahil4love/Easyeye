@@ -297,18 +297,42 @@
       inset: 0;
       z-index: 10;
       background: rgba(0, 0, 0, 0);
-      display: none;
+      display: flex; /* Active by default both in portrait and landscape */
       cursor: grab;
       align-items: center;
       justify-content: center;
-    }
-
-    .gesture-tracker-overlay.active {
-      display: flex;
+      pointer-events: auto; /* Active by default */
     }
 
     .gesture-tracker-overlay:active {
       cursor: grabbing;
+    }
+
+    /* Screen Lock Float Switch Badge on video player */
+    .lock-float-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 40;
+      background: rgba(12, 13, 19, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      display: none; /* Shows up once video is loaded */
+      align-items: center;
+      gap: 5px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      transition: all 0.2s;
+    }
+
+    .lock-float-badge.unlocked {
+      border-color: var(--accent-secondary);
+      color: var(--accent-secondary);
     }
 
     /* Landscape Fullscreen styles automatically triggered */
@@ -434,7 +458,7 @@
       bottom: 12px;
       right: 12px;
       z-index: 15;
-      background: rgba(12, 13, 19, 0.8);
+      background: rgba(12, 13, 19, 0.85);
       border: 1px solid rgba(255, 255, 255, 0.15);
       color: #fff;
       padding: 6px 12px;
@@ -442,7 +466,7 @@
       font-size: 10px;
       font-weight: 700;
       cursor: pointer;
-      display: flex;
+      display: none; /* Shows up once video loaded */
       align-items: center;
       gap: 5px;
       backdrop-filter: blur(8px);
@@ -989,7 +1013,7 @@
       position: relative;
     }
 
-    .history-img {
+    .history-pic-box img {
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -1186,6 +1210,11 @@
           <span id="zoom-percentage">Zoom: 100%</span>
         </div>
 
+        <!-- Screen Lock switch badge -->
+        <button class="lock-float-badge" id="lock-badge" onclick="toggleOverlayLock(event)">
+          <span id="lock-icon">&#128274;</span> <span id="lock-text">Zoom Active</span>
+        </button>
+
         <!-- Transform scaler layer -->
         <div class="video-viewport-scaler" id="video-zoom-container">
           <iframe id="yt-iframe" style="display:none" allowfullscreen allow="autoplay; encrypted-media"></iframe>
@@ -1222,7 +1251,7 @@
         </div>
 
         <!-- Floating Cinema Mode button in Portrait Mode -->
-        <button class="portrait-cinema-trigger" id="cinema-trigger-btn" onclick="toggleCinemaMode(true)" style="display: none;" title="Landscape Cinema Mode">
+        <button class="portrait-cinema-trigger" id="cinema-trigger-btn" onclick="toggleCinemaMode(true)" title="Landscape Cinema Mode">
           <span>📺</span> Cinema Mode & Zoom
         </button>
 
@@ -1455,6 +1484,7 @@ let initialPinchDistance = 0;
 let initialZoom = 1.0;
 let isPlaying = true;
 let lastTapTime = 0;
+let isOverlayLocked = true; // default Zoom Mode active
 
 // DOM Elements
 const iframe = document.getElementById('yt-iframe');
@@ -1472,6 +1502,7 @@ const timerSubheading = document.getElementById('timer-subheading');
 const liveBadge = document.getElementById('live-badge');
 const landscapeHUD = document.getElementById('landscape-hud');
 const cinemaTriggerBtn = document.getElementById('cinema-trigger-btn');
+const lockBadge = document.getElementById('lock-badge');
 
 // Load video history on start
 window.onload = function() {
@@ -1502,9 +1533,9 @@ window.onload = function() {
 
 // Auto Landscape Switcher & Zoom overlay enabler
 function handleAutoOrientation() {
-  const isLandscape = window.innerWidth > window.innerHeight && window.innerWidth < 1024;
+  const isLandscape = window.innerWidth > window.innerHeight;
   if (isLandscape && iframe.style.display !== 'none') {
-    // Rotated to landscape while playing -> Automatically go Fullscreen & active zoom overlay!
+    // Rotated to landscape while playing -> Automatically go Fullscreen & active zoom!
     toggleCinemaMode(true);
   }
 }
@@ -1514,8 +1545,11 @@ function toggleCinemaMode(enable) {
   const body = document.body;
   if (enable) {
     body.classList.add('landscape-active');
-    gestureOverlay.classList.add('active');
     
+    // Automatically make sure overlay is locked (Zoom active) in Landscape Cinema Mode
+    isOverlayLocked = false;
+    toggleOverlayLock();
+
     // Animate viewport hint briefly
     const hint = document.getElementById('gesture-hint');
     hint.style.animation = 'none';
@@ -1527,8 +1561,6 @@ function toggleCinemaMode(enable) {
     showLandscapeHUD();
   } else {
     body.classList.remove('landscape-active');
-    // Portrait returns normal, no overlay by default to allow youtube clicking
-    gestureOverlay.classList.remove('active');
     resetZoom();
   }
 }
@@ -1552,6 +1584,27 @@ function toggleHUD(e) {
     } else {
       showLandscapeHUD();
     }
+  }
+}
+
+// Controls Lock & Zoom overlay toggle switch
+function toggleOverlayLock(e) {
+  if (e) e.stopPropagation();
+  isOverlayLocked = !isOverlayLocked;
+  
+  const icon = document.getElementById('lock-icon');
+  const text = document.getElementById('lock-text');
+  
+  if (isOverlayLocked) {
+    gestureOverlay.style.pointerEvents = 'auto';
+    lockBadge.classList.remove('unlocked');
+    icon.innerHTML = '&#128274;'; // Lock icon
+    text.textContent = 'Zoom Active';
+  } else {
+    gestureOverlay.style.pointerEvents = 'none';
+    lockBadge.classList.add('unlocked');
+    icon.innerHTML = '&#128275;'; // Unlock icon
+    text.textContent = 'Player Controls';
   }
 }
 
@@ -1629,6 +1682,11 @@ function loadVideo(customId = null, isCustomLive = false) {
   iframe.style.display = 'block';
   placeholder.style.display = 'none';
   cinemaTriggerBtn.style.display = 'flex'; // reveal fullscreen zoom shortcut
+  lockBadge.style.display = 'flex'; // reveal Zoom / Player Controls lock badge
+
+  // Make sure overlay starts as Zoom Active by default for immediate zoom compatibility
+  isOverlayLocked = false;
+  toggleOverlayLock();
 
   if (isLive) {
     liveBadge.style.display = 'flex';
@@ -1714,26 +1772,32 @@ function setupGestureListeners() {
       isPanning = true;
       startX = e.touches[0].clientX - panX;
       startY = e.touches[0].clientY - panY;
+      if (zoomLevel > 1.0) {
+        e.preventDefault(); // only block scroll when actively zoomed in and panning
+      }
     } else if (e.touches.length === 2) {
       isPanning = false;
       initialPinchDistance = getDistanceBetweenTouches(e.touches);
       initialZoom = zoomLevel;
+      e.preventDefault();
     }
-    e.preventDefault();
   }, { passive: false });
 
   gestureOverlay.addEventListener('touchmove', function(e) {
     if (e.touches.length === 1 && isPanning) {
-      panX = e.touches[0].clientX - startX;
-      panY = e.touches[0].clientY - startY;
-      updateZoomTransform();
+      if (zoomLevel > 1.0) {
+        panX = e.touches[0].clientX - startX;
+        panY = e.touches[0].clientY - startY;
+        updateZoomTransform();
+        e.preventDefault(); // Block parent page scroll only when zoomed & dragging video
+      }
     } else if (e.touches.length === 2) {
       const currentDistance = getDistanceBetweenTouches(e.touches);
       const factor = currentDistance / initialPinchDistance;
       zoomLevel = Math.max(1.0, Math.min(5.0, initialZoom * factor));
       updateZoomTransform();
+      e.preventDefault();
     }
-    e.preventDefault();
   }, { passive: false });
 
   gestureOverlay.addEventListener('touchend', function(e) {
@@ -1742,12 +1806,15 @@ function setupGestureListeners() {
     // Smart Single/Double Tap detection to trigger HUD or PlayPause state
     const now = Date.now();
     const delay = now - lastTapTime;
+    
     if (delay < 250 && delay > 0) {
       // Double Tap -> Play Pause
       togglePlayPause();
     } else {
-      // Single Tap -> reveal HUD
-      showLandscapeHUD();
+      // Single Tap -> reveal HUD if in Cinema landscape
+      if (document.body.classList.contains('landscape-active')) {
+        showLandscapeHUD();
+      }
     }
     lastTapTime = now;
   });
