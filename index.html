@@ -1916,15 +1916,62 @@ function switchMainTab(tabId) {
 function toggleZoomMode() {
   const btn = document.getElementById('floating-zoom-toggle');
   const icon = document.getElementById('zoom-toggle-icon');
+  
+  // Remove any existing toast
+  const oldToast = document.getElementById('mode-toast');
+  if (oldToast) oldToast.remove();
+  
+  const toast = document.createElement('div');
+  toast.id = 'mode-toast';
+  
   if (interactiveMode === 'control') {
     setInteractiveMode('gesture');
     btn.classList.add('active');
     icon.textContent = '🔍';
+    toast.textContent = 'Zoom & Pan Mode';
+    toast.style.background = 'rgba(124, 111, 255, 0.9)';
+    toast.style.border = '1px solid rgba(255, 255, 255, 0.2)';
   } else {
     setInteractiveMode('control');
     btn.classList.remove('active');
     icon.textContent = '👆';
+    toast.textContent = 'Player Controls';
+    toast.style.background = 'rgba(12, 13, 19, 0.9)';
+    toast.style.border = '1px solid rgba(255, 255, 255, 0.1)';
   }
+  
+  // Dynamic premium toast styling
+  toast.style.position = 'absolute';
+  toast.style.right = '56px';
+  toast.style.top = '12px';
+  toast.style.padding = '6px 12px';
+  toast.style.borderRadius = '20px';
+  toast.style.color = '#fff';
+  toast.style.fontSize = '10px';
+  toast.style.fontWeight = '700';
+  toast.style.fontFamily = 'inherit';
+  toast.style.zIndex = '40';
+  toast.style.pointerEvents = 'none';
+  toast.style.boxShadow = '0 4px 15px rgba(0,0,0,0.5)';
+  toast.style.backdropFilter = 'blur(10px)';
+  toast.style.transition = 'opacity 0.25s, transform 0.25s';
+  toast.style.opacity = '0';
+  toast.style.transform = 'translateX(10px)';
+  
+  viewportContainer.appendChild(toast);
+  
+  // Trigger entry animation
+  setTimeout(() => {
+    toast.style.opacity = '1';
+    toast.style.transform = 'translateX(0)';
+  }, 10);
+  
+  // Auto fade out
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(10px)';
+    setTimeout(() => { toast.remove(); }, 250);
+  }, 1600);
 }
 
 // Keyboards
