@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="description" content="EasyEyes Premium — Optimized YouTube mobile study station with visual eye filters, pinch-to-zoom, live matching, and eye break counter.">
+  <meta name="description" content="EasyEyes Mobile Pro — Ultra-premium YouTube mobile study station featuring visual eye protection filters, automatic fullscreen landscape pinch-to-zoom, and ocular timer.">
   <title>EasyEyes Mobile Pro — The YouTube Study Station</title>
   
   <!-- Premium Google Fonts -->
@@ -41,7 +41,6 @@
       margin: 0;
       padding: 0;
       -webkit-tap-highlight-color: transparent;
-      user-select: none;
     }
 
     body {
@@ -79,7 +78,7 @@
       justify-content: space-between;
       align-items: center;
       padding: 12px 16px;
-      background: rgba(12, 13, 19, 0.8);
+      background: rgba(12, 13, 19, 0.85);
       backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border-color);
       position: sticky;
@@ -266,6 +265,7 @@
       display: flex;
       flex-direction: column;
       position: relative;
+      transition: all 0.3s ease;
     }
 
     .viewport-container {
@@ -282,7 +282,6 @@
       height: 100%;
       position: relative;
       transform-origin: center center;
-      transition: none; /* Removed transition for ultra-smooth instantaneous drag/pinch responses */
     }
 
     #yt-iframe {
@@ -310,6 +309,148 @@
 
     .gesture-tracker-overlay:active {
       cursor: grabbing;
+    }
+
+    /* Landscape Fullscreen styles automatically triggered */
+    body.landscape-active .viewport-card {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 99999;
+      border-radius: 0;
+      margin: 0;
+      border: none;
+    }
+
+    body.landscape-active .viewport-container {
+      width: 100%;
+      height: 100%;
+      aspect-ratio: auto;
+    }
+
+    body.landscape-active .sticky-bottom-tab-bar,
+    body.landscape-active .app-header,
+    body.landscape-active .scrollable-content > *:not(.viewport-card) {
+      display: none !important;
+    }
+
+    /* Translucent HUD Overlay for Cinema Mode */
+    .landscape-overlay-hud {
+      position: absolute;
+      inset: 0;
+      z-index: 30;
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 16px;
+      background: rgba(6, 6, 9, 0.5);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .landscape-overlay-hud.visible {
+      opacity: 1;
+    }
+
+    body.landscape-active .landscape-overlay-hud {
+      display: flex;
+    }
+
+    .hud-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      pointer-events: auto;
+    }
+
+    .hud-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hud-exit-btn {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+    }
+
+    .hud-center-play {
+      align-self: center;
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: rgba(124, 111, 255, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #fff;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      pointer-events: auto;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      transition: transform 0.2s;
+    }
+
+    .hud-center-play:active {
+      transform: scale(0.9);
+    }
+
+    .hud-bottom-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      pointer-events: auto;
+    }
+
+    .hud-scale-badge {
+      background: rgba(12, 13, 19, 0.8);
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 4px 10px;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      backdrop-filter: blur(6px);
+    }
+
+    /* Sleek Floating Landscape trigger button in Portrait Mode */
+    .portrait-cinema-trigger {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      z-index: 15;
+      background: rgba(12, 13, 19, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+
+    .portrait-cinema-trigger:active {
+      transform: scale(0.95);
     }
 
     .gesture-indicator-badge {
@@ -409,80 +550,6 @@
       font-size: 11px;
       max-width: 220px;
       line-height: 1.5;
-    }
-
-    /* Viewport Control Strip */
-    .viewport-control-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: var(--bg-pill);
-      padding: 8px 12px;
-      border-top: 1px solid var(--border-color);
-      gap: 10px;
-    }
-
-    .mode-tab-group {
-      display: flex;
-      background: var(--bg-dark);
-      padding: 3px;
-      border-radius: 8px;
-      border: 1px solid var(--border-color);
-    }
-
-    .mode-btn {
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      padding: 5px 12px;
-      font-size: 11px;
-      font-weight: 700;
-      border-radius: 6px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      transition: all 0.2s;
-    }
-
-    .mode-btn.active {
-      background: var(--accent-primary);
-      color: #fff;
-    }
-
-    .zoom-hud-buttons {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .hud-btn {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      width: 28px;
-      height: 28px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s;
-    }
-
-    .hud-btn:active {
-      background: var(--bg-pill);
-      border-color: var(--accent-blue);
-    }
-
-    .hud-zoom-value {
-      font-size: 10px;
-      font-weight: 800;
-      color: var(--text-muted);
-      min-width: 36px;
-      text-align: center;
     }
 
     /* Interactive Bottom Navigation Hub (Filter / Ocular Care / History tabs) */
@@ -594,6 +661,7 @@
       padding: 1px 4px;
       border-bottom-left-radius: 6px;
       text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .preset-item-art {
@@ -1112,8 +1180,8 @@
     <section class="viewport-card">
       <div class="viewport-container" id="viewport-container">
         
-        <!-- Zoom scale indicator -->
-        <div class="gesture-indicator-badge">
+        <!-- Zoom scale indicator (only when zoomed) -->
+        <div class="gesture-indicator-badge" id="zoom-badge" style="display: none;">
           <div class="indicator-blue-dot"></div>
           <span id="zoom-percentage">Zoom: 100%</span>
         </div>
@@ -1131,33 +1199,40 @@
           </div>
         </div>
 
+        <!-- Translucent Custom Landscape Controls HUD -->
+        <div class="landscape-overlay-hud" id="landscape-hud" onclick="toggleHUD(event)">
+          <div class="hud-header">
+            <div class="hud-title">
+              <span style="color: var(--accent-secondary); font-size: 16px;">&#128065;</span>
+              <span>Cinema Zoom Mode</span>
+            </div>
+            <button class="hud-exit-btn" onclick="toggleCinemaMode(false); event.stopPropagation();">
+              Exit Fullscreen
+            </button>
+          </div>
+
+          <button class="hud-center-play" id="hud-play-btn" onclick="togglePlayPause(event)" title="Play/Pause">
+            &#9646;&#9646;
+          </button>
+
+          <div class="hud-bottom-bar">
+            <span class="hud-scale-badge" id="hud-scale-val">Zoom: 100%</span>
+            <span style="font-size: 9px; color: #fff; text-shadow: 0 1px 2px #000; opacity: 0.8;">Double tap to play/pause</span>
+          </div>
+        </div>
+
+        <!-- Floating Cinema Mode button in Portrait Mode -->
+        <button class="portrait-cinema-trigger" id="cinema-trigger-btn" onclick="toggleCinemaMode(true)" style="display: none;" title="Landscape Cinema Mode">
+          <span>📺</span> Cinema Mode & Zoom
+        </button>
+
         <!-- Screen Placeholder state -->
         <div class="viewport-placeholder" id="placeholder">
           <div class="placeholder-icon">&#127891;</div>
           <span class="placeholder-title">Study Station Activated</span>
-          <span class="placeholder-desc">Paste a YouTube lecture link or live stream, then hit Load to apply student protection filters.</span>
+          <span class="placeholder-desc">Paste a YouTube lecture link or live stream, then hit Load to begin.</span>
         </div>
 
-      </div>
-
-      <!-- Action custom control toolstrip -->
-      <div class="viewport-control-bar">
-        <div class="mode-tab-group">
-          <button class="mode-btn active" id="mode-control" onclick="setInteractiveMode('control')">
-            &#127918; Player Controls
-          </button>
-          <button class="mode-btn" id="mode-gesture" onclick="setInteractiveMode('gesture')">
-            &#9995; Zoom & Pan
-          </button>
-        </div>
-
-        <!-- Zoom HUD adjusters for precise alignment -->
-        <div class="zoom-hud-buttons">
-          <button class="hud-btn" onclick="adjustZoom(-0.1)" title="Zoom Out">-</button>
-          <span class="hud-zoom-value" id="zoom-control-percentage">100%</span>
-          <button class="hud-btn" onclick="adjustZoom(0.1)" title="Zoom In">+</button>
-          <button class="hud-btn" onclick="resetZoom()" style="width: auto; padding: 0 8px; font-size: 9px;">Reset</button>
-        </div>
       </div>
     </section>
 
@@ -1369,7 +1444,7 @@ let timerSecondsLeft = totalTimerSeconds;
 let activePreset = null;
 let recentVideos = [];
 
-// Stabilized zoom & drag variables
+// Stabilized linear zoom & drag panning variables
 let zoomLevel = 1.0;
 let panX = 0;
 let panY = 0;
@@ -1378,7 +1453,8 @@ let startX = 0;
 let startY = 0;
 let initialPinchDistance = 0;
 let initialZoom = 1.0;
-let interactiveMode = 'control'; 
+let isPlaying = true;
+let lastTapTime = 0;
 
 // DOM Elements
 const iframe = document.getElementById('yt-iframe');
@@ -1394,8 +1470,10 @@ const timerDot = document.getElementById('timer-dot');
 const timerHeading = document.getElementById('timer-heading');
 const timerSubheading = document.getElementById('timer-subheading');
 const liveBadge = document.getElementById('live-badge');
+const landscapeHUD = document.getElementById('landscape-hud');
+const cinemaTriggerBtn = document.getElementById('cinema-trigger-btn');
 
-// Load video history from localstorage on start
+// Load video history on start
 window.onload = function() {
   const stored = localStorage.getItem('easyeyes_history');
   if (stored) {
@@ -1407,8 +1485,13 @@ window.onload = function() {
     }
   }
 
-  // Setup Touch / Gesture event listeners on the overlay
+  // Setup Gesture overlay listeners
   setupGestureListeners();
+
+  // Handle auto orientation and resize detection
+  window.addEventListener('resize', handleAutoOrientation);
+  window.addEventListener('orientationchange', handleAutoOrientation);
+  handleAutoOrientation();
 
   // Hosting validation
   const proto = window.location.protocol;
@@ -1417,7 +1500,80 @@ window.onload = function() {
   }
 };
 
-// YouTube URL parser supporting live, watches, embed, shorts
+// Auto Landscape Switcher & Zoom overlay enabler
+function handleAutoOrientation() {
+  const isLandscape = window.innerWidth > window.innerHeight && window.innerWidth < 1024;
+  if (isLandscape && iframe.style.display !== 'none') {
+    // Rotated to landscape while playing -> Automatically go Fullscreen & active zoom overlay!
+    toggleCinemaMode(true);
+  }
+}
+
+// Fullscreen Cinema mode switcher
+function toggleCinemaMode(enable) {
+  const body = document.body;
+  if (enable) {
+    body.classList.add('landscape-active');
+    gestureOverlay.classList.add('active');
+    
+    // Animate viewport hint briefly
+    const hint = document.getElementById('gesture-hint');
+    hint.style.animation = 'none';
+    setTimeout(() => {
+      hint.style.animation = 'fadeOut 2.2s forwards';
+    }, 10);
+
+    // Show initial Native Playback HUD controls
+    showLandscapeHUD();
+  } else {
+    body.classList.remove('landscape-active');
+    // Portrait returns normal, no overlay by default to allow youtube clicking
+    gestureOverlay.classList.remove('active');
+    resetZoom();
+  }
+}
+
+// Translucent HUD management
+let hudTimeout = null;
+function showLandscapeHUD() {
+  landscapeHUD.classList.add('visible');
+  clearTimeout(hudTimeout);
+  hudTimeout = setTimeout(() => {
+    landscapeHUD.classList.remove('visible');
+  }, 3500);
+}
+
+function toggleHUD(e) {
+  // If clicked directly on the HUD panel, toggle its visibility
+  if (e.target === landscapeHUD) {
+    if (landscapeHUD.classList.contains('visible')) {
+      landscapeHUD.classList.remove('visible');
+      clearTimeout(hudTimeout);
+    } else {
+      showLandscapeHUD();
+    }
+  }
+}
+
+// YouTube Play/Pause command controller via enablejsapi=1 postMessage protocol
+function togglePlayPause(e) {
+  if (e) e.stopPropagation();
+  isPlaying = !isPlaying;
+  
+  const command = isPlaying ? 'playVideo' : 'pauseVideo';
+  iframe.contentWindow.postMessage(JSON.stringify({
+    event: 'command',
+    func: command,
+    args: ''
+  }), '*');
+
+  // Sync HUD center button state
+  const btn = document.getElementById('hud-play-btn');
+  btn.innerHTML = isPlaying ? '&#9646;&#9646;' : '&#9654;'; // Pause vs Play glyphs
+  showLandscapeHUD();
+}
+
+// YouTube URL Parser
 function parseYouTubeId(url) {
   url = url.trim();
   let vid = '';
@@ -1447,7 +1603,7 @@ function parseYouTubeId(url) {
   };
 }
 
-// Loads video into iframe and registers in history
+// Loads video into player viewport
 function loadVideo(customId = null, isCustomLive = false) {
   let vid = '';
   let isLive = false;
@@ -1468,9 +1624,11 @@ function loadVideo(customId = null, isCustomLive = false) {
     return;
   }
 
-  iframe.src = 'https://www.youtube.com/embed/' + vid + '?rel=0&modestbranding=1&autoplay=1';
+  // Load Iframe with enabled API for playback hud
+  iframe.src = 'https://www.youtube.com/embed/' + vid + '?rel=0&modestbranding=1&autoplay=1&enablejsapi=1';
   iframe.style.display = 'block';
   placeholder.style.display = 'none';
+  cinemaTriggerBtn.style.display = 'flex'; // reveal fullscreen zoom shortcut
 
   if (isLive) {
     liveBadge.style.display = 'flex';
@@ -1478,108 +1636,41 @@ function loadVideo(customId = null, isCustomLive = false) {
     liveBadge.style.display = 'none';
   }
 
+  isPlaying = true;
+  document.getElementById('hud-play-btn').innerHTML = '&#9646;&#9646;';
+
   resetZoom();
   applyFilters();
   addToHistory(vid, isLive);
 }
 
-// Add Item to History
-function addToHistory(vid, isLive) {
-  recentVideos = recentVideos.filter(item => item.id !== vid);
-  recentVideos.unshift({
-    id: vid,
-    isLive: isLive,
-    timestamp: Date.now()
-  });
+// Panning boundary calculations
+function updateZoomTransform() {
+  const viewportWidth = viewportContainer.clientWidth || 320;
+  const viewportHeight = viewportContainer.clientHeight || 180;
+  
+  // Calculate dynamic maximum borders keeping video perfectly clamped inside frame
+  const maxPanX = ((zoomLevel - 1) * viewportWidth) / 2;
+  const maxPanY = ((zoomLevel - 1) * viewportHeight) / 2;
+  
+  panX = Math.max(-maxPanX, Math.min(maxPanX, panX));
+  panY = Math.max(-maxPanY, Math.min(maxPanY, panY));
 
-  if (recentVideos.length > 10) {
-    recentVideos.pop();
-  }
-
-  localStorage.setItem('easyeyes_history', JSON.stringify(recentVideos));
-  renderHistory();
+  // translate first, scale second to secure identical drag speed globally
+  zoomContainer.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
+  
+  // Update Indicators
+  const pct = `${Math.round(zoomLevel * 100)}%`;
+  document.getElementById('zoom-percentage').textContent = `Zoom: ${pct}`;
+  document.getElementById('hud-scale-val').textContent = `Zoom: ${pct}`;
+  
+  // Toggle inline indicator display
+  document.getElementById('zoom-badge').style.display = zoomLevel > 1.0 ? 'flex' : 'none';
 }
 
-// Render History
-function renderHistory() {
-  const listEl = document.getElementById('history-list');
-  if (recentVideos.length === 0) {
-    listEl.innerHTML = `
-      <div class="history-empty-message">
-        <div class="history-empty-art">&#128229;</div>
-        <span style="font-size: 11px; font-weight: 600;">No history logged yet</span>
-        <span style="font-size: 9px; color: var(--text-muted);">Videos you study will appear here</span>
-      </div>
-    `;
-    return;
-  }
-
-  let html = '';
-  recentVideos.forEach(vid => {
-    const formattedDate = new Date(vid.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const liveIndicator = vid.isLive ? `<span class="history-live-pill">Live</span>` : '';
-    html += `
-      <div class="history-row" onclick="loadVideo('${vid.id}', ${vid.isLive})">
-        <div class="history-pic-box">
-          <img class="history-img" src="https://img.youtube.com/vi/${vid.id}/mqdefault.jpg" alt="Thumbnail">
-          ${liveIndicator}
-        </div>
-        <div class="history-row-details">
-          <span class="history-row-title">Video ID: ${vid.id}</span>
-          <div class="history-row-meta">
-            <span>Study Session</span>
-            <span>${formattedDate}</span>
-          </div>
-        </div>
-        <button class="history-row-remove" onclick="event.stopPropagation(); deleteHistoryItem('${vid.id}')" title="Remove">
-          &times;
-        </button>
-      </div>
-    `;
-  });
-  listEl.innerHTML = html;
-}
-
-// Clear single history row
-function deleteHistoryItem(id) {
-  recentVideos = recentVideos.filter(item => item.id !== id);
-  localStorage.setItem('easyeyes_history', JSON.stringify(recentVideos));
-  renderHistory();
-}
-
-// Clear all history logs
-function clearHistory() {
-  if (confirm('Clear recently played history?')) {
-    recentVideos = [];
-    localStorage.removeItem('easyeyes_history');
-    renderHistory();
-  }
-}
-
-// Toggle interactive layouts
-function setInteractiveMode(mode) {
-  interactiveMode = mode;
-  document.getElementById('mode-control').classList.toggle('active', mode === 'control');
-  document.getElementById('mode-gesture').classList.toggle('active', mode === 'gesture');
-
-  if (mode === 'gesture') {
-    gestureOverlay.classList.add('active');
-    
-    const hint = document.getElementById('gesture-hint');
-    hint.style.animation = 'none';
-    setTimeout(() => {
-      hint.style.animation = 'fadeOut 2.2s forwards';
-    }, 10);
-  } else {
-    gestureOverlay.classList.remove('active');
-  }
-}
-
-// Handle zoom Adjusters manually
+// Adjust zoom manually
 function adjustZoom(delta) {
   zoomLevel = Math.max(1.0, Math.min(5.0, zoomLevel + delta));
-  
-  // Constrain boundary panning on smaller zooms
   if (zoomLevel === 1.0) {
     panX = 0;
     panY = 0;
@@ -1594,29 +1685,11 @@ function resetZoom() {
   updateZoomTransform();
 }
 
-// Apply CSS translate-first, scale-second transform pattern for linear drag speed compatibility
-function updateZoomTransform() {
-  // Constrain panning boundaries perfectly to keep video inside viewport frame boundaries
-  const viewportWidth = viewportContainer.clientWidth || 320;
-  const viewportHeight = viewportContainer.clientHeight || 180;
-  const maxPanX = ((zoomLevel - 1) * viewportWidth) / 2;
-  const maxPanY = ((zoomLevel - 1) * viewportHeight) / 2;
-  
-  panX = Math.max(-maxPanX, Math.min(maxPanX, panX));
-  panY = Math.max(-maxPanY, Math.min(maxPanY, panY));
-
-  zoomContainer.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
-  
-  const percentageText = `Zoom: ${Math.round(zoomLevel * 100)}%`;
-  document.getElementById('zoom-percentage').textContent = percentageText;
-  document.getElementById('zoom-control-percentage').textContent = `${Math.round(zoomLevel * 100)}%`;
-}
-
-// Mobile Pinch-to-zoom and Drag Panning
+// Mobile Pinch & Drag handlers securely clamped
 function setupGestureListeners() {
-  // Desktop Drag-Panning inside gestureOverlay
+  
+  // Desktop Drag-Panning
   gestureOverlay.addEventListener('mousedown', function(e) {
-    if (interactiveMode !== 'gesture') return;
     isPanning = true;
     startX = e.clientX - panX;
     startY = e.clientY - panY;
@@ -1624,7 +1697,7 @@ function setupGestureListeners() {
   });
 
   window.addEventListener('mousemove', function(e) {
-    if (!isPanning || interactiveMode !== 'gesture') return;
+    if (!isPanning) return;
     panX = e.clientX - startX;
     panY = e.clientY - startY;
     updateZoomTransform();
@@ -1635,10 +1708,8 @@ function setupGestureListeners() {
     isPanning = false;
   });
 
-  // Mobile Touch Gestures (Pinch to Zoom and 1-finger Panning)
+  // Mobile multi-touch gesturer
   gestureOverlay.addEventListener('touchstart', function(e) {
-    if (interactiveMode !== 'gesture') return;
-    
     if (e.touches.length === 1) {
       isPanning = true;
       startX = e.touches[0].clientX - panX;
@@ -1652,8 +1723,6 @@ function setupGestureListeners() {
   }, { passive: false });
 
   gestureOverlay.addEventListener('touchmove', function(e) {
-    if (interactiveMode !== 'gesture') return;
-
     if (e.touches.length === 1 && isPanning) {
       panX = e.touches[0].clientX - startX;
       panY = e.touches[0].clientY - startY;
@@ -1669,6 +1738,18 @@ function setupGestureListeners() {
 
   gestureOverlay.addEventListener('touchend', function(e) {
     isPanning = false;
+    
+    // Smart Single/Double Tap detection to trigger HUD or PlayPause state
+    const now = Date.now();
+    const delay = now - lastTapTime;
+    if (delay < 250 && delay > 0) {
+      // Double Tap -> Play Pause
+      togglePlayPause();
+    } else {
+      // Single Tap -> reveal HUD
+      showLandscapeHUD();
+    }
+    lastTapTime = now;
   });
 }
 
@@ -1678,7 +1759,7 @@ function getDistanceBetweenTouches(touches) {
   return Math.sqrt(dx * dx + dy * dy);
 }
 
-// Student Protection Filters
+// Student Eye protection logic
 function applyFilters() {
   const br = document.getElementById('brightness').value;
   const co = document.getElementById('contrast').value;
@@ -1697,7 +1778,7 @@ function applyFilters() {
   iframe.style.filter = filterStr;
 }
 
-// Preset Filters Setup
+// Presets
 function applyPreset(name) {
   document.querySelectorAll('.preset-mobile-item').forEach(c => c.classList.remove('active'));
   document.getElementById('p-' + name).classList.add('active');
@@ -1743,7 +1824,7 @@ function toggleInvert(shouldApply = true) {
   }
 }
 
-// Ocular Alarm Sound (Self-contained Web Audio API)
+// Study Chime synthesiser
 function triggerBreakSound() {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1753,24 +1834,24 @@ function triggerBreakSound() {
       osc.type = 'sine';
       osc.frequency.setValueAtTime(pitch, time);
       gain.gain.setValueAtTime(0, time);
-      gain.gain.linearRampToValueAtTime(0.25, time + 0.05);
-      gain.gain.exponentialRampToValueAtTime(0.0001, time + 1.0);
+      gain.gain.linearRampToValueAtTime(0.2, time + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.8);
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start(time);
-      osc.stop(time + 1.1);
+      osc.stop(time + 0.9);
     };
 
     const now = ctx.currentTime;
     playChime(now, 523.25); 
-    playChime(now + 0.2, 659.25); 
-    playChime(now + 0.4, 783.99); 
+    playChime(now + 0.15, 659.25); 
+    playChime(now + 0.3, 783.99); 
   } catch(e) {
-    console.log("Audio not enabled by browser gesture context yet.");
+    console.log("Audio contexts blocked by browser environment.");
   }
 }
 
-// 20-20-20 Eye break Timer Logic
+// 20-20-20 Break Timer System
 function updateTimerUI() {
   const m = Math.floor(timerSecondsLeft / 60);
   const s = timerSecondsLeft % 60;
@@ -1837,20 +1918,88 @@ function toggleTimer() {
   }
 }
 
-// Unified tab switching logic for body nav cards and sticky bottom bar
+// Unified navigation hubs
 function switchMainTab(tabId) {
-  // Hide all panels
   document.querySelectorAll('.tab-content-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-tab-item').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.bottom-tab-btn').forEach(b => b.classList.remove('active'));
 
-  // Show selected panel
   document.getElementById('panel-' + tabId).classList.add('active');
   document.getElementById('nav-' + tabId).classList.add('active');
   document.getElementById('b-tab-' + tabId).classList.add('active');
 }
 
-// Keyboards
+// History
+function addToHistory(vid, isLive) {
+  recentVideos = recentVideos.filter(item => item.id !== vid);
+  recentVideos.unshift({
+    id: vid,
+    isLive: isLive,
+    timestamp: Date.now()
+  });
+
+  if (recentVideos.length > 10) {
+    recentVideos.pop();
+  }
+
+  localStorage.setItem('easyeyes_history', JSON.stringify(recentVideos));
+  renderHistory();
+}
+
+function renderHistory() {
+  const listEl = document.getElementById('history-list');
+  if (recentVideos.length === 0) {
+    listEl.innerHTML = `
+      <div class="history-empty-message">
+        <div class="history-empty-art">&#128229;</div>
+        <span style="font-size: 11px; font-weight: 600;">No history logged yet</span>
+        <span style="font-size: 9px; color: var(--text-muted);">Videos you study will appear here</span>
+      </div>
+    `;
+    return;
+  }
+
+  let html = '';
+  recentVideos.forEach(vid => {
+    const formattedDate = new Date(vid.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const liveIndicator = vid.isLive ? `<span class="history-live-pill">Live</span>` : '';
+    html += `
+      <div class="history-row" onclick="loadVideo('${vid.id}', ${vid.isLive})">
+        <div class="history-pic-box">
+          <img class="history-img" src="https://img.youtube.com/vi/${vid.id}/mqdefault.jpg" alt="Thumbnail">
+          ${liveIndicator}
+        </div>
+        <div class="history-row-details">
+          <span class="history-row-title">Video ID: ${vid.id}</span>
+          <div class="history-row-meta">
+            <span>Study Session</span>
+            <span>${formattedDate}</span>
+          </div>
+        </div>
+        <button class="history-row-remove" onclick="event.stopPropagation(); deleteHistoryItem('${vid.id}')" title="Remove">
+          &times;
+        </button>
+      </div>
+    `;
+  });
+  listEl.innerHTML = html;
+}
+
+function deleteHistoryItem(id) {
+  recentVideos = recentVideos.filter(item => item.id !== id);
+  localStorage.setItem('easyeyes_history', JSON.stringify(recentVideos));
+  renderHistory();
+}
+
+function clearHistory() {
+  if (confirm('Clear recently played history?')) {
+    recentVideos = [];
+    localStorage.removeItem('easyeyes_history');
+    renderHistory();
+  }
+}
+
+// Enter submit URL
 document.getElementById('url-input').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') {
     loadVideo();
