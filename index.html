@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="description" content="EasyEyes Mobile Pro — Ultra-premium YouTube mobile study station featuring visual eye protection filters, automatic fullscreen landscape pinch-to-zoom, and ocular timer.">
+  <meta name="description" content="EasyEyes Premium — Optimized YouTube mobile study station with visual eye filters, pinch-to-zoom, live matching, and eye break counter.">
   <title>EasyEyes Mobile Pro — The YouTube Study Station</title>
   
   <!-- Premium Google Fonts -->
@@ -41,6 +41,7 @@
       margin: 0;
       padding: 0;
       -webkit-tap-highlight-color: transparent;
+      user-select: none;
     }
 
     body {
@@ -78,7 +79,7 @@
       justify-content: space-between;
       align-items: center;
       padding: 12px 16px;
-      background: rgba(12, 13, 19, 0.85);
+      background: rgba(12, 13, 19, 0.8);
       backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border-color);
       position: sticky;
@@ -265,7 +266,6 @@
       display: flex;
       flex-direction: column;
       position: relative;
-      transition: all 0.3s ease;
     }
 
     .viewport-container {
@@ -282,6 +282,7 @@
       height: 100%;
       position: relative;
       transform-origin: center center;
+      transition: none; /* Removed transition for ultra-smooth instantaneous drag/pinch responses */
     }
 
     #yt-iframe {
@@ -291,303 +292,76 @@
       transition: filter 0.3s;
     }
 
-    /* Transparent Overlay for tracking touch gestures and custom HUD controls */
+    /* Transparent Overlay for tracking touch gestures securely */
     .gesture-tracker-overlay {
       position: absolute;
       inset: 0;
       z-index: 10;
       background: rgba(0, 0, 0, 0);
-      display: none; /* Displays only when video is loaded */
-      flex-direction: column;
-      justify-content: space-between;
+      display: none;
       cursor: grab;
-      pointer-events: auto;
-      overflow: hidden;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .gesture-tracker-overlay.active {
+      display: flex;
     }
 
     .gesture-tracker-overlay:active {
       cursor: grabbing;
     }
 
-    /* Glassmorphic Control Strips */
-    .hud-strip {
-      background: linear-gradient(to bottom, rgba(12, 13, 19, 0.95), rgba(6, 6, 9, 0.8));
-      backdrop-filter: blur(12px);
-      padding: 10px 14px;
-      display: flex;
-      transition: transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 0.3s ease;
-      z-index: 35;
-    }
-
-    .top-hud-strip {
+    .gesture-indicator-badge {
       position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      border-bottom: 1px solid var(--border-color);
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-      transform: translateY(-100%);
-      opacity: 0;
-    }
-
-    .bottom-hud-strip {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      border-top: 1px solid var(--border-color);
-      flex-direction: column;
-      gap: 8px;
-      transform: translateY(100%);
-      opacity: 0;
-    }
-
-    /* Active visibility for the strips */
-    .gesture-tracker-overlay.hud-visible .top-hud-strip {
-      transform: translateY(0);
-      opacity: 1;
-    }
-
-    .gesture-tracker-overlay.hud-visible .bottom-hud-strip {
-      transform: translateY(0);
-      opacity: 1;
-    }
-
-    .gesture-tracker-overlay.hud-visible .hud-center-group {
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
-    }
-
-    /* Top HUD Elements */
-    .hud-left-group {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .hud-glass-badge {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      top: 10px;
+      left: 10px;
+      background: rgba(12, 13, 19, 0.85);
+      border: 1px solid rgba(255,255,255,0.1);
       padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 9px;
-      font-weight: 700;
-      color: #fff;
-    }
-
-    .hud-btn {
-      background: rgba(124, 111, 255, 0.2);
-      border: 1px solid rgba(124, 111, 255, 0.4);
-      color: #fff;
-      padding: 6px 12px;
       border-radius: 8px;
+      color: #fff;
       font-size: 10px;
       font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .hud-btn:active {
-      background: var(--accent-primary);
-    }
-
-    /* Center Play HUD Group */
-    .hud-center-group {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0.9);
+      z-index: 20;
+      backdrop-filter: blur(6px);
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-      pointer-events: none;
-      z-index: 25;
-      opacity: 0;
-      transition: all 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
-    }
-
-    .hud-center-btn {
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      background: rgba(124, 111, 255, 0.85);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      color: #fff;
-      font-size: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      pointer-events: auto;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-      transition: transform 0.2s;
-    }
-
-    .hud-center-btn:active {
-      transform: scale(0.9);
-    }
-
-    /* Seeker timeline details */
-    .timeline-container {
-      width: 100%;
-      position: relative;
-      height: 16px;
-      display: flex;
-      align-items: center;
-    }
-
-    .timeline-slider {
-      -webkit-appearance: none;
-      width: 100%;
-      height: 4px;
-      border-radius: 2px;
-      background: rgba(255, 255, 255, 0.15);
-      outline: none;
-      cursor: pointer;
-      position: relative;
-      z-index: 5;
-    }
-
-    .timeline-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: var(--accent-primary);
-      border: 1.5px solid #fff;
-      cursor: pointer;
-      box-shadow: 0 0 6px var(--accent-primary);
-    }
-
-    .timeline-fill {
-      position: absolute;
-      left: 0;
-      top: 6px;
-      height: 4px;
-      background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
-      border-radius: 2px;
-      pointer-events: none;
-      z-index: 2;
-      width: 0%;
-    }
-
-    /* Live Badge Seeker block */
-    .live-timeline-badge {
-      display: none;
       align-items: center;
       gap: 5px;
-      background: rgba(255, 111, 145, 0.15);
-      border: 1px solid rgba(255, 111, 145, 0.3);
-      padding: 3px 10px;
-      border-radius: 6px;
-      color: var(--accent-secondary);
-      font-size: 9px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin: 0 auto;
+      pointer-events: none;
     }
 
-    .live-timeline-dot {
+    .indicator-blue-dot {
       width: 6px;
       height: 6px;
-      background-color: var(--accent-secondary);
       border-radius: 50%;
-      box-shadow: 0 0 6px var(--accent-secondary);
-      animation: pulseLive 1.5s infinite;
-    }
-
-    /* Controls Strip Row */
-    .hud-controls-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-    }
-
-    .hud-controls-left, .hud-controls-right {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .hud-control-icon-btn {
-      background: none;
-      border: none;
-      color: #fff;
-      font-size: 16px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 4px;
-      transition: opacity 0.2s;
-    }
-
-    .hud-control-icon-btn:active {
-      opacity: 0.7;
-    }
-
-    .hud-control-icon-btn.seek-btn {
-      font-size: 10px;
-      font-weight: 700;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      padding: 4px 8px;
-      border-radius: 6px;
-    }
-
-    .time-display {
-      font-family: monospace;
-      font-size: 10px;
-      color: var(--text-muted);
+      background-color: var(--accent-blue);
     }
 
     /* Floating instructional hint inside viewport */
     .viewport-hint {
-      background: rgba(12, 13, 19, 0.95);
+      background: rgba(12, 13, 19, 0.9);
       border: 1px solid var(--accent-primary);
-      padding: 8px 14px;
-      border-radius: 8px;
+      padding: 10px 16px;
+      border-radius: 10px;
       color: #fff;
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 600;
       text-align: center;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      pointer-events: none;
+      animation: fadeOut 2.2s forwards;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 3px;
-      pointer-events: none;
-      margin-top: 8px;
+      gap: 4px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
     }
 
-    /* Landscape Fullscreen styles automatically triggered */
-    body.landscape-active .viewport-card {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 99999;
-      border-radius: 0;
-      margin: 0;
-      border: none;
-    }
-
-    body.landscape-active .viewport-container {
-      width: 100%;
-      height: 100%;
-      aspect-ratio: auto;
-    }
-
-    body.landscape-active .sticky-bottom-tab-bar,
-    body.landscape-active .app-header,
-    body.landscape-active .scrollable-content > *:not(.viewport-card) {
-      display: none !important;
+    @keyframes fadeOut {
+      0% { opacity: 0; transform: scale(0.9); }
+      10% { opacity: 1; transform: scale(1); }
+      80% { opacity: 1; }
+      100% { opacity: 0; transform: scale(1.05); }
     }
 
     /* Screen Placeholder */
@@ -637,7 +411,81 @@
       line-height: 1.5;
     }
 
-    /* Interactive Bottom Navigation Hub */
+    /* Viewport Control Strip */
+    .viewport-control-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-pill);
+      padding: 8px 12px;
+      border-top: 1px solid var(--border-color);
+      gap: 10px;
+    }
+
+    .mode-tab-group {
+      display: flex;
+      background: var(--bg-dark);
+      padding: 3px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    .mode-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: 5px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s;
+    }
+
+    .mode-btn.active {
+      background: var(--accent-primary);
+      color: #fff;
+    }
+
+    .zoom-hud-buttons {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .hud-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .hud-btn:active {
+      background: var(--bg-pill);
+      border-color: var(--accent-blue);
+    }
+
+    .hud-zoom-value {
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--text-muted);
+      min-width: 36px;
+      text-align: center;
+    }
+
+    /* Interactive Bottom Navigation Hub (Filter / Ocular Care / History tabs) */
     .tab-container-card {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
@@ -649,6 +497,7 @@
       box-shadow: var(--card-shadow);
     }
 
+    /* Navigation Headers for Tabs */
     .navigation-tabs-header {
       display: flex;
       background: var(--bg-pill);
@@ -684,6 +533,7 @@
       font-size: 16px;
     }
 
+    /* Tab Contents styling */
     .tab-content-panel {
       display: none;
       flex-direction: column;
@@ -694,6 +544,7 @@
       display: flex;
     }
 
+    /* Tab 1: Filters details */
     .presets-label {
       font-size: 10px;
       font-weight: 700;
@@ -743,7 +594,6 @@
       padding: 1px 4px;
       border-bottom-left-radius: 6px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
     }
 
     .preset-item-art {
@@ -785,6 +635,7 @@
       color: var(--text-muted);
     }
 
+    /* Dark mode invert bar toggle */
     .inversion-card {
       display: flex;
       align-items: center;
@@ -847,6 +698,7 @@
       transform: translateX(18px);
     }
 
+    /* Fine tuning manual sliders */
     .fine-tuning-container {
       background: var(--bg-pill);
       border: 1px solid var(--border-color);
@@ -911,7 +763,7 @@
       border: 1.5px solid #fff;
     }
 
-    /* Tab 2: Ocular Care dashboard */
+    /* Tab 2: Ocular Health Care details */
     .health-dashboard {
       background: var(--bg-pill);
       border: 1px solid var(--border-color);
@@ -999,7 +851,7 @@
       color: var(--accent-green);
     }
 
-    /* Tab 3: History log */
+    /* Tab 3: History log styling */
     .history-log-header {
       display: flex;
       justify-content: space-between;
@@ -1069,7 +921,7 @@
       position: relative;
     }
 
-    .history-pic-box img {
+    .history-img {
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -1121,7 +973,7 @@
       padding: 4px;
     }
 
-    /* Local Hosting Notice Alert */
+    /* Hosting alert banner */
     .local-warning-panel {
       background: rgba(255, 179, 71, 0.07);
       border: 1px solid rgba(255, 179, 71, 0.25);
@@ -1149,7 +1001,7 @@
       font-weight: 700;
     }
 
-    /* Sticky Bottom native-like app bar */
+    /* Bottom sticky tabs for mobile look and feel */
     .sticky-bottom-tab-bar {
       display: flex;
       background: rgba(12, 13, 19, 0.85);
@@ -1186,6 +1038,7 @@
       font-size: 18px;
     }
 
+    /* Footer adjustments */
     .app-footer {
       text-align: center;
       padding: 10px;
@@ -1207,7 +1060,7 @@
 
 <div class="mobile-app-frame">
   
-  <!-- App Top Header Bar -->
+  <!-- App Top Header -->
   <header class="app-header">
     <div class="brand-group">
       <div class="brand-icon">&#128065;</div>
@@ -1230,10 +1083,10 @@
     </div>
   </header>
 
-  <!-- Main scrollable panel content -->
+  <!-- Main scrollable layout space -->
   <main class="scrollable-content">
     
-    <!-- Local file notice alert -->
+    <!-- Local Hosting Notice -->
     <div class="local-warning-panel" id="host-warning">
       <span class="warning-panel-icon">&#9888;</span>
       <div class="warning-panel-text">
@@ -1241,7 +1094,7 @@
       </div>
     </div>
 
-    <!-- Paste YouTube link field -->
+    <!-- paste YouTube Stream row -->
     <section class="input-section">
       <div class="presets-label" style="display: flex; justify-content: space-between; align-items: center;">
         <span>Paste YouTube Video or Live Link</span>
@@ -1255,102 +1108,63 @@
       </div>
     </section>
 
-    <!-- Professional Custom-Controlled Video Viewport Card -->
+    <!-- Professional viewport container -->
     <section class="viewport-card">
       <div class="viewport-container" id="viewport-container">
         
-        <!-- Transform scaler layer containing iframe -->
+        <!-- Zoom scale indicator -->
+        <div class="gesture-indicator-badge">
+          <div class="indicator-blue-dot"></div>
+          <span id="zoom-percentage">Zoom: 100%</span>
+        </div>
+
+        <!-- Transform scaler layer -->
         <div class="video-viewport-scaler" id="video-zoom-container">
           <iframe id="yt-iframe" style="display:none" allowfullscreen allow="autoplay; encrypted-media"></iframe>
         </div>
 
-        <!-- Transparent Zoom Overlay with Custom Netflix-Style controls -->
-        <div class="gesture-tracker-overlay hud-visible" id="gesture-overlay">
-          
-          <!-- Top HUD Strip bar -->
-          <div class="hud-strip top-hud-strip" onclick="event.stopPropagation()">
-            <div class="hud-left-group">
-              <span class="hud-glass-badge" id="hud-zoom-indicator">🔍 Zoom: 100%</span>
-              <span class="hud-glass-badge" id="hud-filter-indicator" style="border-color: var(--accent-secondary); color: var(--accent-secondary);">HD Premium</span>
-            </div>
-            
-            <button class="hud-btn" id="hud-cinema-toggle" onclick="toggleCinemaModeClicked(event)">
-              📺 Cinema Mode
-            </button>
+        <!-- Transparent Zoom overlay wrapper -->
+        <div class="gesture-tracker-overlay" id="gesture-overlay">
+          <div class="viewport-hint" id="gesture-hint">
+            <span>👋 Pinch with 2 fingers to zoom</span>
+            <span style="font-size: 9px; color: var(--text-muted);">Drag with 1 finger to pan around</span>
           </div>
-
-          <!-- Central Play / Pause HUD & Gesture hint Fader -->
-          <div class="hud-center-group">
-            <button class="hud-center-btn" id="hud-center-play-btn" onclick="togglePlayPause(event)" title="Play/Pause">
-              &#9654;
-            </button>
-            
-            <div class="viewport-hint" id="gesture-hint">
-              <span>👋 Pinch with 2 fingers to zoom anytime</span>
-              <span style="font-size: 8px; color: var(--text-muted); font-weight: 500;">Drag 1 finger to pan | Tap video to toggle controls</span>
-            </div>
-          </div>
-
-          <!-- Bottom HUD Strip controls -->
-          <div class="hud-strip bottom-hud-strip" onclick="event.stopPropagation()">
-            
-            <!-- Seekbar Timeline slider -->
-            <div class="timeline-container">
-              <input type="range" class="timeline-slider" id="timeline-slider" min="0" max="100" value="0" step="0.1" onchange="seekTimeline(this.value)" oninput="timelineSliderDragged(this.value)">
-              <div class="timeline-fill" id="timeline-fill"></div>
-              
-              <!-- Special Live badge showing instead of progress when studying live feed -->
-              <div class="live-timeline-badge" id="live-timeline-pill">
-                <div class="live-timeline-dot"></div>
-                <span>● Live Stream</span>
-              </div>
-            </div>
-
-            <!-- Controls row -->
-            <div class="hud-controls-row">
-              <div class="hud-controls-left">
-                <button class="hud-control-icon-btn" onclick="togglePlayPause(event)" id="bottom-play-btn" title="Play/Pause">
-                  &#9654;
-                </button>
-                
-                <button class="hud-control-icon-btn seek-btn" onclick="seekRelative(-10)" title="Rewind 10s">
-                  &#8634; 10s
-                </button>
-                <button class="hud-control-icon-btn seek-btn" onclick="seekRelative(10)" title="Forward 10s">
-                  &#8635; 10s
-                </button>
-
-                <span class="time-display" id="time-display">0:00 / 0:00</span>
-              </div>
-
-              <div class="hud-controls-right">
-                <button class="hud-control-icon-btn" onclick="toggleMute(event)" id="mute-btn" title="Mute/Unmute">
-                  🔊
-                </button>
-                <button class="hud-control-icon-btn" onclick="resetZoom(event)" title="Reset Zoom" style="font-size: 11px; background: rgba(255,255,255,0.08); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.12);">
-                  🔄 Reset Zoom
-                </button>
-              </div>
-            </div>
-
-          </div>
-
         </div>
 
-        <!-- Viewport Empty Placeholder -->
+        <!-- Screen Placeholder state -->
         <div class="viewport-placeholder" id="placeholder">
           <div class="placeholder-icon">&#127891;</div>
           <span class="placeholder-title">Study Station Activated</span>
-          <span class="placeholder-desc">Paste a YouTube lecture link or live stream, then hit Load to begin.</span>
+          <span class="placeholder-desc">Paste a YouTube lecture link or live stream, then hit Load to apply student protection filters.</span>
         </div>
 
       </div>
+
+      <!-- Action custom control toolstrip -->
+      <div class="viewport-control-bar">
+        <div class="mode-tab-group">
+          <button class="mode-btn active" id="mode-control" onclick="setInteractiveMode('control')">
+            &#127918; Player Controls
+          </button>
+          <button class="mode-btn" id="mode-gesture" onclick="setInteractiveMode('gesture')">
+            &#9995; Zoom & Pan
+          </button>
+        </div>
+
+        <!-- Zoom HUD adjusters for precise alignment -->
+        <div class="zoom-hud-buttons">
+          <button class="hud-btn" onclick="adjustZoom(-0.1)" title="Zoom Out">-</button>
+          <span class="hud-zoom-value" id="zoom-control-percentage">100%</span>
+          <button class="hud-btn" onclick="adjustZoom(0.1)" title="Zoom In">+</button>
+          <button class="hud-btn" onclick="resetZoom()" style="width: auto; padding: 0 8px; font-size: 9px;">Reset</button>
+        </div>
+      </div>
     </section>
 
-    <!-- Bottom Navigation Hub cards -->
+    <!-- Main Navigation Hub (Tabs) -->
     <section class="tab-container-card">
       
-      <!-- Tab selections -->
+      <!-- Headers -->
       <div class="navigation-tabs-header">
         <button class="nav-tab-item active" id="nav-filters" onclick="switchMainTab('filters')">
           <span class="tab-icon">&#128065;</span>
@@ -1410,7 +1224,7 @@
             <div class="preset-item-art">&#127771;</div>
             <div class="preset-item-details">
               <span class="preset-item-name">Night Vision</span>
-              <span class="preset-item-sub">Dim Warm Glow</span>
+              <span class="preset-item-sub">Ultra Dim Tone</span>
             </div>
           </div>
 
@@ -1424,7 +1238,7 @@
 
         </div>
 
-        <!-- Invert whites dark mode card toggle -->
+        <!-- Invert white background card toggle -->
         <div class="inversion-card" id="invert-toggle" onclick="toggleInvert()">
           <div class="inversion-info">
             <span style="font-size: 18px; color: var(--accent-secondary);">&#9681;</span>
@@ -1477,7 +1291,7 @@
 
       </div>
 
-      <!-- TAB PANEL 2: Eye Health monitor -->
+      <!-- TAB PANEL 2: Eye Health countdown & 20-20-20 alert rule -->
       <div class="tab-content-panel" id="panel-health">
         <span class="presets-label">Ocular Care System</span>
         
@@ -1527,7 +1341,7 @@
 
   </main>
 
-  <!-- Sticky Bottom app bar for navigation support -->
+  <!-- Sticky Bottom native-like app bar for navigation support -->
   <nav class="sticky-bottom-tab-bar">
     <button class="bottom-tab-btn active" id="b-tab-filters" onclick="switchMainTab('filters')">
       <span class="bottom-tab-btn-icon">&#128065;</span>
@@ -1552,21 +1366,10 @@ let timerOn = false;
 let timerInterval = null;
 const totalTimerSeconds = 20 * 60; 
 let timerSecondsLeft = totalTimerSeconds;
-let activePreset = 'hd-premium';
+let activePreset = null;
 let recentVideos = [];
 
-// Video Details & API variables
-let videoDuration = 0;
-let currentVideoTime = 0;
-let playerState = -1;
-let isMuted = false;
-let isSeeking = false;
-let isLiveVideo = false;
-let isPlaying = false;
-let hudVisible = true;
-let hudTimeout = null;
-
-// Gestures parameters
+// Stabilized zoom & drag variables
 let zoomLevel = 1.0;
 let panX = 0;
 let panY = 0;
@@ -1575,7 +1378,7 @@ let startX = 0;
 let startY = 0;
 let initialPinchDistance = 0;
 let initialZoom = 1.0;
-let lastTapTime = 0;
+let interactiveMode = 'control'; 
 
 // DOM Elements
 const iframe = document.getElementById('yt-iframe');
@@ -1592,7 +1395,7 @@ const timerHeading = document.getElementById('timer-heading');
 const timerSubheading = document.getElementById('timer-subheading');
 const liveBadge = document.getElementById('live-badge');
 
-// Load video history on start
+// Load video history from localstorage on start
 window.onload = function() {
   const stored = localStorage.getItem('easyeyes_history');
   if (stored) {
@@ -1604,16 +1407,8 @@ window.onload = function() {
     }
   }
 
-  // Setup IFrame API Event Message Listeners
-  setupPlayerApiListener();
-
-  // Setup Gesture overlay listeners
+  // Setup Touch / Gesture event listeners on the overlay
   setupGestureListeners();
-
-  // Handle auto orientation and resize detection
-  window.addEventListener('resize', handleAutoOrientation);
-  window.addEventListener('orientationchange', handleAutoOrientation);
-  handleAutoOrientation();
 
   // Hosting validation
   const proto = window.location.protocol;
@@ -1622,219 +1417,7 @@ window.onload = function() {
   }
 };
 
-// Handle orientation change to automatically launch cinema mode
-function handleAutoOrientation() {
-  const isLandscape = window.innerWidth > window.innerHeight;
-  if (isLandscape && iframe.style.display !== 'none') {
-    toggleCinemaMode(true);
-  }
-}
-
-// Fullscreen Cinema Mode switch toggler
-function toggleCinemaMode(enable) {
-  const body = document.body;
-  const toggleBtn = document.getElementById('hud-cinema-toggle');
-  
-  if (enable) {
-    body.classList.add('landscape-active');
-    toggleBtn.textContent = 'Exit Fullscreen';
-    toggleBtn.style.borderColor = 'var(--accent-secondary)';
-    
-    // Animate viewport hint briefly
-    const hint = document.getElementById('gesture-hint');
-    hint.style.animation = 'none';
-    setTimeout(() => {
-      hint.style.animation = 'fadeOut 2.2s forwards';
-    }, 10);
-
-    toggleHUDVisibility(true);
-  } else {
-    body.classList.remove('landscape-active');
-    toggleBtn.textContent = '📺 Cinema Mode';
-    toggleBtn.style.borderColor = 'rgba(124, 111, 255, 0.4)';
-    resetZoom();
-  }
-}
-
-function toggleCinemaModeClicked(e) {
-  if (e) e.stopPropagation();
-  const isCurrentlyCinema = document.body.classList.contains('landscape-active');
-  toggleCinemaMode(!isCurrentlyCinema);
-}
-
-// Premium HUD custom visibility toggles
-function toggleHUDVisibility(show = null) {
-  if (show !== null) {
-    hudVisible = show;
-  } else {
-    hudVisible = !hudVisible;
-  }
-  
-  if (hudVisible) {
-    gestureOverlay.classList.add('hud-visible');
-    if (isPlaying) {
-      startHUDAutoHideTimer();
-    }
-  } else {
-    gestureOverlay.classList.remove('hud-visible');
-  }
-}
-
-function startHUDAutoHideTimer() {
-  clearTimeout(hudTimeout);
-  hudTimeout = setTimeout(() => {
-    if (isPlaying && hudVisible) {
-      toggleHUDVisibility(false);
-    }
-  }, 3500);
-}
-
-// Youtube API Message listener system for progress bar tracking
-function setupPlayerApiListener() {
-  window.addEventListener('message', function(event) {
-    try {
-      const data = JSON.parse(event.data);
-      
-      // Look for info updates from YouTube Iframe JS API
-      if (data.event === 'infoDelivery' && data.info) {
-        const info = data.info;
-        
-        if (info.currentTime !== undefined) {
-          currentVideoTime = info.currentTime;
-        }
-        if (info.duration !== undefined) {
-          videoDuration = info.duration;
-        }
-        if (info.playerState !== undefined) {
-          playerState = info.playerState;
-          // State codes: 1 = playing, 2 = paused, 3 = buffering, 0 = ended, -1 = unstarted
-          if (playerState === 1) {
-            isPlaying = true;
-            updatePlaybackButtons(true);
-          } else if (playerState === 2 || playerState === 0) {
-            isPlaying = false;
-            updatePlaybackButtons(false);
-          }
-        }
-        if (info.muted !== undefined) {
-          isMuted = info.muted;
-          document.getElementById('mute-btn').innerHTML = isMuted ? '🔇' : '🔊';
-        }
-        
-        // Sync seekbar UI unless actively dragging
-        if (!isSeeking) {
-          updateSeekbarUI();
-        }
-      }
-    } catch(e) {}
-  });
-}
-
-function updatePlaybackButtons(playing) {
-  const centerBtn = document.getElementById('hud-center-play-btn');
-  const bottomBtn = document.getElementById('bottom-play-btn');
-  
-  centerBtn.innerHTML = playing ? '&#9646;&#9646;' : '&#9654;';
-  bottomBtn.innerHTML = playing ? '&#9646;&#9646;' : '&#9654;';
-  
-  if (playing) {
-    startHUDAutoHideTimer();
-  } else {
-    clearTimeout(hudTimeout);
-    toggleHUDVisibility(true); // Keep controls visible when paused
-  }
-}
-
-function updateSeekbarUI() {
-  const slider = document.getElementById('timeline-slider');
-  const fill = document.getElementById('timeline-fill');
-  const display = document.getElementById('time-display');
-  
-  if (isLiveVideo) {
-    slider.style.display = 'none';
-    fill.style.width = '0%';
-    document.getElementById('live-timeline-pill').style.display = 'flex';
-    display.textContent = 'LIVE STREAM';
-    return;
-  }
-
-  slider.style.display = 'block';
-  document.getElementById('live-timeline-pill').style.display = 'none';
-
-  if (videoDuration > 0) {
-    const pct = (currentVideoTime / videoDuration) * 100;
-    slider.value = pct;
-    fill.style.width = `${pct}%`;
-    display.textContent = `${formatTime(currentVideoTime)} / ${formatTime(videoDuration)}`;
-  } else {
-    slider.value = 0;
-    fill.style.width = '0%';
-    display.textContent = '0:00 / 0:00';
-  }
-}
-
-function formatTime(seconds) {
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  const s = Math.floor(seconds % 60);
-  if (h > 0) {
-    return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-  }
-  return `${m}:${String(s).padStart(2, '0')}`;
-}
-
-// Action controllers via YouTube embed Iframe API
-function togglePlayPause(e) {
-  if (e) e.stopPropagation();
-  isPlaying = !isPlaying;
-  
-  const cmd = isPlaying ? 'playVideo' : 'pauseVideo';
-  sendIframeCommand(cmd);
-}
-
-function seekTimeline(pctValue) {
-  isSeeking = false;
-  if (videoDuration > 0) {
-    const targetSeconds = (pctValue / 100) * videoDuration;
-    sendIframeCommand('seekTo', [targetSeconds, true]);
-  }
-}
-
-function timelineSliderDragged(pctValue) {
-  isSeeking = true;
-  const fill = document.getElementById('timeline-fill');
-  fill.style.width = `${pctValue}%`;
-  
-  if (videoDuration > 0) {
-    const targetSeconds = (pctValue / 100) * videoDuration;
-    document.getElementById('time-display').textContent = `${formatTime(targetSeconds)} / ${formatTime(videoDuration)}`;
-  }
-}
-
-function seekRelative(seconds) {
-  if (videoDuration > 0) {
-    const target = Math.max(0, Math.min(videoDuration, currentVideoTime + seconds));
-    sendIframeCommand('seekTo', [target, true]);
-  }
-}
-
-function toggleMute(e) {
-  if (e) e.stopPropagation();
-  isMuted = !isMuted;
-  const cmd = isMuted ? 'mute' : 'unmute';
-  sendIframeCommand(cmd);
-  document.getElementById('mute-btn').innerHTML = isMuted ? '🔇' : '🔊';
-}
-
-function sendIframeCommand(funcName, args = '') {
-  iframe.contentWindow.postMessage(JSON.stringify({
-    event: 'command',
-    func: funcName,
-    args: args
-  }), '*');
-}
-
-// Youtube URL Parser
+// YouTube URL parser supporting live, watches, embed, shorts
 function parseYouTubeId(url) {
   url = url.trim();
   let vid = '';
@@ -1864,7 +1447,7 @@ function parseYouTubeId(url) {
   };
 }
 
-// Loads video into player viewport
+// Loads video into iframe and registers in history
 function loadVideo(customId = null, isCustomLive = false) {
   let vid = '';
   let isLive = false;
@@ -1885,13 +1468,9 @@ function loadVideo(customId = null, isCustomLive = false) {
     return;
   }
 
-  isLiveVideo = isLive;
-
-  // Load Iframe with completely clean player configurations (hides standard YT overlay controls)
-  iframe.src = 'https://www.youtube.com/embed/' + vid + '?rel=0&controls=0&disablekb=1&fs=0&modestbranding=1&autoplay=1&enablejsapi=1';
+  iframe.src = 'https://www.youtube.com/embed/' + vid + '?rel=0&modestbranding=1&autoplay=1';
   iframe.style.display = 'block';
   placeholder.style.display = 'none';
-  gestureOverlay.style.display = 'flex'; // reveal custom gesture controls overlay
 
   if (isLive) {
     liveBadge.style.display = 'flex';
@@ -1899,52 +1478,145 @@ function loadVideo(customId = null, isCustomLive = false) {
     liveBadge.style.display = 'none';
   }
 
-  isPlaying = true;
-  updatePlaybackButtons(true);
   resetZoom();
   applyFilters();
   addToHistory(vid, isLive);
-  
-  // Make HUD visible immediately with brief hint overlay
-  toggleHUDVisibility(true);
 }
 
-// Panning boundary calculations
-function updateZoomTransform() {
-  const viewportWidth = viewportContainer.clientWidth || 320;
-  const viewportHeight = viewportContainer.clientHeight || 180;
-  
-  // Calculate dynamic maximum borders keeping video perfectly clamped inside frame
-  const maxPanX = ((zoomLevel - 1) * viewportWidth) / 2;
-  const maxPanY = ((zoomLevel - 1) * viewportHeight) / 2;
-  
-  panX = Math.max(-maxPanX, Math.min(maxPanX, panX));
-  panY = Math.max(-maxPanY, Math.min(maxPanY, panY));
+// Add Item to History
+function addToHistory(vid, isLive) {
+  recentVideos = recentVideos.filter(item => item.id !== vid);
+  recentVideos.unshift({
+    id: vid,
+    isLive: isLive,
+    timestamp: Date.now()
+  });
 
-  // translate first, scale second to secure identical drag speed globally
-  zoomContainer.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
-  
-  // Update Indicators
-  const pct = `${Math.round(zoomLevel * 100)}%`;
-  document.getElementById('hud-zoom-indicator').textContent = `🔍 Zoom: ${pct}`;
+  if (recentVideos.length > 10) {
+    recentVideos.pop();
+  }
+
+  localStorage.setItem('easyeyes_history', JSON.stringify(recentVideos));
+  renderHistory();
 }
 
-function resetZoom(e) {
-  if (e) e.stopPropagation();
+// Render History
+function renderHistory() {
+  const listEl = document.getElementById('history-list');
+  if (recentVideos.length === 0) {
+    listEl.innerHTML = `
+      <div class="history-empty-message">
+        <div class="history-empty-art">&#128229;</div>
+        <span style="font-size: 11px; font-weight: 600;">No history logged yet</span>
+        <span style="font-size: 9px; color: var(--text-muted);">Videos you study will appear here</span>
+      </div>
+    `;
+    return;
+  }
+
+  let html = '';
+  recentVideos.forEach(vid => {
+    const formattedDate = new Date(vid.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const liveIndicator = vid.isLive ? `<span class="history-live-pill">Live</span>` : '';
+    html += `
+      <div class="history-row" onclick="loadVideo('${vid.id}', ${vid.isLive})">
+        <div class="history-pic-box">
+          <img class="history-img" src="https://img.youtube.com/vi/${vid.id}/mqdefault.jpg" alt="Thumbnail">
+          ${liveIndicator}
+        </div>
+        <div class="history-row-details">
+          <span class="history-row-title">Video ID: ${vid.id}</span>
+          <div class="history-row-meta">
+            <span>Study Session</span>
+            <span>${formattedDate}</span>
+          </div>
+        </div>
+        <button class="history-row-remove" onclick="event.stopPropagation(); deleteHistoryItem('${vid.id}')" title="Remove">
+          &times;
+        </button>
+      </div>
+    `;
+  });
+  listEl.innerHTML = html;
+}
+
+// Clear single history row
+function deleteHistoryItem(id) {
+  recentVideos = recentVideos.filter(item => item.id !== id);
+  localStorage.setItem('easyeyes_history', JSON.stringify(recentVideos));
+  renderHistory();
+}
+
+// Clear all history logs
+function clearHistory() {
+  if (confirm('Clear recently played history?')) {
+    recentVideos = [];
+    localStorage.removeItem('easyeyes_history');
+    renderHistory();
+  }
+}
+
+// Toggle interactive layouts
+function setInteractiveMode(mode) {
+  interactiveMode = mode;
+  document.getElementById('mode-control').classList.toggle('active', mode === 'control');
+  document.getElementById('mode-gesture').classList.toggle('active', mode === 'gesture');
+
+  if (mode === 'gesture') {
+    gestureOverlay.classList.add('active');
+    
+    const hint = document.getElementById('gesture-hint');
+    hint.style.animation = 'none';
+    setTimeout(() => {
+      hint.style.animation = 'fadeOut 2.2s forwards';
+    }, 10);
+  } else {
+    gestureOverlay.classList.remove('active');
+  }
+}
+
+// Handle zoom Adjusters manually
+function adjustZoom(delta) {
+  zoomLevel = Math.max(1.0, Math.min(5.0, zoomLevel + delta));
+  
+  // Constrain boundary panning on smaller zooms
+  if (zoomLevel === 1.0) {
+    panX = 0;
+    panY = 0;
+  }
+  updateZoomTransform();
+}
+
+function resetZoom() {
   zoomLevel = 1.0;
   panX = 0;
   panY = 0;
   updateZoomTransform();
 }
 
-// Mobile Pinch & Drag handlers securely clamped
-function setupGestureListeners() {
+// Apply CSS translate-first, scale-second transform pattern for linear drag speed compatibility
+function updateZoomTransform() {
+  // Constrain panning boundaries perfectly to keep video inside viewport frame boundaries
+  const viewportWidth = viewportContainer.clientWidth || 320;
+  const viewportHeight = viewportContainer.clientHeight || 180;
+  const maxPanX = ((zoomLevel - 1) * viewportWidth) / 2;
+  const maxPanY = ((zoomLevel - 1) * viewportHeight) / 2;
   
-  // Desktop Drag-Panning
+  panX = Math.max(-maxPanX, Math.min(maxPanX, panX));
+  panY = Math.max(-maxPanY, Math.min(maxPanY, panY));
+
+  zoomContainer.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
+  
+  const percentageText = `Zoom: ${Math.round(zoomLevel * 100)}%`;
+  document.getElementById('zoom-percentage').textContent = percentageText;
+  document.getElementById('zoom-control-percentage').textContent = `${Math.round(zoomLevel * 100)}%`;
+}
+
+// Mobile Pinch-to-zoom and Drag Panning
+function setupGestureListeners() {
+  // Desktop Drag-Panning inside gestureOverlay
   gestureOverlay.addEventListener('mousedown', function(e) {
-    // Prevent dragging action triggering on control strips
-    if (e.target.closest('.hud-strip') || e.target.closest('.hud-center-btn')) return;
-    
+    if (interactiveMode !== 'gesture') return;
     isPanning = true;
     startX = e.clientX - panX;
     startY = e.clientY - panY;
@@ -1952,7 +1624,7 @@ function setupGestureListeners() {
   });
 
   window.addEventListener('mousemove', function(e) {
-    if (!isPanning) return;
+    if (!isPanning || interactiveMode !== 'gesture') return;
     panX = e.clientX - startX;
     panY = e.clientY - startY;
     updateZoomTransform();
@@ -1963,73 +1635,40 @@ function setupGestureListeners() {
     isPanning = false;
   });
 
-  // Mobile multi-touch gesturer
+  // Mobile Touch Gestures (Pinch to Zoom and 1-finger Panning)
   gestureOverlay.addEventListener('touchstart', function(e) {
-    // Prevent gesture actions triggering on control strips
-    if (e.target.closest('.hud-strip') || e.target.closest('.hud-center-btn')) return;
-
+    if (interactiveMode !== 'gesture') return;
+    
     if (e.touches.length === 1) {
       isPanning = true;
       startX = e.touches[0].clientX - panX;
       startY = e.touches[0].clientY - panY;
-      if (zoomLevel > 1.0) {
-        e.preventDefault(); // only block scroll when actively zoomed in and panning
-      }
     } else if (e.touches.length === 2) {
       isPanning = false;
       initialPinchDistance = getDistanceBetweenTouches(e.touches);
       initialZoom = zoomLevel;
-      e.preventDefault();
     }
+    e.preventDefault();
   }, { passive: false });
 
   gestureOverlay.addEventListener('touchmove', function(e) {
+    if (interactiveMode !== 'gesture') return;
+
     if (e.touches.length === 1 && isPanning) {
-      if (zoomLevel > 1.0) {
-        panX = e.touches[0].clientX - startX;
-        panY = e.touches[0].clientY - startY;
-        updateZoomTransform();
-        e.preventDefault(); // Block parent page scroll only when zoomed & dragging video
-      }
+      panX = e.touches[0].clientX - startX;
+      panY = e.touches[0].clientY - startY;
+      updateZoomTransform();
     } else if (e.touches.length === 2) {
       const currentDistance = getDistanceBetweenTouches(e.touches);
       const factor = currentDistance / initialPinchDistance;
       zoomLevel = Math.max(1.0, Math.min(5.0, initialZoom * factor));
       updateZoomTransform();
-      e.preventDefault();
     }
+    e.preventDefault();
   }, { passive: false });
 
   gestureOverlay.addEventListener('touchend', function(e) {
     isPanning = false;
-    
-    // Smart Single/Double Tap detection to trigger HUD or PlayPause state
-    const now = Date.now();
-    const delay = now - lastTapTime;
-    
-    // Avoid double taps triggering on buttons
-    const isControl = e.target.closest('.hud-strip') || e.target.closest('.hud-center-btn');
-    
-    if (delay < 250 && delay > 0) {
-      if (!isControl) {
-        // Double Tap -> Play Pause
-        togglePlayPause();
-      }
-    } else {
-      if (!isControl) {
-        // Single Tap -> toggle HUD visibility
-        toggleHUDVisibility();
-      }
-    }
-    lastTapTime = now;
-  });
-
-  // Desktop Click toggler for HUD visibility
-  gestureOverlay.addEventListener('click', function(e) {
-    const isControl = e.target.closest('.hud-strip') || e.target.closest('.hud-center-btn');
-    if (!isControl) {
-      toggleHUDVisibility();
-    }
   });
 }
 
@@ -2039,7 +1678,7 @@ function getDistanceBetweenTouches(touches) {
   return Math.sqrt(dx * dx + dy * dy);
 }
 
-// Student Eye protection logic
+// Student Protection Filters
 function applyFilters() {
   const br = document.getElementById('brightness').value;
   const co = document.getElementById('contrast').value;
@@ -2058,21 +1697,11 @@ function applyFilters() {
   iframe.style.filter = filterStr;
 }
 
-// Presets
+// Preset Filters Setup
 function applyPreset(name) {
   document.querySelectorAll('.preset-mobile-item').forEach(c => c.classList.remove('active'));
   document.getElementById('p-' + name).classList.add('active');
   activePreset = name;
-
-  const prettyNames = {
-    'hd-premium': 'HD Premium',
-    'premium-hd': 'Premium HD',
-    'focus': 'Super Focus',
-    'blue-block': 'Reader Mode',
-    'night': 'Night Vision',
-    'reset': 'Original'
-  };
-  document.getElementById('hud-filter-indicator').textContent = prettyNames[name] || 'Custom';
 
   const presetsList = {
     'hd-premium': { br: 104, co: 116, se: 0, sa: 110, inv: false },
@@ -2114,7 +1743,7 @@ function toggleInvert(shouldApply = true) {
   }
 }
 
-// Study Chime synthesiser
+// Ocular Alarm Sound (Self-contained Web Audio API)
 function triggerBreakSound() {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -2124,24 +1753,24 @@ function triggerBreakSound() {
       osc.type = 'sine';
       osc.frequency.setValueAtTime(pitch, time);
       gain.gain.setValueAtTime(0, time);
-      gain.gain.linearRampToValueAtTime(0.2, time + 0.05);
-      gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.8);
+      gain.gain.linearRampToValueAtTime(0.25, time + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.0001, time + 1.0);
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start(time);
-      osc.stop(time + 0.9);
+      osc.stop(time + 1.1);
     };
 
     const now = ctx.currentTime;
     playChime(now, 523.25); 
-    playChime(now + 0.15, 659.25); 
-    playChime(now + 0.3, 783.99); 
+    playChime(now + 0.2, 659.25); 
+    playChime(now + 0.4, 783.99); 
   } catch(e) {
-    console.log("Audio contexts blocked by browser environment.");
+    console.log("Audio not enabled by browser gesture context yet.");
   }
 }
 
-// 20-20-20 Break Timer System
+// 20-20-20 Eye break Timer Logic
 function updateTimerUI() {
   const m = Math.floor(timerSecondsLeft / 60);
   const s = timerSecondsLeft % 60;
@@ -2208,88 +1837,20 @@ function toggleTimer() {
   }
 }
 
-// Unified navigation hubs
+// Unified tab switching logic for body nav cards and sticky bottom bar
 function switchMainTab(tabId) {
+  // Hide all panels
   document.querySelectorAll('.tab-content-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-tab-item').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.bottom-tab-btn').forEach(b => b.classList.remove('active'));
 
+  // Show selected panel
   document.getElementById('panel-' + tabId).classList.add('active');
   document.getElementById('nav-' + tabId).classList.add('active');
   document.getElementById('b-tab-' + tabId).classList.add('active');
 }
 
-// History
-function addToHistory(vid, isLive) {
-  recentVideos = recentVideos.filter(item => item.id !== vid);
-  recentVideos.unshift({
-    id: vid,
-    isLive: isLive,
-    timestamp: Date.now()
-  });
-
-  if (recentVideos.length > 10) {
-    recentVideos.pop();
-  }
-
-  localStorage.setItem('easyeyes_history', JSON.stringify(recentVideos));
-  renderHistory();
-}
-
-function renderHistory() {
-  const listEl = document.getElementById('history-list');
-  if (recentVideos.length === 0) {
-    listEl.innerHTML = `
-      <div class="history-empty-message">
-        <div class="history-empty-art">&#128229;</div>
-        <span style="font-size: 11px; font-weight: 600;">No history logged yet</span>
-        <span style="font-size: 9px; color: var(--text-muted);">Videos you study will appear here</span>
-      </div>
-    `;
-    return;
-  }
-
-  let html = '';
-  recentVideos.forEach(vid => {
-    const formattedDate = new Date(vid.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const liveIndicator = vid.isLive ? `<span class="history-live-pill">Live</span>` : '';
-    html += `
-      <div class="history-row" onclick="loadVideo('${vid.id}', ${vid.isLive})">
-        <div class="history-pic-box">
-          <img class="history-img" src="https://img.youtube.com/vi/${vid.id}/mqdefault.jpg" alt="Thumbnail">
-          ${liveIndicator}
-        </div>
-        <div class="history-row-details">
-          <span class="history-row-title">Video ID: ${vid.id}</span>
-          <div class="history-row-meta">
-            <span>Study Session</span>
-            <span>${formattedDate}</span>
-          </div>
-        </div>
-        <button class="history-row-remove" onclick="event.stopPropagation(); deleteHistoryItem('${vid.id}')" title="Remove">
-          &times;
-        </button>
-      </div>
-    `;
-  });
-  listEl.innerHTML = html;
-}
-
-function deleteHistoryItem(id) {
-  recentVideos = recentVideos.filter(item => item.id !== id);
-  localStorage.setItem('easyeyes_history', JSON.stringify(recentVideos));
-  renderHistory();
-}
-
-function clearHistory() {
-  if (confirm('Clear recently played history?')) {
-    recentVideos = [];
-    localStorage.removeItem('easyeyes_history');
-    renderHistory();
-  }
-}
-
-// Enter submit URL
+// Keyboards
 document.getElementById('url-input').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') {
     loadVideo();
